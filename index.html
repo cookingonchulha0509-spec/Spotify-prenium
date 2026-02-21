@@ -466,6 +466,8 @@
     let timerInterval = null;
     let mySymbol = 'X';
     let isMyTurn = false;
+    let mmQueueRef = null;
+    let mmListenerUnsub = null;
 
     // Consts (Logic & State untouched)
     const RANKS = [
@@ -542,10 +544,10 @@
     };
 
     window.navToForce = (screenId) => {
-        // [FIX] Sabse zaruri fix: Matchmaking se baahar jaane par ghost ko clear karna
-        if (screenId !== 'matchmaking' && mmQueueRef) {
-            remove(mmQueueRef);
-            mmQueueRef = null;
+        // [FIX] Cleanup queue if leaving matchmaking screen
+        if (screenId !== 'matchmaking') {
+            if(mmListenerUnsub) { mmListenerUnsub(); mmListenerUnsub = null; }
+            if(mmQueueRef) { remove(mmQueueRef); mmQueueRef = null; }
         }
 
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -722,65 +724,67 @@
     };
     window.closeRankModal = () => document.getElementById('rank-modal').classList.remove('active');
 
-    let mmQueueRef = null;
-
-    // [FIX] Ab matchmaking logic bahut simple aur fast kar diya hai.
+    // ==========================================
+    // [FIXED] REAL-TIME MATCHMAKING ENGINE
+    // ==========================================
     window.startMatchmaking = async (mode) => {
         currentMode = mode;
         navToForce('matchmaking');
         
-        // Classic ho ya Ranked, koi rank limit nahi. Seedha match hoga jo bhi waiting mein hai.
         const qPath = mode === 'ranked' ? `matchmaking/ranked/all` : `matchmaking/classic/all`;
         
         document.getElementById('mm-text').innerText = `SEARCHING FOR MATCH...`;
         document.getElementById('mm-sub').innerText = mode === 'ranked' ? `Searching Ranked Arena` : `Classic Matchmaking`;
 
-        // Database mein queue read karo
-        const qSnap = await get(ref(db, qPath));
-        let found = false;
-        
-        if(qSnap.exists()) {
-            let entries = qSnap.val();
+        // 1. Join queue
+        mmQueueRef = push(ref(db, qPath));
+        await set(mmQueueRef, { uid: currentUser.uid, matched: false, time: Date.now(), mode: mode });
+        onDisconnect(mmQueueRef).remove(); 
+
+        // 2. Real-Time Listener (Instant Match)
+        mmListenerUnsub = onValue(ref(db, qPath), async (snap) => {
+            if(!snap.exists() || !mmQueueRef) return;
+
+            let entries = snap.val();
             let keys = Object.keys(entries);
-            
+            let myEntry = entries[mmQueueRef.key];
+
+            if(!myEntry || myEntry.matched) return; 
+
             for(let i=0; i<keys.length; i++) {
                 let key = keys[i];
-                let entry = entries[key];
+                let opp = entries[key];
                 
-                // Agar samne wala valid hai aur match nahi hua hai
-                if(entry && entry.uid !== currentUser.uid && !entry.matched) {
+                if(opp && opp.uid !== currentUser.uid && !opp.matched) {
                     
-                    // Hum purane online lag ko ignore karke sirf ye check karenge ki banda kisi aur game mein toh busy nahi hai.
-                    let oppActiveGameSnap = await get(ref(db, `users/${entry.uid}/activeGame`));
+                    let oppActiveSnap = await get(ref(db, `users/${opp.uid}/activeGame`));
                     
-                    if(!oppActiveGameSnap.exists() || !oppActiveGameSnap.val()) {
-                        // Match mil gaya!
-                        found = true;
-                        let oppUid = entry.uid;
+                    if(!oppActiveSnap.exists() || !oppActiveSnap.val()) {
                         
-                        // Entry ko lock kardo aur game banao
-                        await update(ref(db, `${qPath}/${key}`), { matched: true });
-                        await createNewGame(oppUid, mode, null);
-                        await remove(ref(db, `${qPath}/${key}`)); // Queue se nikal do
-                        break;
+                        // Prevent double-game creation (older queue entry creates the game)
+                        if(myEntry.time <= opp.time) {
+                            update(ref(db, `${qPath}/${key}`), { matched: true });
+                            update(ref(db, `${qPath}/${mmQueueRef.key}`), { matched: true });
+                            
+                            await createNewGame(opp.uid, mode, null);
+                            
+                            remove(ref(db, `${qPath}/${key}`));
+                            remove(ref(db, `${qPath}/${mmQueueRef.key}`));
+                            mmQueueRef = null;
+                            if(mmListenerUnsub) { mmListenerUnsub(); mmListenerUnsub = null; }
+                            break; 
+                        }
                     } else {
-                        // Agar banda pehle hi game mein chala gaya hai, toh ye "Ghost" entry hai, isko saaf kar do taaki koi aur na fase.
+                        // Clear Ghost
                         remove(ref(db, `${qPath}/${key}`));
                     }
                 }
             }
-        }
-
-        // Agar koi khali nahi mila, toh aap khud queue mein lag jao
-        if(!found) {
-            mmQueueRef = push(ref(db, qPath));
-            await set(mmQueueRef, { uid: currentUser.uid, matched: false, time: Date.now(), mode: mode });
-            // Agar app band karte hain, tabhi delete ho jayega server se
-            onDisconnect(mmQueueRef).remove();
-        }
+        });
     };
 
     window.cancelMatchmaking = () => {
+        if(mmListenerUnsub) { mmListenerUnsub(); mmListenerUnsub = null; }
         if(mmQueueRef) { remove(mmQueueRef); mmQueueRef = null; }
         navToForce('home');
     };
@@ -815,7 +819,6 @@
         
         await set(ref(db, `games/${gid}`), gameObj);
         
-        // Dono players ke profile mein game add karte hi dono automaticaly game screen par chale jayenge (setupUserListener ki wajah se)
         await update(ref(db, `users/${p1Uid}`), { activeGame: gid });
         await update(ref(db, `users/${p2Uid}`), { activeGame: gid });
     }
@@ -896,7 +899,9 @@
     window.rejectInvite = (invKey) => remove(ref(db, `invites/${currentUser.uid}/${invKey}`));
 
     async function joinGame(gid) {
+        if(mmListenerUnsub) { mmListenerUnsub(); mmListenerUnsub = null; }
         if(mmQueueRef) { remove(mmQueueRef); mmQueueRef = null; }
+        
         navToForce('game');
         currentGameId = gid;
         document.getElementById('emote-menu').classList.add('hidden');
