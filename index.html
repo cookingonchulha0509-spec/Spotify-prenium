@@ -542,6 +542,12 @@
     };
 
     window.navToForce = (screenId) => {
+        // [FIX] Sabse zaruri fix: Matchmaking se baahar jaane par ghost ko clear karna
+        if (screenId !== 'matchmaking' && mmQueueRef) {
+            remove(mmQueueRef);
+            mmQueueRef = null;
+        }
+
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId + '-screen').classList.add('active');
         
@@ -631,7 +637,6 @@
     function setupUserListener() {
         if(userUnsub) userUnsub();
         
-        // FIXED BUG: Setup online presence once safely outside the continuous loop!
         const myOnlineRef = ref(db, `users/${currentUser.uid}/online`);
         set(myOnlineRef, true);
         onDisconnect(myOnlineRef).set(false);
@@ -655,7 +660,6 @@
             }
         });
         
-        // Setup invite listener once here
         listenInvites();
         navToForce('home');
     }
@@ -719,58 +723,59 @@
     window.closeRankModal = () => document.getElementById('rank-modal').classList.remove('active');
 
     let mmQueueRef = null;
-    let mmListener = null;
 
-    // FIXED BUG: Faster matchmaking by ignoring exact rank limits & deleting inactive/ghost waiting players immediately.
+    // [FIX] Ab matchmaking logic bahut simple aur fast kar diya hai.
     window.startMatchmaking = async (mode) => {
         currentMode = mode;
         navToForce('matchmaking');
         
-        // Single unified path for each mode to make finding players instantaneous regardless of ranks
+        // Classic ho ya Ranked, koi rank limit nahi. Seedha match hoga jo bhi waiting mein hai.
         const qPath = mode === 'ranked' ? `matchmaking/ranked/all` : `matchmaking/classic/all`;
         
         document.getElementById('mm-text').innerText = `SEARCHING FOR MATCH...`;
         document.getElementById('mm-sub').innerText = mode === 'ranked' ? `Searching Ranked Arena` : `Classic Matchmaking`;
 
-        const q = query(ref(db, qPath), orderByChild('time'));
-        const qSnap = await get(q);
+        // Database mein queue read karo
+        const qSnap = await get(ref(db, qPath));
         let found = false;
         
         if(qSnap.exists()) {
-            let entries = [];
-            qSnap.forEach(s => { entries.push({ key: s.key, val: s.val() }); });
+            let entries = qSnap.val();
+            let keys = Object.keys(entries);
             
-            // Iterate over players waiting in queue
-            for(let i=0; i<entries.length; i++) {
-                let entry = entries[i].val;
-                let key = entries[i].key;
+            for(let i=0; i<keys.length; i++) {
+                let key = keys[i];
+                let entry = entries[key];
                 
-                if(entry && entry.uid !== currentUser.uid && !entry.matched && entry.mode === mode) {
+                // Agar samne wala valid hai aur match nahi hua hai
+                if(entry && entry.uid !== currentUser.uid && !entry.matched) {
                     
-                    // Verify if opponent is actually online and not disconnected/ghost
-                    let oppSnap = await get(ref(db, `users/${entry.uid}`));
-                    let oppData = oppSnap.val();
+                    // Hum purane online lag ko ignore karke sirf ye check karenge ki banda kisi aur game mein toh busy nahi hai.
+                    let oppActiveGameSnap = await get(ref(db, `users/${entry.uid}/activeGame`));
                     
-                    if(oppData && oppData.online === true && !oppData.activeGame) {
+                    if(!oppActiveGameSnap.exists() || !oppActiveGameSnap.val()) {
+                        // Match mil gaya!
                         found = true;
                         let oppUid = entry.uid;
-                        // Lock the entry
+                        
+                        // Entry ko lock kardo aur game banao
                         await update(ref(db, `${qPath}/${key}`), { matched: true });
                         await createNewGame(oppUid, mode, null);
-                        await remove(ref(db, `${qPath}/${key}`));
+                        await remove(ref(db, `${qPath}/${key}`)); // Queue se nikal do
                         break;
                     } else {
-                        // Dead/Ghost entry cleanup! Prevents you from getting stuck.
+                        // Agar banda pehle hi game mein chala gaya hai, toh ye "Ghost" entry hai, isko saaf kar do taaki koi aur na fase.
                         remove(ref(db, `${qPath}/${key}`));
                     }
                 }
             }
         }
 
-        // If no active players were found, join the queue and wait for the next person
+        // Agar koi khali nahi mila, toh aap khud queue mein lag jao
         if(!found) {
             mmQueueRef = push(ref(db, qPath));
             await set(mmQueueRef, { uid: currentUser.uid, matched: false, time: Date.now(), mode: mode });
+            // Agar app band karte hain, tabhi delete ho jayega server se
             onDisconnect(mmQueueRef).remove();
         }
     };
@@ -810,7 +815,7 @@
         
         await set(ref(db, `games/${gid}`), gameObj);
         
-        // This instantly triggers the user listener to pull both players into the match
+        // Dono players ke profile mein game add karte hi dono automaticaly game screen par chale jayenge (setupUserListener ki wajah se)
         await update(ref(db, `users/${p1Uid}`), { activeGame: gid });
         await update(ref(db, `users/${p2Uid}`), { activeGame: gid });
     }
