@@ -336,7 +336,7 @@
     </div>
 
     <!-- Home Screen -->
-    <div id="home-screen" class="screen"><div class="screen-content"><h2 style="margin-bottom: 16px; font-weight: 900; font-size: 1.4rem; letter-spacing: 1px; text-transform: uppercase;">Select Mode</h2><div class="glass-card mode-card" onclick="startMatchmaking('ranked')"><h3><svg class="svg-icon" style="stroke: var(--primary);" viewBox="0 0 24 24"><path d="M12 15l-8-4.5v-3L12 12l8-4.5v3z"></path></svg> Ranked Match</h3><p>Compete for MMR against your own Rank. High stakes environment.</p><div id="home-rank-info" style="margin-top: 12px; font-size: 0.75rem; font-weight: 900; color: var(--primary); background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); display: inline-block; padding: 6px 12px; border-radius: 6px; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">Loading Tier...</div></div><div class="glass-card mode-card" onclick="startMatchmaking('classic')"><h3><svg class="svg-icon" style="stroke: var(--text-main);" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg> Casual Scrimmage</h3><p>Unranked gameplay. Match with anyone without MMR pressure.</p></div><div class="glass-card mode-card" onclick="navTo('friend')"><h3><svg class="svg-icon" style="stroke: var(--accent);" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Custom Lobby</h3><p>Host private matches. Best of X series with your peers.</p></div></div></div>
+    <div id="home-screen" class="screen"><div class="screen-content"><h2 style="margin-bottom: 16px; font-weight: 900; font-size: 1.4rem; letter-spacing: 1px; text-transform: uppercase;">Select Mode</h2><div class="glass-card mode-card" onclick="startMatchmaking('ranked')"><h3><svg class="svg-icon" style="stroke: var(--primary);" viewBox="0 0 24 24"><path d="M12 15l-8-4.5v-3L12 12l8-4.5v3z"></path></svg> Ranked Match</h3><p>Compete for MMR. Strict timers apply. High stakes environment.</p><div id="home-rank-info" style="margin-top: 12px; font-size: 0.75rem; font-weight: 900; color: var(--primary); background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); display: inline-block; padding: 6px 12px; border-radius: 6px; letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">Loading Tier...</div></div><div class="glass-card mode-card" onclick="startMatchmaking('classic')"><h3><svg class="svg-icon" style="stroke: var(--text-main);" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg> Casual Scrimmage</h3><p>Unranked gameplay. Practice strategies without MMR pressure.</p></div><div class="glass-card mode-card" onclick="navTo('friend')"><h3><svg class="svg-icon" style="stroke: var(--accent);" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Custom Lobby</h3><p>Host private matches. Best of X series with your peers.</p></div></div></div>
     
     <!-- Friend Screen -->
     <div id="friend-screen" class="screen"><div class="screen-content"><h2 style="margin-bottom: 16px; font-weight: 900; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px;">Custom Lobby</h2><div class="glass-card" style="margin-bottom: 24px;"><p style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Your Pro ID</p><h2 id="my-uid-display" style="letter-spacing: 2px; color: var(--primary); margin: 10px 0 20px; font-family: monospace; font-size: 1.6rem; background: rgba(13,15,18,0.8); padding: 12px; border-radius: 10px; border: 1px solid var(--card-border); text-align: center; box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.5);">0000000000</h2><div class="input-group"><input type="number" id="friend-uid-input" placeholder=" "><label>Opponent ID</label></div><select id="friend-bestof" style="width: 100%; padding: 12px; border-radius: 8px; background: rgba(17,19,23,0.8); color: white; border: 1px solid var(--card-border); margin-bottom: 20px; font-family: inherit; font-size: 0.9rem; outline: none; appearance: none; font-weight: 800; cursor: pointer;"><option value="3">Best of 3 Series</option><option value="5">Best of 5 Series</option><option value="7">Best of 7 Series</option></select><button type="button" class="btn btn-primary" style="width: 100%;" onclick="sendInvite()">Deploy Invite</button></div><div><h3 style="margin-bottom: 16px; font-size: 1.1rem; color: var(--text-muted); font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Lobby Invites</h3><div id="invites-list" class="leaderboard-container"></div></div></div></div>
@@ -345,7 +345,7 @@
     <div id="matchmaking-screen" class="screen"><div class="matchmaking-loader"><div class="radar"><div class="radar-ping"></div></div><div style="text-align: center;"><h2 id="mm-text" style="font-weight: 900; font-size: 1.6rem; letter-spacing: 2px; margin-bottom: 10px; color: var(--text-main); text-shadow: 0 0 15px rgba(255,255,255,0.3);">SEARCHING</h2><p id="mm-sub" style="color: var(--primary); font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800;">Finding Opponent...</p></div><button type="button" class="btn btn-outline" style="margin-top: 30px; border-radius: 10px; padding: 12px 30px; font-size: 0.85rem;" onclick="cancelMatchmaking()">Abort</button></div></div>
     
     <!-- Game Screen -->
-    <div id="game-screen" class="screen"><div class="screen-content" style="padding-top: 10px;"><div class="game-header"><div class="player-info" id="p1-info"><div class="player-avatar" id="p1-avatar">X</div><div id="p1-name" style="font-size: 0.75rem; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;">PLAYER</div><div id="p1-timer" class="timer">--</div></div><div id="game-score" style="font-size: 1.4rem; font-weight: 900; color: var(--text-muted); letter-spacing: 1px; text-shadow: 0 5px 10px rgba(0,0,0,0.8);">VS</div><div class="player-info" id="p2-info"><div class="player-avatar" id="p2-avatar">O</div><div id="p2-name" style="font-size: 0.75rem; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;">OPPONENT</div><div id="p2-timer" class="timer">--</div></div></div><div class="board-container"><div class="board" id="game-board"></div></div><div style="text-align: center; margin-top: 25px;"><div id="game-status-text" style="font-size: 1.3rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 4px 10px rgba(0,0,0,0.8);">Connecting...</div></div><div class="emotes-btn" onclick="toggleEmoteMenu()"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></div><div id="emote-menu" class="glass-card hidden" style="position: absolute; bottom: 140px; right: 16px; padding: 12px; display: flex; flex-direction: column; gap: 10px; z-index: 50; width: 140px; max-height: 280px; overflow-y: auto;"></div></div></div>
+    <div id="game-screen" class="screen"><div class="screen-content" style="padding-top: 10px;"><div class="game-header"><div class="player-info" id="p1-info"><div class="player-avatar" id="p1-avatar">X</div><div id="p1-name" style="font-size: 0.75rem; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;">PLAYER</div><div id="p1-timer" class="timer">--</div></div><div style="display: flex; flex-direction: column; align-items: center; justify-content: center;"><div id="game-score" style="font-size: 1.4rem; font-weight: 900; color: var(--text-muted); letter-spacing: 1px; text-shadow: 0 5px 10px rgba(0,0,0,0.8);">VS</div><button type="button" onclick="confirmQuitGame()" style="background:transparent; border:none; color:var(--danger); font-size:0.65rem; font-weight:900; margin-top:4px; cursor:pointer; text-transform:uppercase; letter-spacing: 1px; padding: 4px;">QUIT</button></div><div class="player-info" id="p2-info"><div class="player-avatar" id="p2-avatar">O</div><div id="p2-name" style="font-size: 0.75rem; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase;">OPPONENT</div><div id="p2-timer" class="timer">--</div></div></div><div class="board-container"><div class="board" id="game-board"></div></div><div style="text-align: center; margin-top: 25px;"><div id="game-status-text" style="font-size: 1.3rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 4px 10px rgba(0,0,0,0.8);">Connecting...</div></div><div class="emotes-btn" onclick="toggleEmoteMenu()"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></div><div id="emote-menu" class="glass-card hidden" style="position: absolute; bottom: 140px; right: 16px; padding: 12px; display: flex; flex-direction: column; gap: 10px; z-index: 50; width: 140px; max-height: 280px; overflow-y: auto;"></div></div></div>
     
     <!-- Store Screen -->
     <div id="store-screen" class="screen"><div class="screen-content"><h2 style="margin-bottom: 5px; font-weight: 900; font-size: 1.4rem; letter-spacing: 1px; text-transform: uppercase;">Store</h2><p style="color: var(--primary); font-size: 0.85rem; margin-bottom: 24px; font-weight: 800; letter-spacing: 0.5px;">Upgrade your aesthetic.</p><h3 style="font-size: 1.1rem; font-weight: 900; border-bottom: 2px solid rgba(255,255,255,0.05); padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 5px rgba(0,0,0,0.5);">Pro Themes</h3><div class="store-grid" id="themes-store"></div><h3 style="font-size: 1.1rem; font-weight: 900; border-bottom: 2px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-top: 35px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 5px rgba(0,0,0,0.5);">Badges & Emotes</h3><div class="store-grid" id="emotes-store"></div></div></div>
@@ -356,13 +356,8 @@
     <!-- Profile Screen -->
     <div id="profile-screen" class="screen"><div class="screen-content"><h2 style="margin-bottom: 16px; font-weight: 900; font-size: 1.4rem; letter-spacing: 1px; text-transform: uppercase;">Player Profile</h2><div class="glass-card" style="text-align: center; margin-bottom: 24px;"><div style="display: flex; justify-content: center; margin-bottom: 20px;"><div id="prof-rank-badge" class="rank-icon rank-bronze" style="transform: scale(1.6); filter: drop-shadow(0 8px 12px rgba(0,0,0,0.8));"></div></div><h2 id="prof-name" style="font-weight: 900; font-size: 1.4rem; letter-spacing: 1px; margin-bottom: 6px; text-transform: uppercase;">Player</h2><p id="prof-uid" style="color: var(--primary); font-family: monospace; letter-spacing: 1px; margin-bottom: 20px; font-size: 0.85rem; font-weight: 800;">ID: 0000000000</p><div style="display: flex; justify-content: space-around; background: rgba(13,15,18,0.8); padding: 16px; border-radius: 10px; border: 1px solid var(--card-border); box-shadow: inset 0 0 15px rgba(0,0,0,0.5);"><div><div id="prof-rp" style="font-weight: 900; font-size: 1.3rem; color: var(--text-main); text-shadow: 0 2px 5px rgba(0,0,0,0.5);">0</div><div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">MMR</div></div><div style="width: 1px; background: rgba(255,255,255,0.1);"></div><div><div id="prof-coins" style="font-weight: 900; font-size: 1.3rem; color: var(--primary); text-shadow: 0 0 10px var(--primary-glow);">0</div><div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Credits</div></div></div><div style="margin-top: 24px; text-align: left;"><div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 10px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;"><span>Progress</span> <span id="prof-next-rank" style="color: var(--primary);">Next: Silver</span></div><div style="width: 100%; height: 8px; background: rgba(13,15,18,0.9); border-radius: 4px; overflow: hidden; border: 1px solid var(--card-border); box-shadow: inset 0 0 10px rgba(0,0,0,0.8);"><div id="prof-progress" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary), #ffe066); transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 0 10px var(--primary-glow);"></div></div></div></div><button type="button" class="btn btn-primary" style="width: 100%; margin-bottom: 12px;" onclick="changeNamePrompt()">Update Alias</button><button type="button" class="btn btn-outline" style="width: 100%; margin-bottom: 12px;" onclick="navTo('terms')">Policy & Integrity</button><button type="button" class="btn btn-outline" style="width: 100%; color: var(--danger); border-color: rgba(211,47,47,0.4);" onclick="logout()">log out</button></div></div>
     
-    <!-- Terms Screen (Now with WhatsApp) -->
-    <div id="terms-screen" class="screen"><div class="screen-content"><h2 style="margin-bottom: 16px; font-weight: 900; font-size: 1.4rem; letter-spacing: 1px; text-transform: uppercase;">Terms & Policy</h2><div class="glass-card" style="line-height: 1.6; color: var(--text-muted); font-size: 0.85rem;"><h3 style="color: var(--text-main); margin-bottom: 8px; font-size: 1rem; font-weight: 900;">Fair Play Integrity</h3><p style="margin-bottom: 20px;">Progression, matchmaking, and MMR are validated securely via Firebase. Exploiting systems will result in account penalties.</p><h3 style="color: var(--text-main); margin-bottom: 8px; font-size: 1rem; font-weight: 900;">Data Handling</h3><p style="margin-bottom: 20px;">Your public Player Name, Rank, and ID are visible to others. No private credentials are broadcasted.</p><h3 style="color: var(--text-main); margin-bottom: 8px; font-size: 1rem; font-weight: 900;">Guest Accounts</h3><p style="margin-bottom: 24px;">Guest profiles are bound to local device cache. Clearing cache will result in permanent loss of progression.</p><h3 style="color: var(--text-main); margin-bottom: 8px; font-size: 1rem; font-weight: 900;">Contact Support</h3><p style="margin-bottom: 10px;">For issues and inquiries, email us at:<br><a href="mailto:support@yourapp.com" style="color: var(--primary); font-weight: 900; text-decoration: none; letter-spacing: 0.5px;">support@yourapp.com</a></p>
-        <button type="button" class="btn btn-success" style="width: 100%; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(46,125,50,0.5);" onclick="openWhatsApp()">
-            <svg class="svg-icon" viewBox="0 0 24 24" style="stroke: white; fill: none; stroke-width: 2;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-            WhatsApp Support
-        </button>
-        <button type="button" class="btn btn-primary" style="width: 100%;" onclick="navTo('profile')">Return</button></div></div></div>
+    <!-- Terms Screen -->
+    <div id="terms-screen" class="screen"><div class="screen-content"><h2 style="margin-bottom: 16px; font-weight: 900; font-size: 1.4rem; letter-spacing: 1px; text-transform: uppercase;">Terms & Policy</h2><div class="glass-card" style="line-height: 1.6; color: var(--text-muted); font-size: 0.85rem;"><h3 style="color: var(--text-main); margin-bottom: 8px; font-size: 1rem; font-weight: 900;">Fair Play Integrity</h3><p style="margin-bottom: 20px;">Progression, matchmaking, and MMR are validated securely via Firebase. Exploiting systems will result in account penalties.</p><h3 style="color: var(--text-main); margin-bottom: 8px; font-size: 1rem; font-weight: 900;">Data Handling</h3><p style="margin-bottom: 20px;">Your public Player Name, Rank, and ID are visible to others. No private credentials are broadcasted.</p><h3 style="color: var(--text-main); margin-bottom: 8px; font-size: 1rem; font-weight: 900;">Guest Accounts</h3><p style="margin-bottom: 24px;">Guest profiles are bound to local device cache. Clearing cache will result in permanent loss of progression.</p><h3 style="color: var(--text-main); margin-bottom: 8px; font-size: 1rem; font-weight: 900;">Contact Support</h3><p style="margin-bottom: 24px;">For issues and inquiries, message us on WhatsApp:<br><a href="javascript:void(0)" onclick="window.open('https://wa.me/' + WHATSAPP_SUPPORT_NUMBER, '_blank')" style="color: var(--success); font-weight: 900; text-decoration: none; letter-spacing: 0.5px; display:inline-flex; align-items:center; gap:5px; margin-top:5px;"><svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.487-1.761-1.66-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg> WhatsApp Support</a></p><button type="button" class="btn btn-primary" style="width: 100%;" onclick="navTo('profile')">Return</button></div></div></div>
     
     <!-- Floating Bottom Nav -->
     <div id="bottom-nav" class="bottom-nav hidden"><div class="nav-item active" onclick="navTo('home')"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>Play</div><div class="nav-item" onclick="navTo('store')"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>Store</div><div class="nav-item" onclick="navTo('leaderboard')"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 15l-8-4.5v-3L12 12l8-4.5v3z"></path></svg>Rank</div><div class="nav-item" onclick="navTo('profile')"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Profile</div></div>
@@ -407,7 +402,7 @@
     import { getDatabase, ref, set, get, onValue, update, remove, query, orderByChild, limitToLast, push, onDisconnect, equalTo } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     // ==========================================
-    // FIREBASE CONFIGURATION & CONSTANTS
+    // CONFIGURATION
     // ==========================================
     const firebaseConfig = {
       apiKey: "AIzaSyDY8xPEACw3bvUxcg7FHPCgk-Dzdft5JpI",
@@ -420,7 +415,7 @@
     };
 
     const MONETIZATION_URL = "https://omg10.com/4/10637837";
-    const WHATSAPP_NUMBER = "919876543210"; // <-- YAHA APNA WHATSAPP NUMBER DAALEIN (With Country Code)
+    const WHATSAPP_SUPPORT_NUMBER = "919000000000"; // MANUALLY CONFIGURE WHATSAPP SUPPORT NUMBER HERE
 
     // App State
     let app, auth, db;
@@ -445,17 +440,17 @@
         let activeScreen = document.querySelector('.screen.active')?.id.replace('-screen', '');
 
         if(currentGameId && currentGameStatus === 'playing') {
-            window.history.pushState({ page: 'forward' }, ""); // Trap inside game
+            window.history.pushState({ page: 'forward' }, ""); 
             window.showModal('Quit Match?', 'Leaving abandons the match and penalizes MMR. Are you sure?', 
                 `<button type="button" class="btn btn-outline" style="flex:1;" onclick="closeModal();">No</button>
-                 <button type="button" class="btn btn-primary" style="flex:1; background: var(--danger); color: white;" onclick="abandonGameWithPenalty(); closeModal();">Yes</button>`);
+                 <button type="button" class="btn btn-primary" style="flex:1; background: var(--danger); color: white;" onclick="abandonGameWithPenalty(); closeModal(); navToForce('home');">Yes</button>`);
         } else if (activeScreen === 'matchmaking') { 
             window.history.pushState({ page: 'forward' }, "");
             cancelMatchmaking(); 
         } else if (['store', 'profile', 'leaderboard', 'friend', 'terms'].includes(activeScreen)) { 
             window.history.pushState({ page: 'forward' }, "");
             navToForce('home'); 
-        }
+        } 
     };
 
     const RANKS = [
@@ -489,8 +484,6 @@
     };
 
     const ERRORS = { 'auth/invalid-email': 'The email format is invalid.', 'auth/user-not-found': 'Account not found.', 'auth/wrong-password': 'Authentication failed. Incorrect password.', 'auth/email-already-in-use': 'Email is already registered.', 'auth/weak-password': 'Password requires at least 6 characters.' };
-
-    window.openWhatsApp = () => { window.open(`https://wa.me/${WHATSAPP_NUMBER}`, '_blank'); };
 
     window.previewItem = (type, id) => {
         let container = document.getElementById('preview-container');
@@ -560,6 +553,8 @@
         if(screenId === 'store') renderStore();
     };
 
+    window.confirmQuitGame = () => navTo('home');
+
     function getRankObj(rp) { return RANKS.find(r => rp <= r.max); }
 
     try {
@@ -567,7 +562,7 @@
         auth = getAuth(app);
         db = getDatabase(app);
         
-        listenToSystemStatus();
+        listenToSystemStatus(); 
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -600,26 +595,35 @@
 
         if (userData && userData.banned) {
             icon.style.background = 'var(--danger)'; icon.style.borderColor = 'var(--danger)';
-            title.innerText = 'ACCOUNT SUSPENDED'; title.style.color = 'var(--danger)'; title.style.textShadow = '0 0 20px rgba(211,47,47,0.5)';
+            title.innerText = 'ACCOUNT SUSPENDED';
+            title.style.color = 'var(--danger)'; title.style.textShadow = '0 0 20px rgba(211,47,47,0.5)';
             msg.innerText = userData.banReason || 'Violation of Fair Play Terms. Contact support.';
             actions.innerHTML = `<button class="btn btn-outline" style="border-color:var(--text-muted);" onclick="logout()">Sign Out</button>`;
-            overlay.classList.add('active'); if(currentGameId) abandonGame(); return;
+            overlay.classList.add('active');
+            if(currentGameId) abandonGame();
+            return;
         }
 
         if (systemSettings && systemSettings.maintenance) {
             icon.style.background = 'var(--primary)'; icon.style.borderColor = 'var(--primary)';
-            title.innerText = 'SYSTEM MAINTENANCE'; title.style.color = 'var(--primary)'; title.style.textShadow = '0 0 20px var(--primary-glow)';
+            title.innerText = 'SYSTEM MAINTENANCE';
+            title.style.color = 'var(--primary)'; title.style.textShadow = '0 0 20px var(--primary-glow)';
             msg.innerText = systemSettings.maintenanceMessage || 'Servers are currently offline for upgrades. Check back soon.';
             actions.innerHTML = ``;
-            overlay.classList.add('active'); if(currentGameId) abandonGame(); return;
+            overlay.classList.add('active');
+            if(currentGameId) abandonGame();
+            return;
         }
 
         if (systemSettings && systemSettings.updateRequired) {
             icon.style.background = 'var(--success)'; icon.style.borderColor = 'var(--success)';
-            title.innerText = 'UPDATE REQUIRED'; title.style.color = 'var(--success)'; title.style.textShadow = '0 0 20px rgba(46,125,50,0.5)';
+            title.innerText = 'UPDATE REQUIRED';
+            title.style.color = 'var(--success)'; title.style.textShadow = '0 0 20px rgba(46,125,50,0.5)';
             msg.innerText = systemSettings.updateMessage || 'A new version of Pro Arena is available.';
             actions.innerHTML = `<button class="btn btn-success" style="padding: 14px 30px; font-size: 1rem; box-shadow: 0 4px 15px rgba(46,125,50,0.5);" onclick="window.open('${systemSettings.updateLink || '#'}', '_blank')">Download Update</button>`;
-            overlay.classList.add('active'); if(currentGameId) abandonGame(); return;
+            overlay.classList.add('active');
+            if(currentGameId) abandonGame();
+            return;
         }
 
         overlay.classList.remove('active');
@@ -763,9 +767,9 @@
         const qPath = mode === 'ranked' ? `matchmaking/ranked/all` : `matchmaking/classic/all`;
         document.getElementById('mm-text').innerText = `SEARCHING`; document.getElementById('mm-sub').innerText = mode === 'ranked' ? `Ranked MMR Queue` : `Casual Queue`;
 
-        let myRankName = userData ? getRankObj(userData.rp || 0).name : 'Bronze'; // NEW: Get Player Rank
+        let myRp = userData?.rp || 0;
         mmQueueRef = push(ref(db, qPath));
-        await set(mmQueueRef, { uid: currentUser.uid, matched: false, time: Date.now(), mode: mode, rank: myRankName });
+        await set(mmQueueRef, { uid: currentUser.uid, matched: false, time: Date.now(), mode: mode, rp: myRp });
         onDisconnect(mmQueueRef).remove(); 
 
         mmListenerUnsub = onValue(ref(db, qPath), async (snap) => {
@@ -775,11 +779,12 @@
 
             for(let i=0; i<keys.length; i++) {
                 let key = keys[i]; let opp = entries[key];
-                
-                // NEW: Strict Same Rank Check for Ranked Mode
-                if(mode === 'ranked' && opp.rank && opp.rank !== myEntry.rank) continue;
-
                 if(opp && opp.uid !== currentUser.uid && !opp.matched) {
+                    if (mode === 'ranked') {
+                        let oppRp = opp.rp || 0;
+                        if (Math.abs(myRp - oppRp) > 300) continue; 
+                    }
+
                     let oppActiveSnap = await get(ref(db, `users/${opp.uid}/activeGame`));
                     if(!oppActiveSnap.exists() || !oppActiveSnap.val()) {
                         if(myEntry.time <= opp.time) {
@@ -856,29 +861,11 @@
         gameUnsubscribe = onValue(ref(db, `games/${gid}`), (snap) => {
             const game = snap.val();
             if(!game) { sessionStorage.removeItem('activeMatch'); abandonGame(); navToForce('home'); return; }
+            if (game.status !== 'playing') { sessionStorage.removeItem('activeMatch'); }
             
-            // NEW: Enemy quit the match -> Provide Win & Kick
-            if (game.status === 'abandoned' && game.winner === currentUser.uid) {
-                sessionStorage.removeItem('activeMatch');
-                update(ref(db, `users/${currentUser.uid}`), { activeGame: null });
-                window.showModal('Match Ended', 'Opponent has fled the match. You won by default!');
-                if(!game['processed_' + currentUser.uid]) {
-                    update(ref(db, `games/${gid}`), { [`processed_${currentUser.uid}`]: true });
-                    processRewards(game, true, false); // Award Victory
-                }
-                navToForce('home');
-                return;
-            } else if (game.status === 'abandoned') {
-                sessionStorage.removeItem('activeMatch');
-                navToForce('home');
-                return;
-            }
-
-            if (game.status !== 'playing' && game.status !== 'abandoned') { sessionStorage.removeItem('activeMatch'); }
-            
-            // Monetag Call at Start has been Removed from here.
-            if(game.status === 'playing') {
+            if (!game[`session_started_${currentUser.uid}`]) {
                 sessionStorage.setItem('activeMatch', JSON.stringify({ gameId: gid, mode: game.mode, symbol: game.p1 === currentUser.uid ? 'X' : 'O' }));
+                update(ref(db, `games/${gid}`), { [`session_started_${currentUser.uid}`]: true });
             }
             
             currentGameStatus = game.status; renderGame(game); handleTimers(game);
@@ -896,7 +883,7 @@
         document.getElementById('p1-info').className = `player-info ${game.turn === currentUser.uid ? 'active-turn' : ''}`; document.getElementById('p2-info').className = `player-info ${game.turn !== currentUser.uid ? 'active-turn' : ''}`;
 
         let boardEl = document.getElementById('game-board'); boardEl.className = 'board ' + themeObj.class; boardEl.innerHTML = '';
-        let winLine = (game.status === 'finished' || game.status === 'timeout') ? checkWin(game.board) : null;
+        let winLine = (game.status === 'finished' || game.status === 'timeout' || game.status === 'abandoned') ? checkWin(game.board) : null;
 
         (game.board || []).forEach((cell, idx) => {
             let div = document.createElement('div'); let isWinCell = winLine && winLine.includes(idx);
@@ -947,22 +934,21 @@
 
     function handleGameEndUI(game) {
         let statusEl = document.getElementById('game-status-text'); let isWin = game.winner === currentUser.uid; let isDraw = game.status === 'draw';
+        let endReason = game.status === 'abandoned' ? "OPPONENT LEFT" : (game.status === 'timeout' ? "TIME EXPIRED" : "DEFEAT");
+
         if(isWin) { statusEl.innerText = "VICTORY"; statusEl.style.color = "var(--success)"; statusEl.style.textShadow = "0 0 15px rgba(46,125,50,0.5)"; }
         else if(isDraw) { statusEl.innerText = "DRAW"; statusEl.style.color = "var(--text-muted)"; statusEl.style.textShadow = "none"; }
-        else { statusEl.innerText = game.status === 'timeout' ? "TIME EXPIRED" : "DEFEAT"; statusEl.style.color = "var(--danger)"; statusEl.style.textShadow = "0 0 15px rgba(211,47,47,0.5)"; }
+        else { statusEl.innerText = endReason; statusEl.style.color = "var(--danger)"; statusEl.style.textShadow = "0 0 15px rgba(211,47,47,0.5)"; }
 
-        if(!game['processed_' + currentUser.uid]) { 
-            update(ref(db, `games/${currentGameId}`), { [`processed_${currentUser.uid}`]: true }); 
-            
-            // NEW: Trigger Monetag Redirect on Match End Before Rewards
-            if (!game[`redirected_end_${currentUser.uid}`]) {
-                update(ref(db, `games/${currentGameId}`), { [`redirected_end_${currentUser.uid}`]: true });
-                sessionStorage.setItem("fromMonetagRedirect", "true");
-                let a = document.createElement('a'); a.href = MONETIZATION_URL; a.target = '_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            }
-
-            processRewards(game, isWin, isDraw); 
+        if (!game[`monetag_redirected_${currentUser.uid}`]) {
+            update(ref(db, `games/${currentGameId}`), { [`monetag_redirected_${currentUser.uid}`]: true });
+            sessionStorage.setItem("fromMonetagRedirect", "true");
+            statusEl.innerHTML += `<div style="font-size:0.8rem; margin-top:10px; color:var(--text-muted); animation: heartbeat 1s infinite;">Finalizing Match Data...</div>`;
+            setTimeout(() => { window.location.href = MONETIZATION_URL; }, 2000);
+            return; 
         }
+
+        if(!game['processed_' + currentUser.uid]) { update(ref(db, `games/${currentGameId}`), { [`processed_${currentUser.uid}`]: true }); processRewards(game, isWin, isDraw); }
         if(game.mode === 'friend' && (game.round || 1) < (game.bestOf || 1)) { statusEl.innerHTML += `<br><button type="button" class="btn btn-primary" style="margin: 15px auto; width: 160px;" onclick="nextRound()">Next Match</button>`; } 
         else { statusEl.innerHTML += `<br><button type="button" class="btn btn-outline" style="margin: 15px auto; width: 160px;" onclick="leaveGame()">Exit Match</button>`; }
     }
@@ -987,18 +973,33 @@
     window.leaveGame = () => { abandonGame(); navToForce('home'); };
 
     function abandonGame() {
-        sessionStorage.removeItem('activeMatch'); if(gameUnsubscribe) gameUnsubscribe(); if(timerInterval) clearInterval(timerInterval);
-        if(currentGameId && currentUser) {
+        sessionStorage.removeItem('activeMatch'); 
+        let currentLocalGameId = currentGameId;
+        let currentLocalStatus = currentGameStatus;
+
+        if(currentLocalGameId && currentUser) {
             update(ref(db, `users/${currentUser.uid}`), { activeGame: null });
-            if(currentGameStatus === 'playing') { get(ref(db, `games/${currentGameId}`)).then(s => { let g = s.val(); if(g && g.status === 'playing') { update(ref(db, `games/${currentGameId}`), { status: 'abandoned', winner: g.p1 === currentUser.uid ? g.p2 : g.p1 }); } }); }
+            if(currentLocalStatus === 'playing') { 
+                get(ref(db, `games/${currentLocalGameId}`)).then(s => { 
+                    let g = s.val(); 
+                    if(g && g.status === 'playing') { 
+                        update(ref(db, `games/${currentLocalGameId}`), { status: 'abandoned', winner: g.p1 === currentUser.uid ? g.p2 : g.p1 }); 
+                    } 
+                }); 
+            }
         }
+        if(gameUnsubscribe) gameUnsubscribe(); 
+        if(timerInterval) clearInterval(timerInterval);
         currentGameId = null; currentGameStatus = null;
     }
 
     window.abandonGameWithPenalty = () => {
         sessionStorage.removeItem('activeMatch'); 
-        if(currentGameId && currentUser && currentGameStatus === 'playing') {
-            get(ref(db, `games/${currentGameId}`)).then(s => {
+        let currentLocalGameId = currentGameId;
+        let currentLocalStatus = currentGameStatus;
+
+        if(currentLocalGameId && currentUser && currentLocalStatus === 'playing') {
+            get(ref(db, `games/${currentLocalGameId}`)).then(s => {
                 let g = s.val();
                 if(g && g.status === 'playing') {
                     if (g.mode === 'ranked') {
@@ -1006,13 +1007,14 @@
                         if (rank.name === 'Bronze') penalty = 10; else if (rank.name === 'Silver') penalty = 20; else if (rank.name === 'Gold') penalty = 40; else if (rank.name === 'Platinum') penalty = 60; else if (rank.name === 'Conquer') penalty = 80; else penalty = 100; 
                         let newRp = Math.max(0, rp - penalty); update(ref(db, `users/${currentUser.uid}`), { rp: newRp });
                     }
-                    let winnerUid = g.p1 === currentUser.uid ? g.p2 : g.p1; update(ref(db, `games/${currentGameId}`), { status: 'abandoned', winner: winnerUid });
+                    let winnerUid = g.p1 === currentUser.uid ? g.p2 : g.p1; 
+                    update(ref(db, `games/${currentLocalGameId}`), { status: 'abandoned', winner: winnerUid });
                 }
             });
         }
-        if(gameUnsubscribe) gameUnsubscribe(); if(timerInterval) clearInterval(timerInterval);
-        if(currentGameId && currentUser) { update(ref(db, `users/${currentUser.uid}`), { activeGame: null }); }
-        navToForce('home'); // NEW: force navigation after leaving
+        if(gameUnsubscribe) gameUnsubscribe(); 
+        if(timerInterval) clearInterval(timerInterval);
+        if(currentUser) { update(ref(db, `users/${currentUser.uid}`), { activeGame: null }); }
         currentGameId = null; currentGameStatus = null;
     };
 
