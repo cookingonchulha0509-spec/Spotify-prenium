@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart AI Video Call Agent</title>
+    <title>Kanhaiya Mittal - AI Video Call</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #121212; color: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
@@ -38,13 +38,13 @@
 
     <div class="call-container">
         <div class="avatar-box">
-            <img id="ai-avatar-img" src="ai-static.png" alt="AI Agent Idle">
+            <img id="ai-avatar-img" src="ai-static.png" alt="Kanhaiya Idle">
             <video id="ai-avatar-video" src="ai.mp4" loop muted playsinline></video>
         </div>
         
         <div class="controls">
             <button id="mic-btn">Tap to Speak</button>
-            <p id="status" style="color: #4CAF50;">System Ready</p>
+            <p id="status" style="color: #4CAF50;">Kanhaiya Ready Hai</p>
             <div id="transcript"></div>
         </div>
     </div>
@@ -52,7 +52,6 @@
     <script>
         // ==========================================
         // 🔑 API KEYS
-        // Agar leak hone ki wajah se error aaye, to nayi keys yahan dalein
         // ==========================================
         const GROQ_API_KEY = "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";
         const ELEVENLABS_API_KEY = "sk_0d4aad84b22364a6b27b0a1d5476856ab4c846b1312531d5";
@@ -65,15 +64,14 @@
         const aiAvatarImg = document.getElementById('ai-avatar-img');
         const aiAvatarVideo = document.getElementById('ai-avatar-video');
 
-        // Function to show real errors directly to the user
+        // Error Pop-up System
         function showError(source, message) {
             console.error(`[${source} Error]:`, message);
-            statusText.style.color = "#ff4d4d"; // Red color for error
+            statusText.style.color = "#ff4d4d"; 
             statusText.innerText = `Error: ${message}`;
-            alert(`🚨 ${source} API ne Error diya hai:\n\n${message}`);
+            alert(`🚨 ${source} API Error:\n\n${message}`);
         }
 
-        // Web Speech API
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
             alert("Aapka browser Speech Recognition support nahi karta. Kripya Google Chrome use karein.");
@@ -88,7 +86,7 @@
             if (isListening) {
                 recognition.stop();
             } else {
-                statusText.style.color = "#aaaaaa"; // Reset color
+                statusText.style.color = "#aaaaaa"; 
                 recognition.start();
             }
         });
@@ -127,11 +125,11 @@
         };
 
         // ==========================================
-        // GROQ API CALL (LLM)
+        // GROQ API CALL (LLM) - KANHAIYA MITTAL PERSONALITY
         // ==========================================
         async function processAIResponse(userText) {
             statusText.style.color = "#aaaaaa";
-            statusText.innerText = "AI soch raha hai...";
+            statusText.innerText = "Kanhaiya soch raha hai...";
             
             try {
                 const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -143,17 +141,19 @@
                     body: JSON.stringify({
                         model: "llama-3.1-8b-instant", 
                         messages: [
-                            { role: "system", content: "You are a helpful AI video call assistant. Keep your answers short, conversational, and reply in Hinglish." },
+                            { 
+                                // YAHAN KANHAIYA KI PERSONALITY DAALI GAYI HAI
+                                role: "system", 
+                                content: "You are Kanhaiya Mittal, a very cool, confident guy with a lot of attitude. You are a passionate cricketer. You are famous for playing awesome 'backshots', hitting massive long sixes, and doing extreme fast bowling. If anyone asks your name, proudly say 'Mera naam Kanhaiya Mittal hai'. Speak only in Hinglish (Hindi written in English alphabet). Keep your replies short, stylish, and conversational, and casually show off your cricket skills when it makes sense." 
+                            },
                             { role: "user", content: userText }
                         ],
                         max_tokens: 100
                     })
                 });
 
-                // 🔥 Asli Error Catch karne ka naya tarika
                 if (!groqResponse.ok) {
                     const errorData = await groqResponse.json();
-                    // Groq ka asli error message nikalna
                     const exactError = errorData.error?.message || "Unknown error occurred";
                     throw new Error(exactError);
                 }
@@ -191,7 +191,6 @@
                     })
                 });
 
-                // 🔥 ElevenLabs ka Asli Error Catch karne ka tarika
                 if (!response.ok) {
                     const errorData = await response.json();
                     const exactError = errorData.detail?.message || errorData.detail || "Unknown error occurred";
@@ -206,8 +205,8 @@
                     aiAvatarImg.style.display = "none";
                     aiAvatarVideo.style.display = "block";
                     aiAvatarVideo.play().catch(e => console.log("Video Play Error:", e));
-                    statusText.style.color = "#007bff"; // Blue for speaking
-                    statusText.innerText = "AI bol raha hai...";
+                    statusText.style.color = "#007bff"; 
+                    statusText.innerText = "Kanhaiya bol raha hai...";
                 };
 
                 audio.onended = () => {
@@ -215,8 +214,8 @@
                     aiAvatarVideo.currentTime = 0; 
                     aiAvatarVideo.style.display = "none";
                     aiAvatarImg.style.display = "block";
-                    statusText.style.color = "#4CAF50"; // Green for ready
-                    statusText.innerText = "System Ready";
+                    statusText.style.color = "#4CAF50"; 
+                    statusText.innerText = "Kanhaiya Ready Hai";
                 };
 
                 audio.play();
