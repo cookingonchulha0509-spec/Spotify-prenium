@@ -14,9 +14,8 @@
         /* Avatar / Video Styling */
         .avatar-box { width: 100%; height: 350px; background-color: #000; border-radius: 15px; overflow: hidden; position: relative; margin-bottom: 20px; border: 2px solid #333; display: flex; justify-content: center; align-items: center; }
         
-        /* Image aur Video dono ko avatar box mein fit karne ke liye */
         #ai-avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        #ai-avatar-video { width: 100%; height: 100%; object-fit: cover; display: none; } /* Default hide rahega */
+        #ai-avatar-video { width: 100%; height: 100%; object-fit: cover; display: none; }
         
         /* Controls */
         .controls { display: flex; flex-direction: column; align-items: center; gap: 15px; }
@@ -25,7 +24,7 @@
         #mic-btn.listening { background-color: #dc3545; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4); animation: pulse 1.5s infinite; }
         
         /* Status Text */
-        #status { font-size: 14px; color: #aaaaaa; min-height: 20px; }
+        #status { font-size: 14px; color: #aaaaaa; min-height: 20px; font-weight: bold; }
         #transcript { font-size: 15px; color: #fff; margin-top: 10px; font-style: italic; background: #2a2a2a; padding: 10px; border-radius: 10px; width: 100%; display: none;}
 
         @keyframes pulse {
@@ -40,50 +39,56 @@
     <div class="call-container">
         <div class="avatar-box">
             <img id="ai-avatar-img" src="ai-static.png" alt="AI Agent Idle">
-            
             <video id="ai-avatar-video" src="ai.mp4" loop muted playsinline></video>
         </div>
         
         <div class="controls">
             <button id="mic-btn">Tap to Speak</button>
-            <p id="status">System Ready</p>
+            <p id="status" style="color: #4CAF50;">System Ready</p>
             <div id="transcript"></div>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // 🔑 API KEYS (Aapki Provide Ki Gayi Keys)
+        // 🔑 API KEYS
+        // Agar leak hone ki wajah se error aaye, to nayi keys yahan dalein
         // ==========================================
         const GROQ_API_KEY = "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";
         const ELEVENLABS_API_KEY = "sk_0d4aad84b22364a6b27b0a1d5476856ab4c846b1312531d5";
         const VOICE_ID = "ErXwobaYiN019PkySvjV"; // Antony (Male)
         
-        // DOM Elements
         const micBtn = document.getElementById('mic-btn');
         const statusText = document.getElementById('status');
         const transcriptDiv = document.getElementById('transcript');
         
-        // Avatar Elements
         const aiAvatarImg = document.getElementById('ai-avatar-img');
         const aiAvatarVideo = document.getElementById('ai-avatar-video');
 
-        // Web Speech API for Voice to Text
+        // Function to show real errors directly to the user
+        function showError(source, message) {
+            console.error(`[${source} Error]:`, message);
+            statusText.style.color = "#ff4d4d"; // Red color for error
+            statusText.innerText = `Error: ${message}`;
+            alert(`🚨 ${source} API ne Error diya hai:\n\n${message}`);
+        }
+
+        // Web Speech API
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            alert("Aapka browser Speech Recognition support nahi karta. Kripya Google Chrome ka use karein.");
+            alert("Aapka browser Speech Recognition support nahi karta. Kripya Google Chrome use karein.");
         }
         const recognition = new SpeechRecognition();
-        recognition.lang = 'hi-IN'; // Hindi-English mix
+        recognition.lang = 'hi-IN'; 
         recognition.interimResults = false;
 
         let isListening = false;
 
-        // Mic Button Click Event
         micBtn.addEventListener('click', () => {
             if (isListening) {
                 recognition.stop();
             } else {
+                statusText.style.color = "#aaaaaa"; // Reset color
                 recognition.start();
             }
         });
@@ -101,12 +106,7 @@
             transcriptDiv.innerText = `You: "${userText}"`;
             transcriptDiv.style.display = 'block';
             
-            // Text milne ke baad AI ko bhejein
             await processAIResponse(userText);
-        };
-
-        recognition.onspeechend = () => {
-            recognition.stop();
         };
 
         recognition.onend = () => {
@@ -120,10 +120,9 @@
 
         recognition.onerror = (event) => {
             if (event.error === 'not-allowed') {
-                statusText.innerText = "Error: Mic permission denied. Please use Live Server!";
-                alert("Browser ne Mic block kar diya hai. Kripya is file ko VS Code ke 'Live Server' se open karein ya Localhost par chalayein.");
+                showError("Microphone", "Mic permission denied. VS Code 'Live Server' ka use karein.");
             } else {
-                statusText.innerText = `Error: ${event.error}`;
+                showError("Speech Recognition", event.error);
             }
         };
 
@@ -131,6 +130,7 @@
         // GROQ API CALL (LLM)
         // ==========================================
         async function processAIResponse(userText) {
+            statusText.style.color = "#aaaaaa";
             statusText.innerText = "AI soch raha hai...";
             
             try {
@@ -141,24 +141,32 @@
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        model: "openai/gpt-oss-120b", // Sahi aur fast model lagaya gaya hai
+                        model: "OpenAI GPT-OSS 20B", 
                         messages: [
-                            { role: "system", content: "You are a helpful AI video call assistant. Keep your answers short, conversational, and reply in Hinglish (Hindi written in English alphabet) or Hindi." },
+                            { role: "system", content: "You are a helpful AI video call assistant. Keep your answers short, conversational, and reply in Hinglish." },
                             { role: "user", content: userText }
                         ],
                         max_tokens: 100
                     })
                 });
 
+                // 🔥 Asli Error Catch karne ka naya tarika
+                if (!groqResponse.ok) {
+                    const errorData = await groqResponse.json();
+                    // Groq ka asli error message nikalna
+                    const exactError = errorData.error?.message || "Unknown error occurred";
+                    throw new Error(exactError);
+                }
+
                 const groqData = await groqResponse.json();
                 const aiReplyText = groqData.choices[0].message.content;
                 
-                // Text milne ke baad Voice generate karein
                 await playElevenLabsAudio(aiReplyText);
 
             } catch (error) {
-                console.error(error);
-                statusText.innerText = "Groq API Error!";
+                showError("Groq", error.message);
+                aiAvatarImg.style.display = "block";
+                aiAvatarVideo.style.display = "none";
             }
         }
 
@@ -178,40 +186,45 @@
                     },
                     body: JSON.stringify({
                         text: text,
-                        model_id: "eleven_multilingual_v2", // Multilingual model for Hindi/Hinglish
+                        model_id: "eleven_multilingual_v2", 
                         voice_settings: { stability: 0.5, similarity_boost: 0.75 }
                     })
                 });
 
-                if (!response.ok) throw new Error("ElevenLabs API failed");
+                // 🔥 ElevenLabs ka Asli Error Catch karne ka tarika
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    const exactError = errorData.detail?.message || errorData.detail || "Unknown error occurred";
+                    throw new Error(exactError);
+                }
 
                 const audioBlob = await response.blob();
                 const audioUrl = URL.createObjectURL(audioBlob);
                 const audio = new Audio(audioUrl);
 
-                // Jab audio play ho, tab Static Image chupayein aur MP4 play karein
                 audio.onplay = () => {
                     aiAvatarImg.style.display = "none";
                     aiAvatarVideo.style.display = "block";
-                    aiAvatarVideo.play();
+                    aiAvatarVideo.play().catch(e => console.log("Video Play Error:", e));
+                    statusText.style.color = "#007bff"; // Blue for speaking
                     statusText.innerText = "AI bol raha hai...";
                 };
 
-                // Jab audio khatam ho, tab MP4 rokein aur wapas Static Image lagayein
                 audio.onended = () => {
                     aiAvatarVideo.pause();
-                    aiAvatarVideo.currentTime = 0; // Video ko wapas start par set karein
+                    aiAvatarVideo.currentTime = 0; 
                     aiAvatarVideo.style.display = "none";
                     aiAvatarImg.style.display = "block";
+                    statusText.style.color = "#4CAF50"; // Green for ready
                     statusText.innerText = "System Ready";
                 };
 
-                // Play the audio
                 audio.play();
 
             } catch (error) {
-                console.error(error);
-                statusText.innerText = "ElevenLabs API Error!";
+                showError("ElevenLabs", error.message);
+                aiAvatarImg.style.display = "block";
+                aiAvatarVideo.style.display = "none";
             }
         }
     </script>
