@@ -539,15 +539,31 @@
         let currentEditingOrderId = null; let listenersAttached = false;
         let customLogoBase64 = null;
 
-        // Smart text resizer function to prevent overlap
-        function applyFitText(element, maxWidth, defaultFontSize, minFontSize = 10) {
+        // Ultra-robust text fitting function to ensure nothing gets cut off
+        function applyFitText(element, maxWidth, defaultFontSize, minFontSize = 8) {
             if (!element) return;
+            element.style.fontSize = defaultFontSize + 'px';
+            element.style.whiteSpace = 'nowrap';
+            
+            // Store original display properties to restore them later
+            const origDisplay = element.style.display;
+            const origWidth = element.style.width;
+            
+            // Force inline-block and auto width to measure the TRUE natural width
+            element.style.display = 'inline-block';
+            element.style.width = 'auto';
+            
             let currentSize = defaultFontSize;
-            element.style.fontSize = currentSize + 'px';
-            while (element.scrollWidth > maxWidth && currentSize > minFontSize) {
-                currentSize -= 1;
+            
+            // Loop and reduce size until the actual width is safely inside our maxWidth
+            while (element.offsetWidth > maxWidth && currentSize > minFontSize) {
+                currentSize -= 0.5;
                 element.style.fontSize = currentSize + 'px';
             }
+            
+            // Restore original styles
+            element.style.display = origDisplay;
+            element.style.width = origWidth;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -800,7 +816,7 @@
             el.style.width = '1000px'; 
             el.style.height = '631px'; 
             el.style.position = 'relative'; 
-            el.style.borderRadius = '0px'; 
+            el.style.borderRadius = '0px'; // No rounded borders to ensure perfect seam alignment
             el.style.overflow = 'hidden'; 
             el.style.fontFamily = '"Plus Jakarta Sans", sans-serif'; 
             el.style.color = '#ffffff'; 
@@ -887,9 +903,9 @@
                 </div>
                 
                 <!-- Restaurant Name - Bottom Right (Flexible and Protected) -->
-                <div style="position: absolute; bottom: 56px; right: 56px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 8px; max-width: 450px; width: 450px; box-sizing: border-box; z-index: 20;">
-                    <h1 class="card-title-main" style="font-family: 'Cinzel', serif; font-weight: 700; color: #ffffff; letter-spacing: 3.2px; margin: 0; line-height: 1; text-align: right; text-shadow: 0 3.2px 8px rgba(0,0,0,0.5); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; box-sizing: border-box; font-size: 32px;">${titleMain}</h1>
-                    <h2 class="card-title-sub" style="font-weight: 600; color: #d4af37; letter-spacing: 4.8px; margin: 0; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; box-sizing: border-box; font-size: 14.4px;">${titleSub}</h2>
+                <div style="position: absolute; bottom: 56px; right: 56px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 8px; width: 450px; box-sizing: border-box; z-index: 20;">
+                    <h1 class="card-title-main" style="font-family: 'Cinzel', serif; font-weight: 700; color: #ffffff; letter-spacing: 3.2px; margin: 0; line-height: 1; text-align: right; text-shadow: 0 3.2px 8px rgba(0,0,0,0.5); width: 100%; box-sizing: border-box; display: block;">${titleMain}</h1>
+                    <h2 class="card-title-sub" style="font-weight: 600; color: #d4af37; letter-spacing: 4.8px; margin: 0; text-align: right; width: 100%; box-sizing: border-box; display: block;">${titleSub}</h2>
                 </div>`;
             return el;
         }
@@ -923,7 +939,7 @@
                     <!-- Signature Strip & CVV -->
                     <div style="display: grid; grid-template-columns: 1fr 96px; gap: 32px; align-items: flex-start; margin-bottom: 32px;">
                         <div style="display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;">
-                            <p style="font-size: 11.2px; color: #4b5563; margin: 0 0 4.8px 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px;">Authorized Signature - Not valid unless signed</p>
+                            <p style="font-size: 11.2px; color: #4b5563; margin: 0 0 4.8px 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px; white-space: nowrap;">Authorized Signature - Not valid unless signed</p>
                             <div style="width: 100%; height: 48px; background: #ffffff; border-radius: 4.8px; background-image: repeating-linear-gradient(45deg, rgba(59,130,246,0.05) 0px, rgba(59,130,246,0.05) 10px, transparent 10px, transparent 20px); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; padding: 0 16px; overflow: hidden;">
                                 <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 28.8px; color: #1e3a8a; opacity: 0.6; white-space: nowrap;">Premium Member</span>
                             </div>
@@ -940,12 +956,13 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; flex: 1; gap: 48px; box-sizing: border-box;">
                         
                         <!-- Left text info -->
-                        <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; max-width: 600px; width: 600px; box-sizing: border-box; overflow: hidden;">
+                        <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; width: 600px; box-sizing: border-box;">
                             <h3 style="font-size: 17.6px; font-weight: 800; color: #1f2937; letter-spacing: 1.6px; margin: 0 0 16px 0;">TERMS & CONDITIONS</h3>
-                            <p style="font-size: 12.8px; color: #374151; margin: 0 0 12.8px 0; line-height: 1.5; text-align: justify; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">This card is property of TapCraves and the issuing restaurant. It is not transferable. Use of this card is subject to the terms and conditions set by the issuer. If found, please return to the nearest participating location.</p>
-                            <div style="display: flex; flex-direction: column; justify-content: center; margin: 0 0 24px 0; max-width: 100%; box-sizing: border-box; overflow: hidden;">
-                                <span class="card-support" style="font-size: 12.8px; color: #374151; line-height: 1.5; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">Support: support@tapcraves.com</span>
-                                <span class="card-restaurant" style="font-size: 12.8px; color: #374151; line-height: 1.5; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">Restaurant: ${rest.mobile || 'Not provided'}</span>
+                            <p style="font-size: 11.5px; color: #374151; margin: 0 0 12px 0; line-height: 1.5; text-align: justify; overflow: hidden;">This card is property of TapCraves and the issuing restaurant. It is not transferable. Use of this card is subject to the terms and conditions set by the issuer. If found, please return to the nearest participating location.</p>
+                            
+                            <div style="display: block; margin: 0 0 24px 0; width: 100%; box-sizing: border-box;">
+                                <div class="card-support" style="color: #374151; line-height: 1.5; font-weight: 600; display: block; width: 100%;">Support: support@tapcraves.com</div>
+                                <div class="card-restaurant" style="color: #374151; line-height: 1.5; font-weight: 600; display: block; width: 100%;">Restaurant: ${rest.mobile || 'Not provided'}</div>
                             </div>
                             
                             <div style="display: flex; align-items: center; gap: 16px;">
@@ -968,7 +985,7 @@
                     
                     <!-- Footer -->
                     <div style="position: absolute; bottom: 40px; left: 56px; right: 56px; display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 16px; box-sizing: border-box;">
-                        <span style="font-family: monospace; font-size: 12.8px; color: #4b5563; font-weight: 600; letter-spacing: 3.2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 50%;">ID: ${cardId}</span>
+                        <span class="card-footer-id" style="font-family: monospace; color: #4b5563; font-weight: 600; letter-spacing: 3.2px; width: 400px; display: block;">ID: ${cardId}</span>
                         <span style="font-size: 13.6px; font-weight: 800; color: #1f2937; letter-spacing: 4.8px; white-space: nowrap;">POWERED BY TAPCRAVES</span>
                     </div>
                     
@@ -993,24 +1010,35 @@
                 const { jsPDF } = window.jspdf; const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
                 const cardWidth = 85.6, cardHeight = 54;
                 
-                // Centering the grid perfectly on an A4 page (210mm x 297mm)
-                // Width: 2 cards = 171.2mm (210 - 171.2) / 2 = 19.4mm horizontal margins
-                // Height: 5 cards = 270mm (297 - 270) / 2 = 13.5mm vertical margins
+                // Gap between rows applied here so they are not glued vertically (gives a "normal gap below")
+                const gapY = 4; // 4mm vertical gap
                 const marginX = (210 - (cardWidth * 2)) / 2;
-                const marginY = (297 - (cardHeight * 5)) / 2;
+                
+                // Height = 5 cards + 4 gaps = (54 * 5) + (4 * 4) = 286mm
+                const totalGridHeight = (cardHeight * 5) + (gapY * 4);
+                const marginY = (297 - totalGridHeight) / 2; // Centers the layout perfectly vertically
 
                 for (let i = 0; i < batch.length; i++) {
                     const cardId = batch[i];
-                    const row = i; // Will always be 0 to 4 (5 cards max per batch/page)
+                    
+                    // Create new page every 5 cards
+                    if (i > 0 && i % 5 === 0) {
+                        doc.addPage();
+                    }
+                    
+                    const row = i % 5;
                     
                     const xPosFront = marginX;
                     const xPosBack = marginX + cardWidth;
-                    const yPos = marginY + (row * cardHeight);
+                    const yPos = marginY + (row * (cardHeight + gapY));
                     
-                    // FRONT RENDERING
+                    // --- FRONT RENDERING ---
                     const frontEl = createCardFront(cardId, rest, window.customLogoBase64); renderContainer.appendChild(frontEl);
-                    applyFitText(frontEl.querySelector('.card-title-main'), 450, 32);
-                    applyFitText(frontEl.querySelector('.card-title-sub'), 450, 14.4);
+                    
+                    // Dynamically apply fitText to prevent text cutting
+                    applyFitText(frontEl.querySelector('.card-title-main'), 430, 32); // Max width safely below container 450px
+                    applyFitText(frontEl.querySelector('.card-title-sub'), 430, 14.4);
+                    
                     new QRCode(frontEl.querySelector('.qr-front-container'), { text: cardId, width: 180, height: 180, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
                     await new Promise(r => setTimeout(r, 100));
                     
@@ -1018,10 +1046,14 @@
                     doc.addImage(canvasFront.toDataURL('image/jpeg', 1.0), 'JPEG', xPosFront, yPos, cardWidth, cardHeight);
                     updateProgress(`Rendering F...`); renderContainer.removeChild(frontEl);
 
-                    // BACK RENDERING
+                    // --- BACK RENDERING ---
                     const backEl = createCardBack(cardId, rest); renderContainer.appendChild(backEl);
-                    applyFitText(backEl.querySelector('.card-support'), 600, 12.8);
-                    applyFitText(backEl.querySelector('.card-restaurant'), 600, 12.8);
+                    
+                    // Dynamically apply fitText to back components
+                    applyFitText(backEl.querySelector('.card-support'), 550, 12.8);
+                    applyFitText(backEl.querySelector('.card-restaurant'), 550, 12.8);
+                    applyFitText(backEl.querySelector('.card-footer-id'), 380, 12.8);
+                    
                     new QRCode(backEl.querySelector('.qr-back-container'), { text: `https://tapcraves.shop/?view=wallet&card=${cardId}`, width: 140, height: 140, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
                     await new Promise(r => setTimeout(r, 100));
                     
@@ -1029,24 +1061,28 @@
                     doc.addImage(canvasBack.toDataURL('image/jpeg', 1.0), 'JPEG', xPosBack, yPos, cardWidth, cardHeight);
                     updateProgress(`Rendering B...`); renderContainer.removeChild(backEl);
                     
-                    // HORIZONTAL FOLD/SCISSOR LINE (Draw ABOVE the row, if not the first row)
+                    // --- GUIDES & SCISSOR LINES ---
+                    
+                    // 1. Horizontal dashed line between rows (placed in the gap)
                     if (row > 0) {
                         doc.setDrawColor(180, 180, 180);
                         doc.setLineWidth(0.1);
                         doc.setLineDashPattern([1.5, 1.5], 0);
-                        doc.line(marginX - 2, yPos, marginX + (cardWidth * 2) + 2, yPos);
+                        const lineY = yPos - (gapY / 2);
+                        doc.line(marginX - 2, lineY, marginX + (cardWidth * 2) + 2, lineY);
                     }
                     
-                    // VERTICAL FOLD MARK (Subtle tiny line between Front and Back)
-                    doc.setDrawColor(180, 180, 180);
-                    doc.setLineDashPattern([], 0); // Solid tick marks
+                    // 2. Vertical Fold Tick Marks (Subtle guides right on the border connecting front & back)
+                    doc.setDrawColor(150, 150, 150);
                     doc.setLineWidth(0.1);
-                    // Top small tick
-                    doc.line(xPosBack, yPos, xPosBack, yPos + 1.5);
-                    // Center subtle fold alignment dash (4mm in the exact middle)
+                    doc.setLineDashPattern([], 0); // Solid lines for the small ticks
+                    
+                    // Top subtle tick
+                    doc.line(xPosBack, yPos, xPosBack, yPos + 2);
+                    // Center subtle fold alignment dash (exactly middle to guide scissor/fold perfectly)
                     doc.line(xPosBack, yPos + (cardHeight / 2) - 2, xPosBack, yPos + (cardHeight / 2) + 2);
-                    // Bottom small tick
-                    doc.line(xPosBack, yPos + cardHeight - 1.5, xPosBack, yPos + cardHeight);
+                    // Bottom subtle tick
+                    doc.line(xPosBack, yPos + cardHeight - 2, xPosBack, yPos + cardHeight);
                 }
 
                 updateProgress('Finalizing...'); doc.save(`Order_${activeOrderId.substring(0,6)}_Batch_${batchIndex+1}.pdf`);
