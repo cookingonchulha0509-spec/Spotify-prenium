@@ -786,141 +786,208 @@
 
         function createCardFront(cardId, rest, logoBase64) {
             const el = document.createElement('div');
-            el.style.width = '1000px'; el.style.height = '631px'; el.style.position = 'relative'; el.style.borderRadius = '32px'; el.style.overflow = 'hidden'; el.style.fontFamily = '"Plus Jakarta Sans", sans-serif'; el.style.color = '#ffffff'; el.style.boxSizing = 'border-box';
-            
+            el.style.width = '1000px'; 
+            el.style.height = '631px'; 
+            el.style.position = 'relative'; 
+            el.style.borderRadius = '32px'; 
+            el.style.overflow = 'hidden'; 
+            el.style.fontFamily = '"Plus Jakarta Sans", sans-serif'; 
+            el.style.color = '#ffffff'; 
+            el.style.boxSizing = 'border-box';
             // Premium Titanium background
             el.style.background = 'linear-gradient(135deg, #2a2a2b 0%, #171718 50%, #09090a 100%)';
             el.style.border = '1px solid rgba(255,255,255,0.15)';
             
-            const nameParts = (rest.name || 'Restaurant').split(' '); let titleMain = nameParts[0].toUpperCase(); let titleSub = nameParts.slice(1).join(' ').toUpperCase(); if(!titleSub) titleSub = "MEMBER CARD";
+            // Applying flexbox for symmetrical layout
+            el.style.display = 'flex';
+            el.style.flexDirection = 'column';
+            el.style.justifyContent = 'space-between';
+            el.style.padding = '40px 50px';
+
+            const nameParts = (rest.name || 'Restaurant').split(' '); 
+            let titleMain = nameParts[0].toUpperCase(); 
+            let titleSub = nameParts.slice(1).join(' ').toUpperCase(); 
+            if(!titleSub) titleSub = "MEMBER CARD";
             
             let logoHtml = logoBase64 
-                ? `<img src="${logoBase64}" style="max-height: 30px; max-width: 150px; object-fit: contain; border-radius: 4px;">`
-                : `<div style="width: 30px; height: 30px; background: #0f172a; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);"><i class="fa-solid fa-utensils" style="color:#d4af37; font-size:16px;"></i></div>`;
+                ? `<img src="${logoBase64}" style="max-height: 40px; max-width: 180px; object-fit: contain; border-radius: 4px;">`
+                : `<div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2);"><i class="fa-solid fa-utensils" style="color:#d4af37; font-size:20px;"></i></div>`;
 
             el.innerHTML = `
+                <style>
+                    .qr-front-container canvas, .qr-front-container img { width: 100% !important; height: 100% !important; display: block; object-fit: contain; }
+                </style>
                 <!-- Background decorative noise/lines -->
-                <div style="position:absolute; top:0; left:0; width:100%; height:100%; opacity: 0.03; background-image: repeating-linear-gradient(45deg, #ffffff 0, #ffffff 1px, transparent 1px, transparent 10px); z-index:1;"></div>
-                <div style="position:absolute; top:-200px; right:-100px; width:600px; height:600px; background:radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 60%); border-radius:50%; z-index:1;"></div>
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; opacity: 0.03; background-image: repeating-linear-gradient(45deg, #ffffff 0, #ffffff 1px, transparent 1px, transparent 10px); z-index:1; pointer-events: none;"></div>
+                <div style="position:absolute; top:-200px; right:-100px; width:600px; height:600px; background:radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 60%); border-radius:50%; z-index:1; pointer-events: none;"></div>
                 
-                <div style="position:relative; z-index:10; padding: 45px 50px; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="position:relative; z-index:10; display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%;">
                     
-                    <!-- Top Section -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-                        <div style="display: flex; align-items: center; gap: 15px;">
+                    <!-- Top Grid -->
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%;">
+                        
+                        <!-- Left: Logo & Subtext -->
+                        <div style="display: flex; align-items: center; gap: 16px;">
                             ${logoHtml}
-                            <div style="display: flex; flex-direction: column;">
-                                <h2 style="font-size: 24px; font-weight: 800; margin: 0; letter-spacing: 1px; line-height:1; color: #fff;">Tap<span style="color: #d4af37;">Craves</span></h2>
-                                <p style="font-size: 12px; font-weight: 600; color: #a1a1aa; margin: 4px 0 0 0; letter-spacing: 2px; text-transform: uppercase;">Premium Rewards</p>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <i class="fa-solid fa-wifi fa-rotate-90" style="font-size: 36px; color: #a1a1aa;"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Middle Section -->
-                    <div style="display: flex; flex-direction: column; justify-content: center; gap: 30px; width: 100%; flex: 1; margin-top: 40px;">
-                        <!-- EMV Chip -->
-                        <div style="width: 75px; height: 50px; background: linear-gradient(135deg, #ebd197 0%, #b48545 100%); border-radius: 8px; position: relative; overflow: hidden; box-shadow: inset 0 0 6px rgba(0,0,0,0.3), 0 4px 10px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;">
-                            <div style="width: 100%; height: 1px; background: rgba(0,0,0,0.3); position: absolute; top: 30%;"></div>
-                            <div style="width: 100%; height: 1px; background: rgba(0,0,0,0.3); position: absolute; top: 70%;"></div>
-                            <div style="width: 1px; height: 100%; background: rgba(0,0,0,0.3); position: absolute; left: 30%;"></div>
-                            <div style="width: 1px; height: 100%; background: rgba(0,0,0,0.3); position: absolute; left: 70%;"></div>
-                            <div style="width: 30px; height: 20px; border: 1px solid rgba(0,0,0,0.3); border-radius: 4px; position: absolute; z-index: 2;"></div>
-                        </div>
-                        
-                        <!-- Card Number -->
-                        <div style="font-family: monospace; font-size: 46px; color: #e5e7eb; font-weight: 600; letter-spacing: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8), -1px -1px 1px rgba(255,255,255,0.3); display:flex; align-items:center;">
-                            <span>${cardId.substring(0,4)}</span><span style="margin-left: 20px;">${cardId.substring(4,8)}</span><span style="margin-left: 20px;">${cardId.substring(8,12)}</span><span style="margin-left: 20px;">${cardId.substring(12,16) || '8888'}</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Bottom Section -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">
-                        <div style="display: flex; flex-direction: column; gap: 15px;">
-                            <div style="display: flex; align-items: center; gap: 40px;">
-                                <div style="display: flex; flex-direction: column;">
-                                    <span style="font-size: 11px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 2px;">Valid Thru</span>
-                                    <span style="font-size: 22px; font-family: monospace; color: #e5e7eb; font-weight: 600; letter-spacing: 2px; text-shadow: 1px 1px 1px rgba(0,0,0,0.8);">12/29</span>
-                                </div>
-                                <div style="display: flex; flex-direction: column;">
-                                    <span style="font-size: 11px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 2px;">Member</span>
-                                    <span style="font-size: 22px; font-family: monospace; color: #e5e7eb; font-weight: 600; letter-spacing: 2px; text-shadow: 1px 1px 1px rgba(0,0,0,0.8);">2024</span>
-                                </div>
-                            </div>
-                            <div style="font-size: 24px; color: #e5e7eb; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; text-shadow: 1px 1px 2px rgba(0,0,0,0.8), -1px -1px 1px rgba(255,255,255,0.2);">
-                                PREMIUM CARDHOLDER
+                            <div style="display: flex; flex-direction: column; justify-content: center;">
+                                <h2 style="font-size: 26px; font-weight: 800; margin: 0; letter-spacing: 2px; line-height: 1; color: #fff;">Tap<span style="color: #d4af37;">Craves</span></h2>
+                                <p style="font-size: 11px; font-weight: 600; color: #a1a1aa; margin: 4px 0 0 0; letter-spacing: 3px; text-transform: uppercase;">Premium Rewards</p>
                             </div>
                         </div>
                         
-                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
-                            <h1 style="font-family: 'Cinzel', serif; font-size: 32px; font-weight: 700; color: #ffffff; letter-spacing: 3px; margin: 0; line-height: 1; text-align: right; text-shadow: 0 2px 5px rgba(0,0,0,0.5);">${titleMain}</h1>
-                            <h2 style="font-size: 14px; color: #d4af37; font-weight: 600; letter-spacing: 4px; margin: 0; text-align: right;">${titleSub}</h2>
-                            <div style="background: #ffffff; padding: 6px; border-radius: 8px; margin-top: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4); width: 300px;">
-                                <div class="qr-front-container"></div>
+                        <!-- Center: Mathematically Centered Restaurant Name -->
+                        <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                            <h1 style="font-family: 'Cinzel', serif; font-size: 32px; font-weight: 700; color: #ffffff; letter-spacing: 5px; margin: 0; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.6); text-transform: uppercase;">${titleMain}</h1>
+                            <h2 style="font-size: 13px; color: #d4af37; font-weight: 600; letter-spacing: 6px; margin: 8px 0 0 0; text-transform: uppercase;">${titleSub}</h2>
+                        </div>
+                        
+                        <!-- Right: Fixed Alignments for Expiry & ID (ATM Aesthetics) -->
+                        <div style="display: grid; grid-template-columns: 80px 80px; gap: 24px; justify-content: flex-end; text-align: right;">
+                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <span style="font-size: 10px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; font-weight: 600;">Valid Thru</span>
+                                <span style="font-size: 16px; font-family: monospace; color: #e5e7eb; font-weight: 700; letter-spacing: 2px;">12/29</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <span style="font-size: 10px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; font-weight: 600;">TC ID</span>
+                                <span style="font-size: 16px; font-family: monospace; color: #e5e7eb; font-weight: 700; letter-spacing: 2px;">${cardId.substring(0,4)}</span>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Middle Section: Chip & Card Number -->
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; flex: 1;">
+                        
+                        <!-- EMV Chip Aligned to the left of the central block -->
+                        <div style="width: 100%; display: flex; justify-content: flex-start; margin-bottom: 24px; padding-left: 20px;">
+                            <div style="width: 60px; height: 42px; background: linear-gradient(135deg, #ebd197 0%, #b48545 100%); border-radius: 8px; position: relative; overflow: hidden; box-shadow: inset 0 0 6px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+                                <div style="width: 100%; height: 1px; background: rgba(0,0,0,0.4); position: absolute; top: 30%;"></div>
+                                <div style="width: 100%; height: 1px; background: rgba(0,0,0,0.4); position: absolute; top: 70%;"></div>
+                                <div style="width: 1px; height: 100%; background: rgba(0,0,0,0.4); position: absolute; left: 30%;"></div>
+                                <div style="width: 1px; height: 100%; background: rgba(0,0,0,0.4); position: absolute; left: 70%;"></div>
+                                <div style="width: 26px; height: 18px; border: 1px solid rgba(0,0,0,0.3); border-radius: 4px; position: absolute; z-index: 2;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mathematically Centered Card Number -->
+                        <div style="font-family: monospace; font-size: 48px; color: #e5e7eb; font-weight: 600; letter-spacing: 16px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; width: 100%; margin-left: 16px;">
+                            <span>${cardId.substring(0,4)}</span>
+                            <span style="margin-left: 24px;">${cardId.substring(4,8)}</span>
+                            <span style="margin-left: 24px;">${cardId.substring(8,12)}</span>
+                            <span style="margin-left: 24px;">${cardId.substring(12,16) || '8888'}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Grid: Cardholder & Glassmorphism QR -->
+                    <div style="display: grid; grid-template-columns: 1fr auto; align-items: flex-end; width: 100%;">
+                        
+                        <!-- Left: Cardholder Name -->
+                        <div style="font-size: 24px; color: #e5e7eb; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; text-shadow: 1px 1px 3px rgba(0,0,0,0.9), -1px -1px 1px rgba(255,255,255,0.1); padding-bottom: 10px;">
+                            PREMIUM CARDHOLDER
+                        </div>
+                        
+                        <!-- Right: Professional Glassmorphism QR Integration -->
+                        <div style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); border-radius: 24px; padding: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(0,0,0,0.4);">
+                            <div style="background: #ffffff; border-radius: 16px; padding: 15%; display: flex; align-items: center; justify-content: center; position: relative; width: 140px; height: 140px; box-sizing: border-box;">
+                                <div class="qr-front-container" style="width: 100%; height: 100%;"></div>
+                                
+                                <!-- TapCraves Logo inside QR (Center) -->
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30%; height: 30%; background: #ffffff; border-radius: 20%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 20; border: 2px solid #fff;">
+                                    <div style="width: 80%; height: 80%; background: #000; border-radius: 15%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fa-solid fa-utensils" style="color:#d4af37; font-size:14px;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
                 </div>`;
             return el;
         }
 
         function createCardBack(cardId, rest) {
             const el = document.createElement('div');
-            el.style.width = '1000px'; el.style.height = '631px'; el.style.position = 'relative'; el.style.borderRadius = '32px'; el.style.overflow = 'hidden'; el.style.fontFamily = '"Plus Jakarta Sans", sans-serif'; el.style.color = '#ffffff'; el.style.backgroundColor = '#d1d5db'; el.style.backgroundImage = 'linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%)'; el.style.boxSizing = 'border-box';
+            el.style.width = '1000px'; 
+            el.style.height = '631px'; 
+            el.style.position = 'relative'; 
+            el.style.borderRadius = '32px'; 
+            el.style.overflow = 'hidden'; 
+            el.style.fontFamily = '"Plus Jakarta Sans", sans-serif'; 
+            el.style.color = '#ffffff'; 
+            el.style.backgroundColor = '#d1d5db'; 
+            el.style.backgroundImage = 'linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%)'; 
+            el.style.boxSizing = 'border-box';
             el.style.border = '1px solid rgba(0,0,0,0.1)';
             
+            // Applying flexbox for symmetrical layout
+            el.style.display = 'flex';
+            el.style.flexDirection = 'column';
+            
             el.innerHTML = `
-                <!-- Magnetic Stripe -->
-                <div style="width: 100%; height: 90px; background: #111111; margin-top: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);"></div>
+                <style>
+                    .qr-back-container canvas, .qr-back-container img { width: 100% !important; height: 100% !important; display: block; object-fit: contain; }
+                </style>
                 
-                <div style="padding: 20px 40px 40px 40px; display: flex; flex-direction: column; height: calc(100% - 140px); box-sizing: border-box;">
+                <!-- Magnetic Stripe -->
+                <div style="width: 100%; height: 90px; background: #111111; margin-top: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); flex-shrink: 0;"></div>
+                
+                <!-- Main Content Area -->
+                <div style="padding: 30px 50px 40px 50px; display: flex; flex-direction: column; flex: 1; box-sizing: border-box; justify-content: space-between;">
                     
-                    <!-- Signature Strip & CVV -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
-                        <div style="flex: 1; margin-right: 20px;">
-                            <p style="font-size: 11px; color: #4b5563; margin: 0 0 4px 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Authorized Signature - Not valid unless signed</p>
-                            <div style="width: 100%; height: 45px; background: #ffffff; border-radius: 4px; background-image: repeating-linear-gradient(45deg, rgba(59,130,246,0.1) 0px, rgba(59,130,246,0.1) 10px, transparent 10px, transparent 20px); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; padding: 0 15px;">
-                                <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 26px; color: #1e3a8a; opacity: 0.6;">Premium Member</span>
+                    <!-- Signature Strip & CVV Grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 100px; gap: 30px; align-items: flex-end;">
+                        <div style="display: flex; flex-direction: column;">
+                            <span style="font-size: 11px; color: #4b5563; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">Authorized Signature - Not valid unless signed</span>
+                            <div style="width: 100%; height: 50px; background: #ffffff; border-radius: 6px; background-image: repeating-linear-gradient(45deg, rgba(59,130,246,0.05) 0px, rgba(59,130,246,0.05) 10px, transparent 10px, transparent 20px); box-shadow: inset 0 2px 6px rgba(0,0,0,0.1); display: flex; align-items: center; padding: 0 20px; box-sizing: border-box;">
+                                <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 30px; color: #1e3a8a; opacity: 0.7;">Premium Member</span>
                             </div>
                         </div>
-                        <div style="width: 80px; display: flex; flex-direction: column;">
-                            <p style="font-size: 11px; color: #4b5563; margin: 0 0 4px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center;">CVV</p>
-                            <div style="width: 100%; height: 45px; background: #ffffff; border-radius: 4px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); font-family: monospace; font-size: 20px; color: #111; font-weight: 700; letter-spacing: 2px;">
+                        <div style="display: flex; flex-direction: column; text-align: center;">
+                            <span style="font-size: 11px; color: #4b5563; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">CVV</span>
+                            <div style="width: 100%; height: 50px; background: #ffffff; border-radius: 6px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 6px rgba(0,0,0,0.1); font-family: monospace; font-size: 22px; color: #111; font-weight: 700; letter-spacing: 3px;">
                                 888
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Content Row -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex: 1;">
+                    <!-- Content Grid (Terms Left, QR Right) -->
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 60px; align-items: center;">
                         
-                        <!-- Left text info -->
-                        <div style="flex: 1; padding-right: 30px;">
-                            <h3 style="font-size: 16px; font-weight: 800; color: #1f2937; letter-spacing: 1px; margin: 0 0 15px 0;">TERMS & CONDITIONS</h3>
-                            <p style="font-size: 12px; color: #374151; margin: 0 0 10px 0; line-height: 1.6; text-align: justify;">This card is property of TapCraves and the issuing restaurant. It is not transferable. Use of this card is subject to the terms and conditions set by the issuer. If found, please return to the nearest participating location.</p>
-                            <p style="font-size: 12px; color: #374151; margin: 0 0 20px 0; line-height: 1.6; font-weight: 600;">For support and inquiries: support@tapcraves.com<br>Restaurant Contact: ${rest.mobile || 'Not provided'}</p>
+                        <!-- Left: Terms & Conditions -->
+                        <div style="display: flex; flex-direction: column; justify-content: center;">
+                            <h3 style="font-size: 16px; font-weight: 800; color: #1f2937; letter-spacing: 2px; margin: 0 0 16px 0;">TERMS & CONDITIONS</h3>
+                            <p style="font-size: 13px; color: #374151; margin: 0 0 12px 0; line-height: 1.6; text-align: justify; font-weight: 500;">This card is property of TapCraves and the issuing restaurant. It is not transferable. Use of this card is subject to the terms and conditions set by the issuer. If found, please return to the nearest participating location.</p>
+                            <p style="font-size: 13px; color: #374151; margin: 0 0 24px 0; line-height: 1.6; font-weight: 700;">For support and inquiries: support@tapcraves.com<br>Restaurant Contact: ${rest.mobile || 'Not provided'}</p>
                             
-                            <div style="display: flex; align-items: center; gap: 15px;">
-                                <i class="fa-solid fa-headset" style="font-size: 24px; color: #4b5563;"></i>
-                                <span style="font-size: 14px; font-weight: 700; color: #1f2937;">24/7 CUSTOMER SUPPORT</span>
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <i class="fa-solid fa-headset" style="font-size: 26px; color: #4b5563;"></i>
+                                <span style="font-size: 15px; font-weight: 800; color: #1f2937; letter-spacing: 1px;">24/7 CUSTOMER SUPPORT</span>
                             </div>
                         </div>
                         
-                        <!-- Right QR Code (White Boxed) -->
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; margin-left: 20px;">
-                            <div style="background: #ffffff; padding: 15px; border-radius: 16px; box-shadow: 0 6px 15px rgba(0,0,0,0.15); border: 1px solid #d1d5db; position: relative;">
-                                <div class="qr-back-container"></div>
+                        <!-- Right: QR Code -->
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;">
+                            <!-- Glassmorphism QR Frame (Darker variant for light back card) -->
+                            <div style="background: rgba(0, 0, 0, 0.04); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.6); border-radius: 24px; padding: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                                <div style="background: #ffffff; border-radius: 16px; padding: 15%; display: flex; align-items: center; justify-content: center; position: relative; width: 140px; height: 140px; box-sizing: border-box; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+                                    <div class="qr-back-container" style="width: 100%; height: 100%;"></div>
+                                    
+                                    <!-- TapCraves Logo inside QR -->
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30%; height: 30%; background: #ffffff; border-radius: 20%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 20; border: 2px solid #fff;">
+                                        <div style="width: 80%; height: 80%; background: #000; border-radius: 15%; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fa-solid fa-utensils" style="color:#d4af37; font-size:14px;"></i>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <p style="font-size: 14px; font-weight: 800; color: #1f2937; margin: 0; letter-spacing: 1px; text-transform: uppercase;">SCAN FOR REWARDS</p>
+                            <p style="font-size: 15px; font-weight: 800; color: #1f2937; margin: 0; letter-spacing: 2px; text-transform: uppercase;">SCAN FOR REWARDS</p>
                         </div>
                     </div>
                     
-                    <!-- Footer -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; margin-top: 20px;">
-                        <span style="font-family: monospace; font-size: 12px; color: #4b5563; font-weight: 600; letter-spacing: 2px;">ID: ${cardId}</span>
-                        <span style="font-size: 12px; font-weight: 800; color: #1f2937; letter-spacing: 4px;">POWERED BY TAPCRAVES</span>
+                    <!-- Bottom Grid (Footer) -->
+                    <div style="display: grid; grid-template-columns: 1fr auto; align-items: flex-end; border-top: 2px solid rgba(0,0,0,0.1); padding-top: 20px;">
+                        <span style="font-family: monospace; font-size: 14px; color: #4b5563; font-weight: 700; letter-spacing: 3px;">ID: ${cardId}</span>
+                        <span style="font-size: 14px; font-weight: 800; color: #1f2937; letter-spacing: 5px;">POWERED BY TAPCRAVES</span>
                     </div>
                     
                 </div>`;
