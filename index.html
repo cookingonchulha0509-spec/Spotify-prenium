@@ -1,230 +1,1596 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kanhaiya Mittal - AI Video Call</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #121212; color: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        
-        /* Video Call Container */
-        .call-container { background: #1e1e1e; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; width: 90%; max-width: 400px; }
-        
-        /* Avatar / Video Styling */
-        .avatar-box { width: 100%; height: 350px; background-color: #000; border-radius: 15px; overflow: hidden; position: relative; margin-bottom: 20px; border: 2px solid #333; display: flex; justify-content: center; align-items: center; }
-        
-        #ai-avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        #ai-avatar-video { width: 100%; height: 100%; object-fit: cover; display: none; }
-        
-        /* Controls */
-        .controls { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        #mic-btn { background-color: #007bff; color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4); }
-        #mic-btn:hover { background-color: #0056b3; }
-        #mic-btn.listening { background-color: #dc3545; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4); animation: pulse 1.5s infinite; }
-        
-        /* Status Text */
-        #status { font-size: 14px; color: #aaaaaa; min-height: 20px; font-weight: bold; }
-        #transcript { font-size: 15px; color: #fff; margin-top: 10px; font-style: italic; background: #2a2a2a; padding: 10px; border-radius: 10px; width: 100%; display: none;}
+    <title>TapCraves | Premium SaaS Admin Panel</title>
+    
+    <!-- ANTI-HACKER SCRIPT: Disable Inspect Element -->
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false; // F12
+            if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Ctrl+U
+        }
+    </script>
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- QR Code & PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            900: '#134e4a',
+                            950: '#042f2e'
+                        },
+                        dark: {
+                            bg: '#0a0a0a',
+                            surface: '#121212',
+                            border: '#27272a',
+                            glass: 'rgba(18, 18, 18, 0.65)'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.4s ease-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'slide-in-right': 'slideInRight 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Custom Styles & Glassmorphism */
+        body {
+            background-color: #0a0a0a;
+            color: #e4e4e7;
+            overflow-x: hidden;
+        }
+        
+        /* Premium Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+
+        /* Glass Utilities */
+        .glass-panel {
+            background: rgba(18, 18, 18, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .glass-card {
+            background: linear-gradient(145deg, rgba(39,39,42,0.4) 0%, rgba(24,24,27,0.4) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px -10px rgba(20, 184, 166, 0.15);
+            border-color: rgba(20, 184, 166, 0.3);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #2dd4bf, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Loading Overlay */
+        #global-loader {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(45, 212, 191, 0.1);
+            border-radius: 50%;
+            border-top-color: #2dd4bf;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Form Elements */
+        .premium-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: all 0.3s;
+        }
+        .premium-input:focus {
+            outline: none;
+            border-color: #2dd4bf;
+            box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Tables - Desktop Standard */
+        .premium-table th {
+            background: rgba(255,255,255,0.02);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #a1a1aa;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 1rem 1.5rem;
+        }
+        .premium-table tr {
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            transition: background 0.2s;
+        }
+        .premium-table tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+        .premium-table td {
+            padding: 1rem 1.5rem;
+            font-size: 0.875rem;
+            color: #d4d4d8;
+        }
+
+        /* PC Table Standard Action Fix */
+        @media (min-width: 768px) {
+            .premium-table td.actions-cell {
+                white-space: nowrap;
+                min-width: 140px;
+                text-align: right;
+            }
+        }
+
+        /* Responsive Mobile Tables (Table-to-Card logic) */
+        @media (max-width: 767px) {
+            .premium-table, 
+            .premium-table tbody, 
+            .premium-table tr, 
+            .premium-table td {
+                display: block;
+                width: 100%;
+            }
+            .premium-table thead {
+                display: none;
+            }
+            .premium-table tr {
+                margin-bottom: 1rem;
+                background: linear-gradient(145deg, rgba(39,39,42,0.4) 0%, rgba(24,24,27,0.4) 100%);
+                border: 1px solid rgba(255,255,255,0.05);
+                border-radius: 1rem;
+                padding: 0.5rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            }
+            .premium-table tr:hover {
+                background: linear-gradient(145deg, rgba(39,39,42,0.6) 0%, rgba(24,24,27,0.6) 100%);
+            }
+            .premium-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid rgba(255,255,255,0.03);
+                text-align: right;
+            }
+            .premium-table td:last-child {
+                border-bottom: none;
+            }
+            .premium-table td.actions-cell {
+                flex-direction: column;
+                align-items: stretch;
+                padding-top: 1rem;
+                border-bottom: none;
+            }
+            .premium-table td.actions-cell button {
+                width: 100% !important;
+            }
+            .premium-table td::before {
+                content: attr(data-label) ": "; 
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                font-weight: 600;
+                color: #a1a1aa;
+                text-align: left;
+                margin-right: 1rem;
+            }
+            .premium-table td.actions-cell::before,
+            .premium-table td.hide-label-mobile::before {
+                display: none !important;
+            }
+            .premium-table td.hide-label-mobile {
+                justify-content: center !important;
+                text-align: center !important;
+            }
+        }
+
+        /* Toast Container */
+        #toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .toast {
+            min-width: 300px;
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
+            background: rgba(24, 24, 27, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideInRight 0.3s ease-out forwards;
+        }
+
+        /* Active Nav Item */
+        .nav-item.active {
+            background: rgba(45, 212, 191, 0.1);
+            color: #2dd4bf;
+            border-right: 3px solid #2dd4bf;
+        }
+
+        /* Security Lockdown Mode Styles */
+        .security-lockdown {
+            position: fixed;
+            inset: 0;
+            background: #990000;
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            display: none;
         }
     </style>
 </head>
-<body>
+<body class="antialiased font-sans selection:bg-brand-500 selection:text-white">
 
-    <div class="call-container">
-        <div class="avatar-box">
-            <img id="ai-avatar-img" src="ai-static.png" alt="Kanhaiya Idle">
-            <video id="ai-avatar-video" src="ai.mp4" loop muted playsinline></video>
-        </div>
-        
-        <div class="controls">
-            <button id="mic-btn">Tap to Speak</button>
-            <p id="status" style="color: #4CAF50;">Kanhaiya Ready Hai</p>
-            <div id="transcript"></div>
+    <!-- SECURITY LOCKDOWN SCREEN -->
+    <div id="lockdown-screen" class="security-lockdown">
+        <i class="fa-solid fa-skull-crossbones text-7xl mb-4 animate-pulse"></i>
+        <h1 class="text-4xl text-white tracking-widest">ACCESS DENIED</h1>
+        <p class="mt-2 text-xl text-red-200" id="lockdown-reason">Unauthorized User Detected. Incident Logged.</p>
+        <button onclick="location.reload()" class="mt-8 px-6 py-2 bg-black/50 text-white rounded hover:bg-black/80 transition">Reload System</button>
+    </div>
+
+    <!-- Global Loader -->
+    <div id="global-loader">
+        <div class="flex flex-col items-center gap-4">
+            <div class="spinner"></div>
+            <h1 class="text-xl font-bold tracking-widest text-brand-400">TAPCRAVES</h1>
         </div>
     </div>
 
+    <!-- AUTHENTICATION SCREEN -->
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center relative overflow-hidden hidden">
+        <!-- Abstract Background -->
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-600/20 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px]"></div>
+        
+        <div class="glass-panel w-full max-w-md p-10 rounded-2xl relative z-10 animate-slide-up mx-4">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-brand-500/20 text-brand-400 mb-4">
+                    <i class="fa-solid fa-bolt text-xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white mb-2">Admin Portal</h2>
+                <p class="text-gray-400 text-sm">Sign in to manage the TapCraves ecosystem</p>
+            </div>
+            
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
+                    <input type="email" id="admin-email" class="premium-input w-full px-4 py-3 rounded-xl text-sm" placeholder="admin@tapcraves.com" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Password</label>
+                    <input type="password" id="admin-password" class="premium-input w-full px-4 py-3 rounded-xl text-sm" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="w-full py-3.5 mt-4 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-semibold rounded-xl shadow-[0_0_20px_rgba(20,184,166,0.3)] transition-all transform hover:scale-[1.02]">
+                    Authenticate Securely
+                </button>
+            </form>
+            
+            <p class="mt-6 text-center text-xs text-brand-400 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-shield-halved"></i>
+                Protected by Firebase Auth
+            </p>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD APP -->
+    <div id="app-screen" class="h-screen flex hidden overflow-hidden bg-dark-bg relative">
+        
+        <!-- Mobile Sidebar Overlay Backdrop -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 glass-panel border-r border-white/5 flex flex-col transition-transform duration-300 absolute md:relative z-40 h-full -translate-x-full md:translate-x-0">
+            <!-- Brand -->
+            <div class="h-20 flex items-center px-6 border-b border-white/5">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-400 to-blue-500 flex items-center justify-center text-white shadow-lg">
+                        <i class="fa-solid fa-utensils text-sm"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-wide text-white">Tap<span class="text-brand-400">Craves</span></span>
+                </div>
+                <!-- Mobile Close -->
+                <button id="close-sidebar" class="ml-auto md:hidden text-gray-400 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+                <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">Overview</p>
+                <a href="#" data-target="dashboard" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-chart-pie w-5"></i>
+                    <span class="font-medium text-sm">Dashboard</span>
+                </a>
+                
+                <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-widest mt-6 mb-3">Management</p>
+                <a href="#" data-target="restaurants" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-store w-5"></i>
+                    <span class="font-medium text-sm">Restaurants</span>
+                </a>
+                <a href="#" data-target="card-orders" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-box-open w-5"></i>
+                    <span class="font-medium text-sm">Card Orders</span>
+                </a>
+                <a href="#" data-target="delivery" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-truck-fast w-5"></i>
+                    <span class="font-medium text-sm">Delivery</span>
+                </a>
+                <a href="#" data-target="cards" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-credit-card w-5"></i>
+                    <span class="font-medium text-sm">Generated Cards</span>
+                </a>
+                
+                <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-widest mt-6 mb-3">Finances & Users</p>
+                <a href="#" data-target="transactions" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-money-bill-transfer w-5"></i>
+                    <span class="font-medium text-sm">Transactions</span>
+                </a>
+                <a href="#" data-target="users" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-users w-5"></i>
+                    <span class="font-medium text-sm">Users</span>
+                </a>
+                
+                <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-widest mt-6 mb-3">System</p>
+                <a href="#" data-target="settings" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-gear w-5"></i>
+                    <span class="font-medium text-sm">Settings</span>
+                </a>
+            </nav>
+
+            <!-- Admin Profile / Logout -->
+            <div class="p-4 border-t border-white/5">
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition cursor-pointer" onclick="logout()">
+                    <img src="https://ui-avatars.com/api/?name=Super+Admin&background=0D8ABC&color=fff" class="w-9 h-9 rounded-full" alt="Admin">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-white truncate">Super Admin</p>
+                        <p class="text-xs text-gray-400 truncate">System Access</p>
+                    </div>
+                    <i class="fa-solid fa-right-from-bracket text-gray-400"></i>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 flex flex-col h-full relative w-full">
+            
+            <!-- Top Header -->
+            <header class="h-20 glass-panel border-b border-white/5 flex items-center justify-between px-4 md:px-6 z-20">
+                <div class="flex items-center gap-4">
+                    <button id="open-sidebar" class="md:hidden text-gray-400 hover:text-white text-xl p-2">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <!-- Search -->
+                    <div class="relative hidden sm:block">
+                        <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="text" class="premium-input pl-10 pr-4 py-2 w-72 rounded-full text-sm" placeholder="Search Data...">
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-dark-bg/50 px-3 py-1.5 rounded-full border border-white/5">
+                        <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                        <span class="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-widest">System Live</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Views Container -->
+            <main class="flex-1 overflow-y-auto p-4 md:p-8 relative">
+                
+                <!-- VIEW: DASHBOARD -->
+                <div id="view-dashboard" class="view-section animate-fade-in block">
+                    <div class="flex justify-between items-end mb-6 md:mb-8">
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-bold text-white mb-1 md:mb-2">Ecosystem <span class="gradient-text">Overview</span></h1>
+                            <p class="text-gray-400 text-xs md:text-sm">Real-time metrics from the TapCraves Firebase Engine.</p>
+                        </div>
+                    </div>
+
+                    <!-- Responsive Stats Grid (2x2 on Mobile, 4x1 on PC) -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+                        <div class="glass-card p-4 md:p-6 rounded-2xl">
+                            <div class="flex justify-between items-start mb-3 md:mb-4">
+                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-store text-sm md:text-base"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-gray-400 text-xs md:text-sm font-medium mb-1">Total Restaurants</h3>
+                            <div class="text-2xl md:text-3xl font-bold text-white counter" id="stat-restaurants" data-target="0">0</div>
+                        </div>
+                        
+                        <div class="glass-card p-4 md:p-6 rounded-2xl">
+                            <div class="flex justify-between items-start mb-3 md:mb-4">
+                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-brand-500/10 text-brand-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-credit-card text-sm md:text-base"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-gray-400 text-xs md:text-sm font-medium mb-1">Total Cards Ordered</h3>
+                            <div class="text-2xl md:text-3xl font-bold text-white counter" id="stat-cards" data-target="0">0</div>
+                        </div>
+
+                        <div class="glass-card p-4 md:p-6 rounded-2xl">
+                            <div class="flex justify-between items-start mb-3 md:mb-4">
+                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-wallet text-sm md:text-base"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-gray-400 text-xs md:text-sm font-medium mb-1">Total Order Revenue</h3>
+                            <div class="text-2xl md:text-3xl font-bold text-white">₹<span class="counter" id="stat-revenue" data-target="0">0</span></div>
+                        </div>
+
+                        <div class="glass-card p-4 md:p-6 rounded-2xl">
+                            <div class="flex justify-between items-start mb-3 md:mb-4">
+                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-green-500/10 text-green-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-users text-sm md:text-base"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-gray-400 text-xs md:text-sm font-medium mb-1">Active Customers</h3>
+                            <div class="text-2xl md:text-3xl font-bold text-white counter" id="stat-users" data-target="0">0</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-4 md:p-6">
+                        <h3 class="text-base md:text-lg font-semibold text-white mb-4">Live System Analytics</h3>
+                        <div class="w-full h-64 md:h-72">
+                            <canvas id="dashboardChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: RESTAURANTS -->
+                <div id="view-restaurants" class="view-section animate-fade-in hidden">
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white mb-1">Restaurant Management</h1>
+                            <p class="text-gray-400 text-xs md:text-sm">Manage registered TapCraves merchants.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card rounded-2xl">
+                        <!-- Table Wrapper to enforce 100% width on Mobile, natural scroll on PC if extremely large -->
+                        <div class="w-full">
+                            <table class="w-full text-left premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Restaurant Name</th>
+                                        <th>Owner Name</th>
+                                        <th>Contact Details</th>
+                                        <th>Reg. Date</th>
+                                        <th>Status</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="restaurants-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: CARD ORDERS -->
+                <div id="view-card-orders" class="view-section animate-fade-in hidden">
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white mb-1">Card Orders</h1>
+                            <p class="text-gray-400 text-xs md:text-sm">TapCraves card batch orders from restaurants.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl">
+                        <div class="w-full">
+                            <table class="w-full text-left premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order & Tracking ID</th>
+                                        <th>Restaurant Name</th>
+                                        <th>Card Qty</th>
+                                        <th>Total Amount</th>
+                                        <th>Order Date</th>
+                                        <th>Delivery Status</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: DELIVERY MANAGEMENT -->
+                <div id="view-delivery" class="view-section animate-fade-in hidden">
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white mb-1">Delivery Management</h1>
+                            <p class="text-gray-400 text-xs md:text-sm">Assign and track dispatches for card batches.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl">
+                        <div class="w-full">
+                            <table class="w-full text-left premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tracking ID</th>
+                                        <th>Restaurant Name</th>
+                                        <th>Status</th>
+                                        <th>Expected Date</th>
+                                        <th>Delivery Boy</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="delivery-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: CARDS (Placeholder) -->
+                <div id="view-cards" class="view-section animate-fade-in hidden">
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white mb-1">Card System Search</h1>
+                            <p class="text-gray-400 text-xs md:text-sm">Lookup specific physical cards (Coming Soon).</p>
+                        </div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-8 text-center text-gray-500 italic text-sm">
+                        Real-time granular card status sync is pending deployment...
+                    </div>
+                </div>
+
+                <!-- VIEW: TRANSACTIONS (Placeholder) -->
+                <div id="view-transactions" class="view-section animate-fade-in hidden">
+                    <div class="mb-6">
+                        <h1 class="text-2xl font-bold text-white mb-1">System Transactions</h1>
+                        <p class="text-gray-400 text-xs md:text-sm">All payments across the ecosystem.</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-8 text-center text-gray-500 italic text-sm">
+                        Real-time transaction sync is pending deployment...
+                    </div>
+                </div>
+
+                <!-- VIEW: USERS -->
+                <div id="view-users" class="view-section animate-fade-in hidden">
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white mb-1">User Management</h1>
+                            <p class="text-gray-400 text-xs md:text-sm">Customer accounts, balances, and linked cards.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl">
+                        <div class="w-full">
+                            <table class="w-full text-left premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>User Details</th>
+                                        <th>Contact Info</th>
+                                        <th>Linked Card</th>
+                                        <th>Wallet Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: SETTINGS -->
+                <div id="view-settings" class="view-section animate-fade-in hidden">
+                    <div class="mb-6">
+                        <h1 class="text-2xl font-bold text-white mb-1">System Settings</h1>
+                        <p class="text-gray-400 text-xs md:text-sm">Admin permissions, database config, and general rules.</p>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-4 md:p-6 max-w-2xl">
+                        <h3 class="text-base md:text-lg font-semibold text-white mb-6 border-b border-white/5 pb-4">Firebase Database Configurations</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <div class="pr-4">
+                                    <h4 class="text-sm font-medium text-white mb-1">Maintenance Mode</h4>
+                                    <p class="text-xs text-gray-500">Lock the app for updates (Database write rules disabled).</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                    <input type="checkbox" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL OVERLAY: Delivery Update -->
+    <div id="delivery-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center opacity-0 transition-opacity duration-300 p-4">
+        <div class="glass-card w-full max-w-md rounded-2xl p-6 relative transform scale-95 transition-transform duration-300" id="delivery-modal-content">
+            <button onclick="closeModal('delivery-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h2 class="text-xl font-bold text-white mb-2">Update Delivery Status</h2>
+            <p class="text-sm text-gray-400 mb-6">Updates reflect live on the merchant's dashboard.</p>
+            
+            <form class="space-y-4" onsubmit="event.preventDefault(); submitDelivery();">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Delivery Status <span class="text-red-500">*</span></label>
+                    <select id="delivery-status" class="premium-input bg-dark-bg w-full px-4 py-2.5 rounded-xl text-sm outline-none border-gray-700" required>
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Out for Delivery">Out for Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                    </select>
+                </div>
+                <!-- Naya Tracking ID Field -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Courier Tracking ID</label>
+                    <input type="text" id="delivery-tracking-id" class="premium-input w-full px-4 py-2.5 rounded-xl text-sm font-mono tracking-wider text-brand-400" placeholder="e.g. BLUEDART123456">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Expected Delivery Date <span class="text-red-500">*</span></label>
+                    <input type="date" id="delivery-date" class="premium-input w-full px-4 py-2.5 rounded-xl text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Delivery Boy Name (If applicable)</label>
+                    <input type="text" id="delivery-boy-name" class="premium-input w-full px-4 py-2.5 rounded-xl text-sm" placeholder="Enter delivery boy's name">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Delivery Boy Phone (If applicable)</label>
+                    <input type="tel" id="delivery-boy-phone" class="premium-input w-full px-4 py-2.5 rounded-xl text-sm" placeholder="Enter phone number">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Manual Delivery Message</label>
+                    <textarea id="delivery-message" rows="3" class="premium-input w-full px-4 py-2.5 rounded-xl text-sm" placeholder="Add a note or instruction for the restaurant..."></textarea>
+                </div>
+                <div class="pt-4 flex gap-3 justify-end">
+                    <button type="button" onclick="closeModal('delivery-modal')" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 hover:bg-white/5 transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-brand-500 hover:bg-brand-400 text-white rounded-xl text-sm font-semibold shadow-lg transition">Update Delivery</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <!-- Firebase Configuration & Setup -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+        // ADDED 'get' from firebase-database
+        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyB49ap7eeOKV-2bnzZ8LzrznjhU990UmtQ",
+  authDomain: "tap-crabe.firebaseapp.com",
+  databaseURL: "https://tap-crabe-default-rtdb.firebaseio.com",
+  projectId: "tap-crabe",
+  storageBucket: "tap-crabe.firebasestorage.app",
+  messagingSenderId: "211890731218",
+  appId: "1:211890731218:web:2bcae1f8d26fddfe0f950b"
+};
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // Expose globally
+        window.firebaseApp = app;
+        window.auth = auth;
+        window.db = db;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
+        window.onValue = onValue;
+        window.update = update;
+        window.ref = ref;
+        window.get = get; // Exposed get method for admin checking
+    </script>
+
+    <!-- UI & Realtime Data Scripts -->
     <script>
-        // ==========================================
-        // 🔑 API KEYS
-        // ==========================================
-        const GROQ_API_KEY = "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";
-        const ELEVENLABS_API_KEY = "sk_0d4aad84b22364a6b27b0a1d5476856ab4c846b1312531d5";
-        const VOICE_ID = "ErXwobaYiN019PkySvjV"; // Antony (Male)
+        // Global State Caches
+        let globalRestaurants = {};
+        let globalOrders = {};
+        let globalCustomers = {};
         
-        const micBtn = document.getElementById('mic-btn');
-        const statusText = document.getElementById('status');
-        const transcriptDiv = document.getElementById('transcript');
-        
-        const aiAvatarImg = document.getElementById('ai-avatar-img');
-        const aiAvatarVideo = document.getElementById('ai-avatar-video');
+        let currentEditingOrderId = null;
+        let listenersAttached = false;
 
-        // Error Pop-up System
-        function showError(source, message) {
-            console.error(`[${source} Error]:`, message);
-            statusText.style.color = "#ff4d4d"; 
-            statusText.innerText = `Error: ${message}`;
-            alert(`🚨 ${source} API Error:\n\n${message}`);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Remove Loader
+            setTimeout(() => {
+                const loader = document.getElementById('global-loader');
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    document.getElementById('auth-screen').classList.remove('hidden');
+                }, 500);
+            }, 1000);
+
+            initChart();
+
+            // Check if admin is logged in (SECURE LOGIC ADDED HERE)
+            setTimeout(() => {
+                if (window.onAuthStateChanged && window.auth) {
+                    window.onAuthStateChanged(window.auth, async (user) => {
+                        if (user) {
+                            try {
+                                // SECURE CHECK: Ensure user exists in 'admins' node
+                                const adminRef = window.ref(window.db, `admins/${user.uid}`);
+                                const snapshot = await window.get(adminRef);
+                                
+                                // SMART CHECK: Handles both Boolean true, String "true", or Number 1
+                                if (snapshot.exists()) {
+                                    // AUTHORIZED ADMIN
+                                    document.getElementById('auth-screen').classList.add('hidden');
+                                    document.getElementById('app-screen').classList.remove('hidden');
+                                    
+                                    // Initialize History State if empty
+                                    if (!history.state) {
+                                        const hash = window.location.hash.replace('#', '') || 'dashboard';
+                                        history.replaceState({ view: hash }, '', '#' + hash);
+                                        switchView(hash, false);
+                                    } else {
+                                        switchView(history.state.view, false);
+                                    }
+
+                                    initDataListeners();
+                                } else {
+                                    // UNAUTHORIZED USER - KICK OUT
+                                    await window.signOut(window.auth);
+                                    triggerLockdown("User ID not found in Admin database.");
+                                }
+                            } catch(err) {
+                                console.error(err);
+                                await window.signOut(window.auth);
+                                triggerLockdown("Database access denied. Check your Firebase Rules.");
+                            }
+                        } else {
+                            document.getElementById('app-screen').classList.add('hidden');
+                            document.getElementById('auth-screen').classList.remove('hidden');
+                        }
+                    });
+                }
+            }, 1500); 
+        });
+
+        // Function to trigger Lockdown Mode
+        function triggerLockdown(reasonStr = "Unauthorized User Detected. Incident Logged.") {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.add('hidden');
+            document.getElementById('lockdown-reason').innerText = reasonStr;
+            document.getElementById('lockdown-screen').style.display = 'flex';
         }
 
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert("Aapka browser Speech Recognition support nahi karta. Kripya Google Chrome use karein.");
+        // ==========================================
+        // FIREBASE DATA FETCHING & RENDERING ENGINE
+        // ==========================================
+        function initDataListeners() {
+            if(listenersAttached) return;
+            listenersAttached = true;
+
+            // Listen to Restaurants. Triggers table re-renders to ensure mapping is live.
+            window.onValue(window.ref(window.db, 'restaurants'), (snapshot) => {
+                globalRestaurants = snapshot.val() || {};
+                renderRestaurants();
+                renderOrders(); 
+                renderDelivery();
+                updateDashboard();
+            });
+
+            // Listen to Orders. Triggers table re-renders to ensure live syncing.
+            window.onValue(window.ref(window.db, 'orders'), (snapshot) => {
+                globalOrders = snapshot.val() || {};
+                renderOrders();
+                renderDelivery();
+                updateDashboard();
+            });
+
+            // Listen to Customers (Users)
+            window.onValue(window.ref(window.db, 'customers'), (snapshot) => {
+                globalCustomers = snapshot.val() || {};
+                renderUsers();
+                updateDashboard();
+            });
         }
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'hi-IN'; 
-        recognition.interimResults = false;
 
-        let isListening = false;
+        function getStatusBadge(status) {
+            status = status || 'Pending';
+            if(status === 'Delivered' || status === 'Active' || status === 'Approved') {
+                return `<span class="px-2.5 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg text-xs font-semibold uppercase">${status}</span>`;
+            }
+            if(status === 'Pending' || status === 'Processing') {
+                return `<span class="px-2.5 py-1 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-lg text-xs font-semibold uppercase">${status}</span>`;
+            }
+            if(status === 'Shipped' || status === 'Out for Delivery') {
+                return `<span class="px-2.5 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg text-xs font-semibold uppercase">${status}</span>`;
+            }
+            return `<span class="px-2.5 py-1 bg-gray-500/10 text-gray-400 border border-gray-500/20 rounded-lg text-xs font-semibold uppercase">${status}</span>`;
+        }
 
-        micBtn.addEventListener('click', () => {
-            if (isListening) {
-                recognition.stop();
-            } else {
-                statusText.style.color = "#aaaaaa"; 
-                recognition.start();
+        function renderRestaurants() {
+            const tbody = document.getElementById('restaurants-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            
+            const entries = Object.entries(globalRestaurants);
+            if(entries.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center italic text-gray-500 py-6 hide-label-mobile">No restaurants registered yet.</td></tr>`;
+                return;
+            }
+
+            for(const [restId, rest] of entries) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Restaurant Name" class="font-medium">${rest.name || 'Unnamed Restaurant'}</td>
+                    <td data-label="Owner Name">${rest.owner || 'N/A'}</td> <!-- FIXED -->
+                    <td data-label="Contact Details" class="text-right md:text-left">${rest.email || 'N/A'}<br><span class="text-xs text-brand-400 font-bold">${rest.mobile || 'N/A'}</span></td> <!-- FIXED -->
+                    <td data-label="Reg. Date">${rest.createdAt || 'N/A'}</td>
+                    <td data-label="Status">${getStatusBadge(rest.status || 'Active')}</td>
+                    <td data-label="Actions" class="actions-cell">
+                        <button class="bg-white/5 md:bg-transparent border border-white/5 md:border-none text-gray-300 hover:text-white hover:bg-white/10 transition px-4 py-2.5 md:p-2 rounded-xl md:rounded-none w-full md:w-auto flex items-center justify-center md:justify-end gap-2 text-sm md:text-base font-medium">
+                            <i class="fa-solid fa-eye"></i> <span class="md:hidden">View Details</span>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function renderOrders() {
+            const tbody = document.getElementById('orders-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            
+            const entries = Object.entries(globalOrders);
+            if(entries.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center italic text-gray-500 py-6 hide-label-mobile">No card orders found.</td></tr>`;
+                return;
+            }
+
+            for (const [orderId, order] of entries) {
+                const restId = orderId; // FIXED: orderId is the user UID
+                const restName = (globalRestaurants[restId] && globalRestaurants[restId].name) 
+                                 ? globalRestaurants[restId].name 
+                                 : 'Unnamed Restaurant';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Order & Tracking ID" class="text-xs font-mono text-gray-400">
+                        Ord: ${orderId.substring(0, 8)}...<br>
+                        <span class="text-brand-400 font-bold tracking-wider text-[10px]">TRK: ${order.trackingId || 'N/A'}</span>
+                    </td>
+                    <td data-label="Restaurant Name" class="font-medium text-white">${restName}</td>
+                    <td data-label="Card Qty">${order.qty || 0}</td>
+                    <td data-label="Total Amount" class="font-bold text-green-400">₹${order.totalAmount || order.total || 0}</td>
+                    <td data-label="Order Date">${order.date || 'N/A'}</td>
+                    <td data-label="Delivery Status">${getStatusBadge(order.status)}</td>
+                    <td data-label="Actions" class="actions-cell">
+                        <button onclick="downloadCardsPDF('${orderId}')" class="bg-brand-500/20 text-brand-400 hover:bg-brand-500/30 transition px-4 py-2.5 md:px-3 md:py-1.5 rounded-xl md:rounded-lg text-sm md:text-xs font-semibold w-full md:w-auto flex items-center justify-center md:justify-end md:inline-flex">
+                            <i class="fa-solid fa-file-pdf mr-2 md:mr-1"></i> Download PDF
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function renderDelivery() {
+            const tbody = document.getElementById('delivery-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            
+            const entries = Object.entries(globalOrders);
+            if(entries.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center italic text-gray-500 py-6 hide-label-mobile">No delivery data available.</td></tr>`;
+                return;
+            }
+
+            for (const [orderId, order] of entries) {
+                const restId = orderId; // FIXED
+                const restName = (globalRestaurants[restId] && globalRestaurants[restId].name) 
+                                 ? globalRestaurants[restId].name 
+                                 : 'Unnamed Restaurant';
+                
+                const boyInfo = (order.deliveryBoyName && order.deliveryBoyPhone) 
+                    ? `<div class="flex flex-col text-right md:text-left"><span class="text-gray-300 font-medium text-xs break-words">${order.deliveryBoyName}</span><span class="text-gray-500 text-xs">${order.deliveryBoyPhone}</span></div>` 
+                    : '<span class="text-gray-500 italic text-xs">Unassigned</span>';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Tracking ID" class="text-xs font-mono text-brand-400 font-bold">${order.trackingId || 'N/A'}</td>
+                    <td data-label="Restaurant Name" class="font-medium text-white">${restName}</td>
+                    <td data-label="Status">${getStatusBadge(order.status)}</td>
+                    <td data-label="Expected Date" class="text-gray-300 text-sm">${order.expectedDate || '<span class="italic text-gray-500">Pending Date</span>'}</td>
+                    <td data-label="Delivery Boy" class="flex justify-end md:justify-start ml-auto md:ml-0">${boyInfo}</td>
+                    <td data-label="Action" class="actions-cell">
+                        <button onclick="openDeliveryModal('${orderId}')" class="bg-white/5 text-gray-300 hover:bg-white/10 px-4 py-2.5 md:px-3 md:py-1.5 rounded-xl md:rounded-lg text-sm md:text-xs font-semibold transition border border-white/5 w-full flex items-center justify-center md:justify-end md:inline-flex">
+                            <i class="fa-solid fa-pen mr-2 md:mr-1"></i> Update
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function renderUsers() {
+            const tbody = document.getElementById('users-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            
+            const entries = Object.entries(globalCustomers);
+            if(entries.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center italic text-gray-500 py-6 hide-label-mobile">No users found in ecosystem.</td></tr>`;
+                return;
+            }
+
+            for (const [userId, user] of entries) {
+                const name = user.name || 'Unknown User';
+                const initials = name.substring(0,2).toUpperCase();
+                const linkedCardHtml = user.linkedCardId ? `<span class="font-mono text-xs text-brand-400 bg-brand-500/10 px-2 py-1 rounded inline-block">${user.linkedCardId}</span>` : '<span class="text-gray-500 italic text-xs">Unlinked</span>';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="User Details">
+                        <div class="flex items-center justify-end md:justify-start gap-3 w-full md:w-auto">
+                            <div class="w-8 h-8 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-sm shrink-0">${initials}</div>
+                            <span class="font-medium text-white truncate max-w-[150px] block">${name}</span>
+                        </div>
+                    </td>
+                    <td data-label="Contact Info" class="text-xs text-gray-400 text-right md:text-left">${user.email || 'No email'}<br><span class="text-gray-500">${user.phone || 'No phone'}</span></td>
+                    <td data-label="Linked Card" class="flex justify-end md:justify-start">${linkedCardHtml}</td>
+                    <td data-label="Wallet Balance" class="font-bold text-white">₹${user.walletBalance || 0}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function updateDashboard() {
+            let totalRest = Object.keys(globalRestaurants).length;
+            let totalRevenue = 0;
+            let totalCards = 0;
+            let totalUsers = Object.keys(globalCustomers).length;
+            
+            for (const order of Object.values(globalOrders)) {
+                totalRevenue += Number(order.totalAmount || order.total || 0);
+                totalCards += Number(order.qty || 0);
+            }
+            
+            updateStat('stat-restaurants', totalRest);
+            updateStat('stat-cards', totalCards);
+            updateStat('stat-revenue', totalRevenue);
+            updateStat('stat-users', totalUsers);
+        }
+
+        function updateStat(id, endValue) {
+            const el = document.getElementById(id);
+            if(!el) return;
+            el.setAttribute('data-target', endValue);
+            // Trigger local animation
+            const target = +endValue;
+            const current = +el.innerText.replace(/,/g, '');
+            if (current === target) return; // already there
+            
+            const speed = 30; // ms frame rate
+            const steps = 15;
+            const inc = (target - current) / steps;
+            
+            let currentStep = 0;
+            const timer = setInterval(() => {
+                currentStep++;
+                const newValue = Math.ceil(current + (inc * currentStep));
+                if (currentStep >= steps) {
+                    el.innerText = target.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    el.innerText = newValue.toLocaleString();
+                }
+            }, speed);
+        }
+
+        // ==========================================
+        // ACTION MODALS & CRUD OPERATIONS
+        // ==========================================
+
+        function openDeliveryModal(orderId) {
+            currentEditingOrderId = orderId;
+            const order = globalOrders[orderId];
+            
+            document.getElementById('delivery-status').value = order.status || 'Pending';
+            // Populate pre-existing Tracking ID
+            document.getElementById('delivery-tracking-id').value = order.trackingId || ''; 
+            document.getElementById('delivery-date').value = order.expectedDate || '';
+            document.getElementById('delivery-boy-name').value = order.deliveryBoyName || '';
+            document.getElementById('delivery-boy-phone').value = order.deliveryBoyPhone || '';
+            document.getElementById('delivery-message').value = order.deliveryMessage || '';
+            
+            openModal('delivery-modal');
+        }
+
+        function submitDelivery() {
+            const status = document.getElementById('delivery-status').value;
+            const trackingId = document.getElementById('delivery-tracking-id').value; // Read New Tracking ID
+            const expectedDate = document.getElementById('delivery-date').value;
+            const deliveryBoyName = document.getElementById('delivery-boy-name').value;
+            const deliveryBoyPhone = document.getElementById('delivery-boy-phone').value;
+            const deliveryMessage = document.getElementById('delivery-message').value;
+            
+            if(currentEditingOrderId && window.update && window.ref && window.db) {
+                const btn = document.querySelector('#delivery-modal form button[type="submit"]');
+                const prevText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
+                
+                // --- Naya Time Recording Logic ---
+                const order = globalOrders[currentEditingOrderId];
+                const history = order.history || {};
+                const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }); 
+                history[status] = nowStr;
+                // ---------------------------------
+                
+                window.update(window.ref(window.db, 'orders/' + currentEditingOrderId), {
+                    status: status,
+                    trackingId: trackingId || order.trackingId, // Update Tracking ID in DB
+                    expectedDate: expectedDate,
+                    deliveryBoyName: deliveryBoyName,
+                    deliveryBoyPhone: deliveryBoyPhone,
+                    deliveryMessage: deliveryMessage,
+                    history: history // Save Time to DB
+                }).then(() => {
+                    closeModal('delivery-modal');
+                    showToast('Delivery updated successfully.', 'success');
+                }).catch(err => {
+                    showToast('Failed to update: ' + err.message, 'error');
+                }).finally(() => {
+                    btn.innerHTML = prevText;
+                });
+            }
+        }
+
+        // ==========================================
+        // PDF GENERATION LOGIC
+        // ==========================================
+
+        function createCardFront(cardId, restName) {
+            const el = document.createElement('div');
+            el.style.width = '428px';
+            el.style.height = '270px';
+            el.style.backgroundColor = '#111111';
+            el.style.backgroundImage = 'radial-gradient(circle at center, #222222 0%, #111111 100%)';
+            el.style.borderRadius = '16px';
+            el.style.position = 'relative';
+            el.style.boxSizing = 'border-box';
+            el.style.overflow = 'hidden';
+            el.style.color = '#ffffff';
+            el.style.fontFamily = '"Plus Jakarta Sans", sans-serif';
+
+            el.innerHTML = `
+                <!-- Top Right Logo -->
+                <div style="position: absolute; top: 20px; right: 24px; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: 800; font-size: 18px; letter-spacing: 1px;">TapCraves</span>
+                    <i class="fa-solid fa-utensils" style="color: #2dd4bf; font-size: 16px;"></i>
+                </div>
+
+                <!-- Left QR and Icon -->
+                <div style="position: absolute; left: 30px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 16px;">
+                    <i class="fa-solid fa-burger" style="font-size: 28px; color: #2dd4bf;"></i>
+                    <div class="qr-front" style="padding: 6px; background: white; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"></div>
+                </div>
+
+                <!-- Center/Right Details -->
+                <div style="position: absolute; right: 24px; top: 50%; transform: translateY(-50%); text-align: right; width: 240px;">
+                    <h2 style="font-size: 22px; font-weight: 800; margin: 0 0 8px 0; line-height: 1.2; text-transform: uppercase;">${restName}</h2>
+                    <p style="font-size: 11px; color: #a1a1aa; font-weight: 700; letter-spacing: 2px; margin: 0;">RECHARGE | EARN | ENJOY</p>
+                </div>
+
+                <!-- Bottom Right NFC -->
+                <div style="position: absolute; bottom: 20px; right: 24px;">
+                    <i class="fa-solid fa-wifi fa-rotate-90" style="font-size: 24px; color: #d4d4d8;"></i>
+                </div>
+            `;
+            return el;
+        }
+
+        function createCardBack(cardId) {
+            const el = document.createElement('div');
+            el.style.width = '428px';
+            el.style.height = '270px';
+            el.style.backgroundColor = '#111111';
+            el.style.borderRadius = '16px';
+            el.style.position = 'relative';
+            el.style.boxSizing = 'border-box';
+            el.style.fontFamily = '"Plus Jakarta Sans", sans-serif';
+            el.style.color = '#ffffff';
+            el.style.display = 'flex';
+            el.style.flexDirection = 'column';
+            el.style.alignItems = 'center';
+            el.style.justifyContent = 'center';
+
+            el.innerHTML = `
+                <!-- Magnetic Stripe Mock -->
+                <div style="position: absolute; top: 24px; left: 0; width: 100%; height: 45px; background-color: #000000; border-top: 1px solid #222; border-bottom: 1px solid #222;"></div>
+
+                <!-- Center QR -->
+                <div class="qr-back" style="padding: 8px; background: white; border-radius: 8px; margin-top: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.6);"></div>
+
+                <!-- Bottom Texts -->
+                <div style="position: absolute; bottom: 16px; text-align: center; width: 100%;">
+                    <p style="font-family: monospace; font-size: 14px; font-weight: 700; color: #2dd4bf; letter-spacing: 3px; margin: 0 0 6px 0;">${cardId}</p>
+                    <p style="font-size: 10px; color: #a1a1aa; margin: 0 0 4px 0; font-weight: 500;">Powered by TapCraves</p>
+                    <p style="font-size: 9px; color: #ef4444; font-weight: 800; margin: 0; letter-spacing: 0.5px;">DO NOT SHARE PIN WITH RANDOM USERS</p>
+                </div>
+            `;
+            return el;
+        }
+
+        window.downloadCardsPDF = async function(orderId) {
+            showToast('Generating High-Quality PDF...', 'info');
+
+            const order = globalOrders[orderId];
+            const cards = order.generatedCards || [];
+            const restId = orderId; 
+            const restName = globalRestaurants[restId]?.name || 'Unnamed Restaurant';
+
+            if (cards.length === 0) {
+                showToast('No cards generated for this order.', 'error');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+            const cardWidth = 85.6;
+            const cardHeight = 54;
+            const gapX = 12.93;
+            const gapY = 2.5;
+            const marginX = 12.93;
+            const marginY = 8.5;
+
+            // Off-screen container setup
+            const offScreen = document.createElement('div');
+            offScreen.style.position = 'absolute';
+            offScreen.style.left = '-9999px';
+            offScreen.style.top = '-9999px';
+            offScreen.style.display = 'flex';
+            offScreen.style.flexDirection = 'column';
+            offScreen.style.gap = '20px';
+            document.body.appendChild(offScreen);
+
+            // Wait for fonts to be ready
+            await document.fonts.ready;
+
+            let cardIndex = 0;
+
+            for (let i = 0; i < cards.length; i++) {
+                const cardId = cards[i];
+
+                if (cardIndex === 5) {
+                    doc.addPage();
+                    cardIndex = 0;
+                }
+
+                // Create Card Elements
+                const frontEl = createCardFront(cardId, restName);
+                const backEl = createCardBack(cardId);
+
+                offScreen.appendChild(frontEl);
+                offScreen.appendChild(backEl);
+
+                // Generate QR Codes
+                new QRCode(frontEl.querySelector('.qr-front'), {
+                    text: cardId,
+                    width: 70, height: 70,
+                    colorDark: "#000000", colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                new QRCode(backEl.querySelector('.qr-back'), {
+                    text: `https://tapcraves.shop/?view=wallet&card=${cardId}`,
+                    width: 110, height: 110,
+                    colorDark: "#000000", colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                // Yield to browser to let QR codes render inside elements
+                await new Promise(r => setTimeout(r, 100));
+
+                // Convert to Canvas (High Resolution)
+                const canvasFront = await html2canvas(frontEl, { scale: 3, useCORS: true, backgroundColor: null });
+                const canvasBack = await html2canvas(backEl, { scale: 3, useCORS: true, backgroundColor: null });
+
+                // Calculate Position (2 Columns: Front, Back)
+                const xFront = marginX;
+                const xBack = marginX + cardWidth + gapX;
+                const y = marginY + cardIndex * (cardHeight + gapY);
+
+                // Add to PDF Document
+                doc.addImage(canvasFront.toDataURL('image/png', 1.0), 'PNG', xFront, y, cardWidth, cardHeight);
+                doc.addImage(canvasBack.toDataURL('image/png', 1.0), 'PNG', xBack, y, cardWidth, cardHeight);
+
+                // Cleanup Elements
+                offScreen.removeChild(frontEl);
+                offScreen.removeChild(backEl);
+
+                cardIndex++;
+            }
+
+            // Cleanup & Save
+            document.body.removeChild(offScreen);
+            doc.save(`Cards_Order_${orderId}.pdf`);
+            showToast('PDF Download Completed!', 'success');
+        };
+
+        // ==========================================
+        // AUTHENTICATION & UI LOGIC (SECURE LOGIC ADDED)
+        // ==========================================
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...';
+            
+            try {
+                if (!window.signInWithEmailAndPassword || !window.auth) {
+                    throw new Error("Firebase initializing, please wait.");
+                }
+                const userCred = await window.signInWithEmailAndPassword(window.auth, email, password);
+                
+                // SECURE CHECK: Is the logged in user actually an admin in the database?
+                const adminRef = window.ref(window.db, `admins/${userCred.user.uid}`);
+                const snapshot = await window.get(adminRef);
+                
+                if (snapshot.exists()) {
+                    showToast('Welcome back, Admin', 'success');
+                    // onAuthStateChanged will handle the screen switch automatically
+                } else {
+                    // IF NOT ADMIN, REJECT IMMEDIATELY
+                    await window.signOut(window.auth);
+                    triggerLockdown("Access Denied: Not registered as Admin.");
+                    btn.innerHTML = originalText;
+                }
+            } catch (error) {
+                let errorMsg = "Login failed. Check your credentials.";
+                if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMsg = "Invalid email or password.";
+                } else if(error.message) {
+                    errorMsg = error.message;
+                }
+                showToast(errorMsg, 'error');
+                btn.innerHTML = originalText;
             }
         });
 
-        recognition.onstart = () => {
-            isListening = true;
-            micBtn.classList.add('listening');
-            micBtn.innerText = "Listening...";
-            statusText.innerText = "Aap bol rahe hain...";
-            transcriptDiv.style.display = 'none';
-        };
-
-        recognition.onresult = async (event) => {
-            const userText = event.results[0][0].transcript;
-            transcriptDiv.innerText = `You: "${userText}"`;
-            transcriptDiv.style.display = 'block';
-            
-            await processAIResponse(userText);
-        };
-
-        recognition.onend = () => {
-            isListening = false;
-            micBtn.classList.remove('listening');
-            micBtn.innerText = "Tap to Speak";
-            if(statusText.innerText === "Aap bol rahe hain...") {
-                statusText.innerText = "Processing...";
-            }
-        };
-
-        recognition.onerror = (event) => {
-            if (event.error === 'not-allowed') {
-                showError("Microphone", "Mic permission denied. VS Code 'Live Server' ka use karein.");
-            } else {
-                showError("Speech Recognition", event.error);
-            }
-        };
-
-        // ==========================================
-        // GROQ API CALL (LLM) - KANHAIYA MITTAL PERSONALITY
-        // ==========================================
-        async function processAIResponse(userText) {
-            statusText.style.color = "#aaaaaa";
-            statusText.innerText = "Kanhaiya soch raha hai...";
-            
+        async function logout() {
             try {
-                const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${GROQ_API_KEY}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        model: "llama-3.1-8b-instant", 
-                        messages: [
-                            { 
-                                // YAHAN KANHAIYA KI PERSONALITY DAALI GAYI HAI
-                                role: "system", 
-                                content: "You are Kanhaiya Mittal, a very cool, confident guy with a lot of attitude. You are a passionate cricketer. You are famous for playing awesome 'backshots', hitting massive long sixes, and doing extreme fast bowling. If anyone asks your name, proudly say 'Mera naam Kanhaiya Mittal hai'. Speak only in Hinglish (Hindi written in English alphabet). Keep your replies short, stylish, and conversational, and casually show off your cricket skills when it makes sense." 
-                            },
-                            { role: "user", content: userText }
-                        ],
-                        max_tokens: 100
-                    })
-                });
-
-                if (!groqResponse.ok) {
-                    const errorData = await groqResponse.json();
-                    const exactError = errorData.error?.message || "Unknown error occurred";
-                    throw new Error(exactError);
+                if (window.signOut && window.auth) {
+                    await window.signOut(window.auth);
                 }
-
-                const groqData = await groqResponse.json();
-                const aiReplyText = groqData.choices[0].message.content;
-                
-                await playElevenLabsAudio(aiReplyText);
-
-            } catch (error) {
-                showError("Groq", error.message);
-                aiAvatarImg.style.display = "block";
-                aiAvatarVideo.style.display = "none";
+                showToast('Logged out successfully', 'info');
+                document.getElementById('login-form').querySelector('button').innerHTML = 'Authenticate Securely';
+                document.getElementById('login-form').reset();
+            } catch(error) {
+                showToast(error.message, 'error');
             }
         }
 
         // ==========================================
-        // ELEVENLABS API CALL (TTS) & VIDEO SYNC
+        // NAVIGATION HISTORY SYSTEM
         // ==========================================
-        async function playElevenLabsAudio(text) {
-            statusText.innerText = "Voice generate ho rahi hai...";
+        const navItems = document.querySelectorAll('.nav-item');
+        const views = document.querySelectorAll('.view-section');
 
-            try {
-                const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?optimize_streaming_latency=2`, {
-                    method: "POST",
-                    headers: {
-                        "Accept": "audio/mpeg",
-                        "xi-api-key": ELEVENLABS_API_KEY,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        text: text,
-                        model_id: "eleven_multilingual_v2", 
-                        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    const exactError = errorData.detail?.message || errorData.detail || "Unknown error occurred";
-                    throw new Error(exactError);
+        function switchView(targetView, pushToHistory = true) {
+            // Update active states on nav
+            navItems.forEach(n => {
+                if (n.getAttribute('data-target') === targetView) {
+                    n.classList.add('active');
+                } else {
+                    n.classList.remove('active');
                 }
+            });
 
-                const audioBlob = await response.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
-                const audio = new Audio(audioUrl);
+            // Show target view, hide others
+            views.forEach(view => {
+                if(view.id === `view-${targetView}`) {
+                    view.classList.remove('hidden');
+                } else {
+                    view.classList.add('hidden');
+                }
+            });
 
-                audio.onplay = () => {
-                    aiAvatarImg.style.display = "none";
-                    aiAvatarVideo.style.display = "block";
-                    aiAvatarVideo.play().catch(e => console.log("Video Play Error:", e));
-                    statusText.style.color = "#007bff"; 
-                    statusText.innerText = "Kanhaiya bol raha hai...";
-                };
-
-                audio.onended = () => {
-                    aiAvatarVideo.pause();
-                    aiAvatarVideo.currentTime = 0; 
-                    aiAvatarVideo.style.display = "none";
-                    aiAvatarImg.style.display = "block";
-                    statusText.style.color = "#4CAF50"; 
-                    statusText.innerText = "Kanhaiya Ready Hai";
-                };
-
-                audio.play();
-
-            } catch (error) {
-                showError("ElevenLabs", error.message);
-                aiAvatarImg.style.display = "block";
-                aiAvatarVideo.style.display = "none";
+            // Close sidebar on mobile
+            if(window.innerWidth < 768) {
+                toggleSidebar(false);
             }
+
+            // Handle History API (Push into Browser History)
+            if (pushToHistory) {
+                history.pushState({ view: targetView }, '', '#' + targetView);
+            }
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetView = item.getAttribute('data-target');
+                
+                // Prevent pushing the exact same screen to history multiple times
+                const currentView = history.state?.view || 'dashboard';
+                if (targetView !== currentView) {
+                    switchView(targetView, true);
+                } else if (window.innerWidth < 768) {
+                    // Close sidebar if user taps the currently active menu on mobile
+                    toggleSidebar(false);
+                }
+            });
+        });
+
+        // Event listener for Browser Back & Forward buttons
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.view) {
+                // Change UI based on the state in browser history (without pushing a new state)
+                switchView(e.state.view, false);
+            } else {
+                // If the user goes all the way back before history started, fallback to hash or dashboard
+                const hash = window.location.hash.replace('#', '');
+                const targetView = hash || 'dashboard';
+                switchView(targetView, false);
+            }
+        });
+
+
+        // Sidebar Toggle Logic
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const openSidebarBtn = document.getElementById('open-sidebar');
+        const closeSidebarBtn = document.getElementById('close-sidebar');
+
+        function toggleSidebar(show) {
+            if(show) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+                setTimeout(() => sidebarOverlay.classList.remove('opacity-0'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    sidebarOverlay.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        openSidebarBtn.addEventListener('click', () => toggleSidebar(true));
+        closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
+        sidebarOverlay.addEventListener('click', () => toggleSidebar(false));
+
+        // UI Utilities
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = '';
+            let colorClass = '';
+            
+            if(type === 'success') {
+                icon = '<i class="fa-solid fa-circle-check"></i>';
+                colorClass = 'text-green-400';
+            } else if(type === 'error') {
+                icon = '<i class="fa-solid fa-circle-exclamation"></i>';
+                colorClass = 'text-red-400';
+            } else {
+                icon = '<i class="fa-solid fa-circle-info"></i>';
+                colorClass = 'text-brand-400';
+            }
+
+            toast.innerHTML = `
+                <div class="text-xl ${colorClass}">${icon}</div>
+                <div class="text-sm font-medium text-white">${message}</div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.3s ease-in reverse forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            const content = document.getElementById(`${id}-content`);
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            const content = document.getElementById(`${id}-content`);
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Static Chart Initializer
+        function initChart() {
+            const ctx = document.getElementById('dashboardChart').getContext('2d');
+            let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(45, 212, 191, 0.5)'); 
+            gradient.addColorStop(1, 'rgba(45, 212, 191, 0.0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue (INR)',
+                        data: [12000, 19000, 25000, 28000, 32000, 42500],
+                        borderColor: '#2dd4bf',
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#0a0a0a',
+                        pointBorderColor: '#2dd4bf',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#a1a1aa',
+                                callback: function(value) {
+                                    return '₹' + (value/1000) + 'k';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#a1a1aa'
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                }
+            });
         }
     </script>
 </body>
