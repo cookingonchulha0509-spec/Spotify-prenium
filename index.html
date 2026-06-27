@@ -802,12 +802,6 @@
             let titleSub = nameParts.slice(1).join(' ').toUpperCase(); 
             if(!titleSub) titleSub = "MEMBER CARD";
             
-            let mainFontSize = titleMain.length > 12 ? '24px' : '32px';
-            let subFontSize = titleSub.length > 15 ? '12px' : '14.4px';
-            
-            if (titleMain.length > 18) mainFontSize = '20px';
-            if (titleSub.length > 20) subFontSize = '10px';
-
             let logoHtml = logoBase64 
                 ? `<img src="${logoBase64}" style="max-height: 40px; max-width: 128px; object-fit: contain; border-radius: 4px;">`
                 : `<div style="width: 40px; height: 40px; background: #0f172a; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);"><i class="fa-solid fa-utensils" style="color:#d4af37; font-size:19.2px;"></i></div>`;
@@ -824,13 +818,13 @@
                 <div style="position:absolute; top:-240px; right:-160px; width:720px; height:720px; background:radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 65%); border-radius:50%; z-index:1;"></div>
                 <div style="position:absolute; bottom:-240px; left:-160px; width:560px; height:560px; background:radial-gradient(circle, rgba(45,212,191,0.1) 0%, transparent 65%); border-radius:50%; z-index:1;"></div>
                 
-                <div style="position:relative; z-index:10; padding: 56px; height: 100%; box-sizing: border-box; display: flex; flex-direction: column;">
+                <div style="position:relative; z-index:10; padding: 56px; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
                     
                     <!-- Top Section -->
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
                         <div style="display: flex; align-items: center; gap: 16px;">
                             ${logoHtml}
-                            <div style="display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;">
+                            <div style="display: flex; flex-direction: column; justify-content: center;">
                                 <h2 style="font-size: 28.8px; font-weight: 800; margin: 0; letter-spacing: 1.6px; line-height:1; color: #fff;">Tap<span style="color: #d4af37;">Craves</span></h2>
                                 <p style="font-size: 12.8px; font-weight: 600; color: #a1a1aa; margin: 3.2px 0 0 0; letter-spacing: 3.2px; text-transform: uppercase;">Premium Rewards</p>
                             </div>
@@ -854,7 +848,7 @@
                             </div>
                             
                             <!-- Card Number -->
-                            <div style="font-family: monospace; font-size: 44.8px; color: #ffffff; font-weight: 600; letter-spacing: 9.6px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(255,255,255,0.2); display:flex; align-items:center;">
+                            <div style="font-family: monospace; font-size: 44.8px; color: #e5e7eb; font-weight: 600; letter-spacing: 9.6px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(255,255,255,0.2); display:flex; align-items:center;">
                                 <span>${cardId.substring(0,4)}</span><span style="margin-left: 19.2px;">${cardId.substring(4,8)}</span><span style="margin-left: 19.2px;">${cardId.substring(8,12)}</span><span style="margin-left: 19.2px;">${cardId.substring(12,16) || '8888'}</span>
                             </div>
                         </div>
@@ -867,24 +861,27 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- ATM Corner Anchor - Bottom Left -->
-                <div style="position: absolute; bottom: 56px; left: 56px; display: flex; gap: 32px; z-index: 20;">
-                    <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; box-sizing: border-box;">
-                        <span style="font-size: 11.2px; color: #d4af37; text-transform: uppercase; letter-spacing: 2.4px; margin-bottom: 4.8px; font-weight: 700;">Valid Thru</span>
-                        <span style="font-size: 20.8px; font-family: monospace; color: #ffffff; font-weight: 600; letter-spacing: 2.4px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">12/29</span>
+                    
+                    <!-- Bottom Section -->
+                    <div style="display: grid; grid-template-columns: 320px 1fr; align-items: flex-end; width: 100%;">
+                        <!-- Left Info (Fixed Width Grid) -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                                <span style="font-size: 11.2px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 2.4px; margin-bottom: 4.8px;">Valid Thru</span>
+                                <span style="font-size: 20.8px; font-family: monospace; color: #e5e7eb; font-weight: 600; letter-spacing: 2.4px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">12/29</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                                <span style="font-size: 11.2px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 2.4px; margin-bottom: 4.8px;">TC ID</span>
+                                <span style="font-size: 20.8px; font-family: monospace; color: #e5e7eb; font-weight: 600; letter-spacing: 2.4px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">${cardId.substring(0,6)}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Info (Restaurant Name perfectly aligned right) -->
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; gap: 8px;">
+                            <h1 style="font-family: 'Cinzel', serif; font-size: 32px; font-weight: 700; color: #ffffff; letter-spacing: 3.2px; margin: 0; line-height: 1; text-align: right; text-shadow: 0 3.2px 8px rgba(0,0,0,0.5);">${titleMain}</h1>
+                            <h2 style="font-size: 14.4px; color: #d4af37; font-weight: 600; letter-spacing: 4.8px; margin: 0; text-align: right;">${titleSub}</h2>
+                        </div>
                     </div>
-                    <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; box-sizing: border-box;">
-                        <span style="font-size: 11.2px; color: #d4af37; text-transform: uppercase; letter-spacing: 2.4px; margin-bottom: 4.8px; font-weight: 700;">TC ID</span>
-                        <span style="font-size: 20.8px; font-family: monospace; color: #ffffff; font-weight: 600; letter-spacing: 2.4px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">${cardId.substring(0,6)}</span>
-                    </div>
-                </div>
-                
-                <!-- Restaurant Name - Bottom Right -->
-                <div style="position: absolute; bottom: 56px; right: 56px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 8px; max-width: 400px; box-sizing: border-box; z-index: 20; overflow: hidden; white-space: nowrap;">
-                    <h1 style="font-family: 'Cinzel', serif; font-size: ${mainFontSize}; font-weight: 700; color: #ffffff; letter-spacing: 3.2px; margin: 0; line-height: 1; text-align: right; text-shadow: 0 3.2px 8px rgba(0,0,0,0.5); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; box-sizing: border-box;">${titleMain}</h1>
-                    <h2 style="font-size: ${subFontSize}; color: #d4af37; font-weight: 600; letter-spacing: 4.8px; margin: 0; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; box-sizing: border-box;">${titleSub}</h2>
                 </div>`;
             return el;
         }
@@ -917,13 +914,13 @@
                     
                     <!-- Signature Strip & CVV -->
                     <div style="display: grid; grid-template-columns: 1fr 96px; gap: 32px; align-items: flex-start; margin-bottom: 32px;">
-                        <div style="display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;">
+                        <div style="display: flex; flex-direction: column;">
                             <p style="font-size: 11.2px; color: #4b5563; margin: 0 0 4.8px 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px;">Authorized Signature - Not valid unless signed</p>
-                            <div style="width: 100%; height: 48px; background: #ffffff; border-radius: 4.8px; background-image: repeating-linear-gradient(45deg, rgba(59,130,246,0.05) 0px, rgba(59,130,246,0.05) 10px, transparent 10px, transparent 20px); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; padding: 0 16px; overflow: hidden;">
-                                <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 28.8px; color: #1e3a8a; opacity: 0.6; white-space: nowrap;">Premium Member</span>
+                            <div style="width: 100%; height: 48px; background: #ffffff; border-radius: 4.8px; background-image: repeating-linear-gradient(45deg, rgba(59,130,246,0.05) 0px, rgba(59,130,246,0.05) 10px, transparent 10px, transparent 20px); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; padding: 0 16px;">
+                                <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 28.8px; color: #1e3a8a; opacity: 0.6;">Premium Member</span>
                             </div>
                         </div>
-                        <div style="display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;">
+                        <div style="display: flex; flex-direction: column;">
                             <p style="font-size: 11.2px; color: #4b5563; margin: 0 0 4.8px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px; text-align: center;">CVV</p>
                             <div style="width: 100%; height: 48px; background: #ffffff; border-radius: 4.8px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); font-family: monospace; font-size: 22.4px; color: #111; font-weight: 700; letter-spacing: 3.2px;">
                                 888
@@ -932,39 +929,36 @@
                     </div>
                     
                     <!-- Content Row -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex: 1; gap: 48px; box-sizing: border-box;">
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: center; flex: 1;">
                         
                         <!-- Left text info -->
-                        <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; max-width: 600px; box-sizing: border-box;">
+                        <div style="display: flex; flex-direction: column; justify-content: center;">
                             <h3 style="font-size: 17.6px; font-weight: 800; color: #1f2937; letter-spacing: 1.6px; margin: 0 0 16px 0;">TERMS & CONDITIONS</h3>
-                            <p style="font-size: 12.8px; color: #374151; margin: 0 0 12.8px 0; line-height: 1.5; text-align: justify; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">This card is property of TapCraves and the issuing restaurant. It is not transferable. Use of this card is subject to the terms and conditions set by the issuer. If found, please return to the nearest participating location.</p>
-                            <div style="display: flex; flex-direction: column; justify-content: center; margin: 0 0 24px 0; max-width: 100%; box-sizing: border-box; overflow: hidden;">
-                                <span style="font-size: 12.8px; color: #374151; line-height: 1.5; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">Support: support@tapcraves.com</span>
-                                <span style="font-size: 12.8px; color: #374151; line-height: 1.5; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;">Restaurant: ${rest.mobile || 'Not provided'}</span>
-                            </div>
+                            <p style="font-size: 12.8px; color: #374151; margin: 0 0 12.8px 0; line-height: 1.5; text-align: justify;">This card is property of TapCraves and the issuing restaurant. It is not transferable. Use of this card is subject to the terms and conditions set by the issuer. If found, please return to the nearest participating location.</p>
+                            <p style="font-size: 12.8px; color: #374151; margin: 0 0 24px 0; line-height: 1.5; font-weight: 600;">Support: support@tapcraves.com<br>Restaurant: ${rest.mobile || 'Not provided'}</p>
                             
                             <div style="display: flex; align-items: center; gap: 16px;">
                                 <i class="fa-solid fa-headset" style="font-size: 25.6px; color: #4b5563;"></i>
-                                <span style="font-size: 16px; font-weight: 700; color: #1f2937; white-space: nowrap;">24/7 CUSTOMER SUPPORT</span>
+                                <span style="font-size: 16px; font-weight: 700; color: #1f2937;">24/7 CUSTOMER SUPPORT</span>
                             </div>
                         </div>
                         
                         <!-- Right QR Code (Glassmorphism Boxed) -->
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12.8px; box-sizing: border-box;">
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12.8px;">
                             <div style="background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 12.8px; border-radius: 16px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.6); position: relative; display: flex; justify-content: center; align-items: center;">
                                 <div style="background: #ffffff; padding: 6.4px; border-radius: 9.6px; display: flex; align-items: center; justify-content: center; position: relative;">
                                     <div class="qr-back-container"></div>
                                     ${qrLogo}
                                 </div>
                             </div>
-                            <p style="font-size: 14.4px; font-weight: 800; color: #1f2937; margin: 0; letter-spacing: 1.6px; text-transform: uppercase; white-space: nowrap;">SCAN FOR REWARDS</p>
+                            <p style="font-size: 14.4px; font-weight: 800; color: #1f2937; margin: 0; letter-spacing: 1.6px; text-transform: uppercase;">SCAN FOR REWARDS</p>
                         </div>
                     </div>
                     
                     <!-- Footer -->
-                    <div style="position: absolute; bottom: 40px; left: 56px; right: 56px; display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 16px; box-sizing: border-box;">
-                        <span style="font-family: monospace; font-size: 12.8px; color: #4b5563; font-weight: 600; letter-spacing: 3.2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 50%;">ID: ${cardId}</span>
-                        <span style="font-size: 13.6px; font-weight: 800; color: #1f2937; letter-spacing: 4.8px; white-space: nowrap;">POWERED BY TAPCRAVES</span>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 16px; margin-top: 24px;">
+                        <span style="font-family: monospace; font-size: 12.8px; color: #4b5563; font-weight: 600; letter-spacing: 3.2px;">ID: ${cardId}</span>
+                        <span style="font-size: 13.6px; font-weight: 800; color: #1f2937; letter-spacing: 4.8px;">POWERED BY TAPCRAVES</span>
                     </div>
                     
                 </div>`;
@@ -986,44 +980,25 @@
 
             try {
                 const { jsPDF } = window.jspdf; const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-                const cardWidth = 85.6, cardHeight = 54;
+                const cardWidth = 85.6, cardHeight = 54, marginX = 15, gapX = 8, marginY = 7.5, gapY = 3;
 
                 for (let i = 0; i < batch.length; i++) {
-                    const cardId = batch[i];
-                    
-                    // Create new page every 4 cards (2 rows x 2 cols of foldable pairs)
-                    if (i > 0 && i % 4 === 0) {
-                        doc.addPage();
-                    }
-                    
-                    const idxOnPage = i % 4;
-                    const col = idxOnPage % 2;
-                    const row = Math.floor(idxOnPage / 2);
-                    
-                    // 5mm margin, 15mm gap between pairs
-                    const xPos = 5 + col * (cardWidth + 15);
-                    const yPos = 5 + row * (cardHeight * 2 + 15);
+                    const cardId = batch[i]; const yPos = marginY + (i * (cardHeight + gapY));
                     
                     const frontEl = createCardFront(cardId, rest, window.customLogoBase64); renderContainer.appendChild(frontEl);
                     new QRCode(frontEl.querySelector('.qr-front-container'), { text: cardId, width: 180, height: 180, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
                     await new Promise(r => setTimeout(r, 100));
-                    const canvasFront = await html2canvas(frontEl, { scale: 3, useCORS: true, backgroundColor: null });
-                    doc.addImage(canvasFront.toDataURL('image/jpeg', 1.0), 'JPEG', xPos, yPos, cardWidth, cardHeight);
+                    const canvasFront = await html2canvas(frontEl, { scale: 2, useCORS: true, backgroundColor: null });
+                    doc.addImage(canvasFront.toDataURL('image/jpeg', 1.0), 'JPEG', marginX, yPos, cardWidth, cardHeight);
                     updateProgress(`Rendering F...`); renderContainer.removeChild(frontEl);
 
                     const backEl = createCardBack(cardId, rest); renderContainer.appendChild(backEl);
                     new QRCode(backEl.querySelector('.qr-back-container'), { text: `https://tapcraves.shop/?view=wallet&card=${cardId}`, width: 140, height: 140, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
                     await new Promise(r => setTimeout(r, 100));
-                    const canvasBack = await html2canvas(backEl, { scale: 3, useCORS: true, backgroundColor: null });
-                    doc.addImage(canvasBack.toDataURL('image/jpeg', 1.0), 'JPEG', xPos, yPos + cardHeight, cardWidth, cardHeight);
+                    const canvasBack = await html2canvas(backEl, { scale: 2, useCORS: true, backgroundColor: null });
+                    const xBack = marginX + cardWidth + gapX;
+                    doc.addImage(canvasBack.toDataURL('image/jpeg', 1.0), 'JPEG', xBack, yPos, cardWidth, cardHeight);
                     updateProgress(`Rendering B...`); renderContainer.removeChild(backEl);
-                    
-                    // Draw faint dashed horizontal line between the two faces exactly in the middle
-                    doc.setDrawColor(180, 180, 180);
-                    doc.setLineWidth(0.2);
-                    doc.setLineDashPattern([2, 2], 0);
-                    doc.line(xPos, yPos + cardHeight, xPos + cardWidth, yPos + cardHeight);
-                    doc.setLineDashPattern([], 0); // reset dash
                 }
 
                 updateProgress('Finalizing...'); doc.save(`Order_${activeOrderId.substring(0,6)}_Batch_${batchIndex+1}.pdf`);
