@@ -795,8 +795,8 @@
             const nameParts = (rest.name || 'Restaurant').split(' '); let titleMain = nameParts[0].toUpperCase(); let titleSub = nameParts.slice(1).join(' ').toUpperCase(); if(!titleSub) titleSub = "MEMBER CARD";
             
             let logoHtml = logoBase64 
-                ? `<img src="${logoBase64}" style="max-height: 45px; max-width: 150px; object-fit: contain; border-radius: 4px;">`
-                : `<div style="width: 45px; height: 45px; background: #0f172a; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);"><i class="fa-solid fa-utensils" style="color:#d4af37; font-size:20px;"></i></div>`;
+                ? `<img src="${logoBase64}" style="max-height: 30px; max-width: 150px; object-fit: contain; border-radius: 4px;">`
+                : `<div style="width: 30px; height: 30px; background: #0f172a; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);"><i class="fa-solid fa-utensils" style="color:#d4af37; font-size:16px;"></i></div>`;
 
             el.innerHTML = `
                 <!-- Background decorative noise/lines -->
@@ -857,7 +857,7 @@
                         <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
                             <h1 style="font-family: 'Cinzel', serif; font-size: 32px; font-weight: 700; color: #ffffff; letter-spacing: 3px; margin: 0; line-height: 1; text-align: right; text-shadow: 0 2px 5px rgba(0,0,0,0.5);">${titleMain}</h1>
                             <h2 style="font-size: 14px; color: #d4af37; font-weight: 600; letter-spacing: 4px; margin: 0; text-align: right;">${titleSub}</h2>
-                            <div style="background: #ffffff; padding: 6px; border-radius: 8px; margin-top: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
+                            <div style="background: #ffffff; padding: 6px; border-radius: 8px; margin-top: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4); width: 300px;">
                                 <div class="qr-front-container"></div>
                             </div>
                         </div>
@@ -948,7 +948,7 @@
                     const cardId = batch[i]; const yPos = marginY + (i * (cardHeight + gapY));
                     
                     const frontEl = createCardFront(cardId, rest, window.customLogoBase64); renderContainer.appendChild(frontEl);
-                    new QRCode(frontEl.querySelector('.qr-front-container'), { text: cardId, width: 80, height: 80, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+                    new QRCode(frontEl.querySelector('.qr-front-container'), { text: cardId, width: 250, height: 250, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
                     await new Promise(r => setTimeout(r, 100));
                     const canvasFront = await html2canvas(frontEl, { scale: 2, useCORS: true, backgroundColor: null });
                     doc.addImage(canvasFront.toDataURL('image/jpeg', 1.0), 'JPEG', marginX, yPos, cardWidth, cardHeight);
