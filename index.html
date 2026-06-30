@@ -14,8 +14,8 @@
         }
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -827,85 +827,66 @@
             const nameParts = (rest.name || 'Restaurant').split(' '); 
             let titleMain = nameParts[0].toUpperCase(); 
             let titleSub = nameParts.slice(1).join(' ').toUpperCase(); 
-            if(!titleSub) titleSub = "MEMBER CARD";
+            if(!titleSub) titleSub = "VIP MEMBER";
 
             let logoHtml = logoBase64 
-                ? `<img src="${logoBase64}" style="max-height: 40px; max-width: 128px; object-fit: contain; border-radius: 4px;">`
-                : `<div style="width: 40px; height: 40px; background: #0f172a; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);"><i class="fa-solid fa-utensils" style="color:#d4af37; font-size:19.2px;"></i></div>`;
+                ? `<img src="${logoBase64}" style="max-height: 48px; max-width: 140px; object-fit: contain; border-radius: 4px;">`
+                : `<div style="width: 48px; height: 48px; background: #000000; border-radius: 8px; border: 2px solid #d4af37; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);"><i class="fa-solid fa-crown" style="color:#d4af37; font-size:24px;"></i></div>`;
 
-            let qrLogo = `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ffffff; padding: 6.4px; border-radius: 8px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 10;">
-                <div style="background: linear-gradient(135deg, #2dd4bf, #3b82f6); border-radius: 4px; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center;">
-                    <span style="color: white; font-size: 11.2px; font-weight: bold; font-family: sans-serif;">TC</span>
+            let qrLogo = `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ffffff; padding: 8px; border-radius: 8px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 12px rgba(0,0,0,0.3); z-index: 10;">
+                <div style="background: #000000; border-radius: 6px; width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; border: 2px solid #d4af37;">
+                    <span style="color: #d4af37; font-size: 14px; font-weight: 900; font-family: sans-serif;">TC</span>
                 </div>
             </div>`;
 
             el.innerHTML = `
-                <!-- Background decorative noise/lines -->
-                <div style="position:absolute; top:0; left:0; width:100%; height:100%; opacity: 0.03; background-image: repeating-linear-gradient(45deg, #ffffff 0, #ffffff 1px, transparent 1px, transparent 10px); z-index:1;"></div>
-                <div style="position:absolute; top:-240px; right:-160px; width:720px; height:720px; background:radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 65%); border-radius:50%; z-index:1;"></div>
-                <div style="position:absolute; bottom:-240px; left:-160px; width:560px; height:560px; background:radial-gradient(circle, rgba(45,212,191,0.1) 0%, transparent 65%); border-radius:50%; z-index:1;"></div>
+                <style>
+                    .vip-text { font-weight: 900 !important; font-family: '"Plus Jakarta Sans", sans-serif'; }
+                    .vip-serif { font-family: 'Cinzel', serif; font-weight: 900 !important; }
+                </style>
+                <!-- Full cover background to ensure Pure Black VIP Look regardless of JS outer styling -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: #000000; z-index:1;"></div>
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at 50% 0%, rgba(212,175,55,0.1) 0%, transparent 70%); z-index:2;"></div>
                 
-                <div style="position:relative; z-index:10; padding: 56px; height: 100%; box-sizing: border-box; display: flex; flex-direction: column;">
+                <!-- Gold Accent Bars -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:12px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:3;"></div>
+                <div style="position:absolute; bottom:0; left:0; width:100%; height:12px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:3;"></div>
+                
+                <div style="position:relative; z-index:10; padding: 64px; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
                     
-                    <!-- Top Section -->
+                    <!-- Top Row -->
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-                        <div style="display: flex; align-items: center; gap: 16px;">
+                        <div style="display: flex; align-items: center; gap: 24px;">
                             ${logoHtml}
-                            <div style="display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;">
-                                <h2 style="font-size: 28.8px; font-weight: 800; margin: 0; letter-spacing: 1.6px; line-height:1; color: #fff;">Tap<span style="color: #d4af37;">Craves</span></h2>
-                                <p style="font-size: 12.8px; font-weight: 600; color: #a1a1aa; margin: 3.2px 0 0 0; letter-spacing: 3.2px; text-transform: uppercase;">Premium Rewards</p>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 16px;">
-                            <i class="fa-solid fa-wifi fa-rotate-90" style="font-size: 40px; color: rgba(255,255,255,0.4);"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Middle Section (Card Number & QR Frame) -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex: 1; padding: 32px 0;">
-                        <!-- Left: EMV and Number -->
-                        <div style="display: flex; flex-direction: column; gap: 32px; justify-content: center;">
-                            <!-- EMV Chip -->
-                            <div style="width: 72px; height: 51.2px; background: linear-gradient(135deg, #ebd197 0%, #b48545 100%); border-radius: 9.6px; position: relative; overflow: hidden; box-shadow: inset 0 0 8px rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;">
-                                <div style="width: 100%; height: 1px; background: rgba(0,0,0,0.3); position: absolute; top: 30%;"></div>
-                                <div style="width: 100%; height: 1px; background: rgba(0,0,0,0.3); position: absolute; top: 70%;"></div>
-                                <div style="width: 1px; height: 100%; background: rgba(0,0,0,0.3); position: absolute; left: 30%;"></div>
-                                <div style="width: 1px; height: 100%; background: rgba(0,0,0,0.3); position: absolute; left: 70%;"></div>
-                                <div style="width: 32px; height: 24px; border: 1px solid rgba(0,0,0,0.3); border-radius: 4.8px; position: absolute; z-index: 2;"></div>
-                            </div>
-                            
-                            <!-- Card Number -->
-                            <div style="font-family: monospace; font-size: 44.8px; color: #ffffff; font-weight: 600; letter-spacing: 9.6px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(255,255,255,0.2); display:flex; align-items:center;">
-                                <span>${cardId.substring(0,4)}</span><span style="margin-left: 19.2px;">${cardId.substring(4,8)}</span><span style="margin-left: 19.2px;">${cardId.substring(8,12)}</span><span style="margin-left: 19.2px;">${cardId.substring(12,16) || '8888'}</span>
+                            <div style="display: flex; flex-direction: column; justify-content: center;">
+                                <h2 class="vip-text" style="font-size: 42px; margin: 0; letter-spacing: 4px; color: #ffffff; line-height: 1;">TAP<span style="color: #d4af37;">CRAVES</span></h2>
+                                <p class="vip-text" style="font-size: 16px; color: #d4af37; margin: 6px 0 0 0; letter-spacing: 8px; text-transform: uppercase;">VIP Tier</p>
                             </div>
                         </div>
                         
-                        <!-- Right: Glassmorphism QR Frame -->
-                        <div style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); border-radius: 19.2px; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 16px 32px rgba(0,0,0,0.4);">
-                            <div style="background: #ffffff; padding: 8px; border-radius: 12.8px; display: flex; align-items: center; justify-content: center; position: relative;">
-                                <div class="qr-front-container"></div>
-                                ${qrLogo}
-                            </div>
+                        <!-- Front QR -->
+                        <div style="background: #ffffff; padding: 12px; border-radius: 12px; border: 3px solid #d4af37; box-shadow: 0 10px 30px rgba(212,175,55,0.15); display: flex; align-items: center; justify-content: center; position: relative;">
+                            <div class="qr-front-container"></div>
+                            ${qrLogo}
                         </div>
                     </div>
-                </div>
-                
-                <!-- ATM Corner Anchor - Bottom Left -->
-                <div style="position: absolute; bottom: 56px; left: 56px; display: flex; gap: 32px; z-index: 20;">
-                    <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; box-sizing: border-box;">
-                        <span style="font-size: 11.2px; color: #d4af37; text-transform: uppercase; letter-spacing: 2.4px; margin-bottom: 4.8px; font-weight: 700;">Valid Thru</span>
-                        <span style="font-size: 20.8px; font-family: monospace; color: #ffffff; font-weight: 600; letter-spacing: 2.4px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">12/29</span>
+                    
+                    <!-- Bottom Row -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">
+                        
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <span class="vip-text" style="font-size: 16px; color: #d4af37; text-transform: uppercase; letter-spacing: 6px;">Membership ID</span>
+                            <span class="vip-text" style="font-family: monospace !important; font-size: 48px; color: #ffffff; letter-spacing: 12px; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">
+                                ${cardId.substring(0,4)}<span style="color:#d4af37;">${cardId.substring(4,8)}</span>${cardId.substring(8,12)}<span style="color:#d4af37;">${cardId.substring(12,16) || '8888'}</span>
+                            </span>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 12px; width: 450px; text-align: right;">
+                            <h1 class="card-title-main vip-serif" style="color: #d4af37; letter-spacing: 4px; margin: 0; line-height: 1; width: 100%; display: block; text-transform: uppercase;">${titleMain}</h1>
+                            <h2 class="card-title-sub vip-text" style="color: #ffffff; letter-spacing: 6px; margin: 0; width: 100%; display: block; text-transform: uppercase;">${titleSub}</h2>
+                        </div>
+                        
                     </div>
-                    <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; box-sizing: border-box;">
-                        <span style="font-size: 11.2px; color: #d4af37; text-transform: uppercase; letter-spacing: 2.4px; margin-bottom: 4.8px; font-weight: 700;">TC ID</span>
-                        <span style="font-size: 20.8px; font-family: monospace; color: #ffffff; font-weight: 600; letter-spacing: 2.4px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">${cardId.substring(0,6)}</span>
-                    </div>
-                </div>
-                
-                <!-- Restaurant Name - Bottom Right (Flexible and Protected) -->
-                <div style="position: absolute; bottom: 56px; right: 56px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 8px; width: 450px; box-sizing: border-box; z-index: 20;">
-                    <h1 class="card-title-main" style="font-family: 'Cinzel', serif; font-weight: 700; color: #ffffff; letter-spacing: 3.2px; margin: 0; line-height: 1; text-align: right; text-shadow: 0 3.2px 8px rgba(0,0,0,0.5); width: 100%; box-sizing: border-box; display: block;">${titleMain}</h1>
-                    <h2 class="card-title-sub" style="font-weight: 600; color: #d4af37; letter-spacing: 4.8px; margin: 0; text-align: right; width: 100%; box-sizing: border-box; display: block;">${titleSub}</h2>
                 </div>`;
             return el;
         }
@@ -924,69 +905,58 @@
             el.style.boxSizing = 'border-box';
             el.style.border = '1px solid rgba(0,0,0,0.1)';
             
-            let qrLogo = `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ffffff; padding: 4.8px; border-radius: 6.4px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 10;">
-                <div style="background: #1f2937; border-radius: 3.2px; width: 19.2px; height: 19.2px; display: flex; justify-content: center; align-items: center;">
-                    <span style="color: #d4af37; font-size: 9.6px; font-weight: bold; font-family: sans-serif;">TC</span>
+            let qrLogo = `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ffffff; padding: 12px; border-radius: 12px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 16px rgba(0,0,0,0.4); z-index: 10;">
+                <div style="background: #000000; border-radius: 8px; width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; border: 2px solid #d4af37;">
+                    <span style="color: #d4af37; font-size: 20px; font-weight: 900; font-family: sans-serif;">TC</span>
                 </div>
             </div>`;
 
             el.innerHTML = `
-                <!-- Magnetic Stripe -->
-                <div style="width: 100%; height: 88px; background: #111111; margin-top: 48px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);"></div>
+                <style>
+                    .qr-massive img, .qr-massive canvas {
+                        width: 360px !important;
+                        height: 360px !important;
+                        image-rendering: pixelated;
+                    }
+                    .vip-text { font-weight: 900 !important; font-family: '"Plus Jakarta Sans", sans-serif'; }
+                </style>
+                <!-- Matte Black Background Override -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: #000000; z-index:1;"></div>
                 
-                <div style="padding: 24px 56px 40px 56px; display: flex; flex-direction: column; height: calc(100% - 136px); box-sizing: border-box;">
+                <!-- Gold Accent Bars -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:12px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:2;"></div>
+                <div style="position:absolute; bottom:0; left:0; width:100%; height:12px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:2;"></div>
+                
+                <div style="position: relative; z-index: 10; padding: 64px; display: flex; justify-content: space-between; align-items: center; height: 100%; box-sizing: border-box;">
                     
-                    <!-- Signature Strip & CVV -->
-                    <div style="display: grid; grid-template-columns: 1fr 96px; gap: 32px; align-items: flex-start; margin-bottom: 32px;">
-                        <div style="display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;">
-                            <p style="font-size: 11.2px; color: #4b5563; margin: 0 0 4.8px 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px; white-space: nowrap;">Authorized Signature - Not valid unless signed</p>
-                            <div style="width: 100%; height: 48px; background: #ffffff; border-radius: 4.8px; background-image: repeating-linear-gradient(45deg, rgba(59,130,246,0.05) 0px, rgba(59,130,246,0.05) 10px, transparent 10px, transparent 20px); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; padding: 0 16px; overflow: hidden;">
-                                <span style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 28.8px; color: #1e3a8a; opacity: 0.6; white-space: nowrap;">Premium Member</span>
-                            </div>
-                        </div>
-                        <div style="display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;">
-                            <p style="font-size: 11.2px; color: #4b5563; margin: 0 0 4.8px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px; text-align: center;">CVV</p>
-                            <div style="width: 100%; height: 48px; background: #ffffff; border-radius: 4.8px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); font-family: monospace; font-size: 22.4px; color: #111; font-weight: 700; letter-spacing: 3.2px;">
-                                888
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Content Row -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex: 1; gap: 48px; box-sizing: border-box;">
+                    <!-- Left Panel: Text Info -->
+                    <div style="display: flex; flex-direction: column; justify-content: center; width: 480px; box-sizing: border-box; gap: 32px;">
                         
-                        <!-- Left text info -->
-                        <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; width: 600px; box-sizing: border-box;">
-                            <h3 style="font-size: 17.6px; font-weight: 800; color: #1f2937; letter-spacing: 1.6px; margin: 0 0 16px 0;">TERMS & CONDITIONS</h3>
-                            <p style="font-size: 11.5px; color: #374151; margin: 0 0 12px 0; line-height: 1.5; text-align: justify; overflow: hidden;">This card is property of TapCraves and the issuing restaurant. It is not transferable. Use of this card is subject to the terms and conditions set by the issuer. If found, please return to the nearest participating location.</p>
-                            
-                            <div style="display: block; margin: 0 0 24px 0; width: 100%; box-sizing: border-box;">
-                                <div class="card-support" style="color: #374151; line-height: 1.5; font-weight: 600; display: block; width: 100%;">Support: support@tapcraves.com</div>
-                                <div class="card-restaurant" style="color: #374151; line-height: 1.5; font-weight: 600; display: block; width: 100%;">Restaurant: ${rest.mobile || 'Not provided'}</div>
-                            </div>
-                            
-                            <div style="display: flex; align-items: center; gap: 16px;">
-                                <i class="fa-solid fa-headset" style="font-size: 25.6px; color: #4b5563;"></i>
-                                <span style="font-size: 16px; font-weight: 700; color: #1f2937; white-space: nowrap;">24/7 CUSTOMER SUPPORT</span>
-                            </div>
+                        <div>
+                            <h3 class="vip-text" style="font-size: 32px; color: #d4af37; letter-spacing: 4px; margin: 0 0 16px 0; text-transform: uppercase;">VIP Terms & Conditions</h3>
+                            <p class="vip-text" style="font-size: 18px; color: #ffffff; margin: 0; line-height: 1.6; text-align: justify;">
+                                This card is the property of TapCraves and the issuing partner. It is strictly non-transferable and grants access to exclusive VIP tier benefits. Presentation of this card constitutes acceptance of our premium terms.
+                            </p>
                         </div>
                         
-                        <!-- Right QR Code (Glassmorphism Boxed) -->
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12.8px; box-sizing: border-box;">
-                            <div style="background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 12.8px; border-radius: 16px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.6); position: relative; display: flex; justify-content: center; align-items: center;">
-                                <div style="background: #ffffff; padding: 6.4px; border-radius: 9.6px; display: flex; align-items: center; justify-content: center; position: relative;">
-                                    <div class="qr-back-container"></div>
-                                    ${qrLogo}
-                                </div>
-                            </div>
-                            <p style="font-size: 14.4px; font-weight: 800; color: #1f2937; margin: 0; letter-spacing: 1.6px; text-transform: uppercase; white-space: nowrap;">SCAN FOR REWARDS</p>
+                        <div style="background: rgba(212, 175, 55, 0.1); border-left: 8px solid #d4af37; padding: 20px;">
+                            <div class="card-support vip-text" style="color: #ffffff; line-height: 1.8; text-transform: uppercase;">SUPPORT: support@tapcraves.com</div>
+                            <div class="card-restaurant vip-text" style="color: #ffffff; line-height: 1.8; text-transform: uppercase;">CONCIERGE: ${rest.mobile || 'Not provided'}</div>
                         </div>
+                        
+                        <div style="margin-top: 16px;">
+                            <span class="card-footer-id vip-text" style="font-family: monospace !important; color: #d4af37; letter-spacing: 4px; text-transform: uppercase; display: block;">ID: ${cardId}</span>
+                        </div>
+                        
                     </div>
                     
-                    <!-- Footer -->
-                    <div style="position: absolute; bottom: 40px; left: 56px; right: 56px; display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 16px; box-sizing: border-box;">
-                        <span class="card-footer-id" style="font-family: monospace; color: #4b5563; font-weight: 600; letter-spacing: 3.2px; width: 400px; display: block;">ID: ${cardId}</span>
-                        <span style="font-size: 13.6px; font-weight: 800; color: #1f2937; letter-spacing: 4.8px; white-space: nowrap;">POWERED BY TAPCRAVES</span>
+                    <!-- Right Panel: Massive QR -->
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; box-sizing: border-box;">
+                        <div style="background: #ffffff; padding: 24px; border-radius: 16px; border: 5px solid #d4af37; box-shadow: 0 0 40px rgba(212,175,55,0.3); display: flex; justify-content: center; align-items: center; position: relative;">
+                            <div class="qr-back-container qr-massive"></div>
+                            ${qrLogo}
+                        </div>
+                        <p class="vip-text" style="font-size: 26px; color: #d4af37; margin: 0; letter-spacing: 6px; text-transform: uppercase; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">Scan For VIP Access</p>
                     </div>
                     
                 </div>`;
