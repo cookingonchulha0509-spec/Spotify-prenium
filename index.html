@@ -821,8 +821,9 @@
             el.style.fontFamily = '"Plus Jakarta Sans", sans-serif'; 
             el.style.color = '#ffffff'; 
             el.style.boxSizing = 'border-box';
-            el.style.background = 'linear-gradient(135deg, #2a2a2b 0%, #171718 50%, #09090a 100%)';
-            el.style.border = '1px solid rgba(255,255,255,0.1)';
+            // Matte Dark Theme
+            el.style.backgroundColor = '#0a0a0a';
+            el.style.border = '1px solid #333333';
             
             const nameParts = (rest.name || 'Restaurant').split(' '); 
             let titleMain = nameParts[0].toUpperCase(); 
@@ -831,7 +832,7 @@
 
             let logoHtml = logoBase64 
                 ? `<img src="${logoBase64}" style="max-height: 48px; max-width: 140px; object-fit: contain; border-radius: 4px;">`
-                : `<div style="width: 48px; height: 48px; background: #000000; border-radius: 8px; border: 2px solid #d4af37; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);"><i class="fa-solid fa-crown" style="color:#d4af37; font-size:24px;"></i></div>`;
+                : `<div style="width: 48px; height: 48px; background: #000000; border-radius: 8px; border: 3px solid #d4af37; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);"><i class="fa-solid fa-crown" style="color:#d4af37; font-size:24px;"></i></div>`;
 
             let qrLogo = `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ffffff; padding: 8px; border-radius: 8px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 12px rgba(0,0,0,0.3); z-index: 10;">
                 <div style="background: #000000; border-radius: 6px; width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; border: 2px solid #d4af37;">
@@ -843,14 +844,16 @@
                 <style>
                     .vip-text { font-weight: 900 !important; font-family: '"Plus Jakarta Sans", sans-serif'; }
                     .vip-serif { font-family: 'Cinzel', serif; font-weight: 900 !important; }
+                    .qr-box { background: #ffffff; padding: 12px; border-radius: 12px; border: 4px solid #d4af37; box-shadow: 0 10px 30px rgba(212,175,55,0.15); display: flex; align-items: center; justify-content: center; position: relative; width: 212px; height: 212px; box-sizing: border-box; }
                 </style>
-                <!-- Full cover background to ensure Pure Black VIP Look regardless of JS outer styling -->
-                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: #000000; z-index:1;"></div>
-                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at 50% 0%, rgba(212,175,55,0.1) 0%, transparent 70%); z-index:2;"></div>
+                <!-- Background base -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: #050505; z-index:1;"></div>
+                <!-- Subtle Gold Accent Pattern -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at 50% 0%, rgba(212,175,55,0.15) 0%, transparent 60%); z-index:2;"></div>
                 
-                <!-- Gold Accent Bars -->
-                <div style="position:absolute; top:0; left:0; width:100%; height:12px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:3;"></div>
-                <div style="position:absolute; bottom:0; left:0; width:100%; height:12px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:3;"></div>
+                <!-- Thick Gold Accent Bars -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:16px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:3;"></div>
+                <div style="position:absolute; bottom:0; left:0; width:100%; height:16px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:3;"></div>
                 
                 <div style="position:relative; z-index:10; padding: 64px; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
                     
@@ -864,8 +867,8 @@
                             </div>
                         </div>
                         
-                        <!-- Front QR -->
-                        <div style="background: #ffffff; padding: 12px; border-radius: 12px; border: 3px solid #d4af37; box-shadow: 0 10px 30px rgba(212,175,55,0.15); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <!-- Front QR Match Size -->
+                        <div class="qr-box">
                             <div class="qr-front-container"></div>
                             ${qrLogo}
                         </div>
@@ -899,64 +902,63 @@
             el.style.borderRadius = '0px'; 
             el.style.overflow = 'hidden'; 
             el.style.fontFamily = '"Plus Jakarta Sans", sans-serif'; 
-            el.style.color = '#1f2937'; 
-            el.style.backgroundColor = '#d1d5db'; 
-            el.style.backgroundImage = 'linear-gradient(135deg, #f3f4f6 0%, #9ca3af 100%)'; 
+            el.style.color = '#ffffff'; 
+            el.style.backgroundColor = '#0a0a0a'; 
             el.style.boxSizing = 'border-box';
-            el.style.border = '1px solid rgba(0,0,0,0.1)';
+            el.style.border = '1px solid #333333';
             
-            let qrLogo = `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ffffff; padding: 12px; border-radius: 12px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 16px rgba(0,0,0,0.4); z-index: 10;">
-                <div style="background: #000000; border-radius: 8px; width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; border: 2px solid #d4af37;">
-                    <span style="color: #d4af37; font-size: 20px; font-weight: 900; font-family: sans-serif;">TC</span>
+            let qrLogo = `<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #ffffff; padding: 8px; border-radius: 8px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 12px rgba(0,0,0,0.3); z-index: 10;">
+                <div style="background: #000000; border-radius: 6px; width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; border: 2px solid #d4af37;">
+                    <span style="color: #d4af37; font-size: 14px; font-weight: 900; font-family: sans-serif;">TC</span>
                 </div>
             </div>`;
 
             el.innerHTML = `
                 <style>
-                    .qr-massive img, .qr-massive canvas {
-                        width: 360px !important;
-                        height: 360px !important;
-                        image-rendering: pixelated;
-                    }
                     .vip-text { font-weight: 900 !important; font-family: '"Plus Jakarta Sans", sans-serif'; }
+                    .qr-box { background: #ffffff; padding: 12px; border-radius: 12px; border: 4px solid #d4af37; box-shadow: 0 10px 30px rgba(212,175,55,0.15); display: flex; align-items: center; justify-content: center; position: relative; width: 212px; height: 212px; box-sizing: border-box; }
+                    /* Force back QR to exactly match front QR size regardless of JS init */
+                    .qr-back-container img, .qr-back-container canvas { width: 180px !important; height: 180px !important; image-rendering: pixelated; }
+                    .qr-front-container img, .qr-front-container canvas { width: 180px !important; height: 180px !important; }
                 </style>
-                <!-- Matte Black Background Override -->
-                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: #000000; z-index:1;"></div>
+                <!-- Matte Black Background -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: #050505; z-index:1;"></div>
+                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at 100% 100%, rgba(212,175,55,0.1) 0%, transparent 70%); z-index:2;"></div>
                 
-                <!-- Gold Accent Bars -->
-                <div style="position:absolute; top:0; left:0; width:100%; height:12px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:2;"></div>
-                <div style="position:absolute; bottom:0; left:0; width:100%; height:12px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:2;"></div>
+                <!-- Thick Gold Accent Bars -->
+                <div style="position:absolute; top:0; left:0; width:100%; height:16px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:3;"></div>
+                <div style="position:absolute; bottom:0; left:0; width:100%; height:16px; background: linear-gradient(90deg, #b48545, #f5d796, #d4af37, #b48545); z-index:3;"></div>
                 
                 <div style="position: relative; z-index: 10; padding: 64px; display: flex; justify-content: space-between; align-items: center; height: 100%; box-sizing: border-box;">
                     
                     <!-- Left Panel: Text Info -->
-                    <div style="display: flex; flex-direction: column; justify-content: center; width: 480px; box-sizing: border-box; gap: 32px;">
+                    <div style="display: flex; flex-direction: column; justify-content: center; width: 550px; box-sizing: border-box; gap: 40px;">
                         
                         <div>
-                            <h3 class="vip-text" style="font-size: 32px; color: #d4af37; letter-spacing: 4px; margin: 0 0 16px 0; text-transform: uppercase;">VIP Terms & Conditions</h3>
-                            <p class="vip-text" style="font-size: 18px; color: #ffffff; margin: 0; line-height: 1.6; text-align: justify;">
-                                This card is the property of TapCraves and the issuing partner. It is strictly non-transferable and grants access to exclusive VIP tier benefits. Presentation of this card constitutes acceptance of our premium terms.
+                            <h3 class="vip-text" style="font-size: 28px; color: #d4af37; letter-spacing: 4px; margin: 0 0 16px 0; text-transform: uppercase;">VIP Terms & Conditions</h3>
+                            <p class="vip-text" style="font-size: 16px; color: #ffffff; margin: 0; line-height: 1.8; text-align: justify;">
+                                This card is the exclusive property of TapCraves and the issuing partner. It is strictly non-transferable and grants access to premium VIP tier benefits. Presentation of this card constitutes acceptance of our elite membership terms.
                             </p>
                         </div>
                         
-                        <div style="background: rgba(212, 175, 55, 0.1); border-left: 8px solid #d4af37; padding: 20px;">
-                            <div class="card-support vip-text" style="color: #ffffff; line-height: 1.8; text-transform: uppercase;">SUPPORT: support@tapcraves.com</div>
-                            <div class="card-restaurant vip-text" style="color: #ffffff; line-height: 1.8; text-transform: uppercase;">CONCIERGE: ${rest.mobile || 'Not provided'}</div>
+                        <div style="background: rgba(212, 175, 55, 0.15); border-left: 8px solid #d4af37; padding: 24px;">
+                            <div class="card-support vip-text" style="color: #ffffff; line-height: 1.8; text-transform: uppercase; font-size: 16px;">SUPPORT: support@tapcraves.com</div>
+                            <div class="card-restaurant vip-text" style="color: #ffffff; line-height: 1.8; text-transform: uppercase; font-size: 16px; margin-top: 8px;">CONCIERGE: ${rest.mobile || 'Not provided'}</div>
                         </div>
                         
                         <div style="margin-top: 16px;">
-                            <span class="card-footer-id vip-text" style="font-family: monospace !important; color: #d4af37; letter-spacing: 4px; text-transform: uppercase; display: block;">ID: ${cardId}</span>
+                            <span class="card-footer-id vip-text" style="font-family: monospace !important; font-size: 20px; color: #d4af37; letter-spacing: 6px; text-transform: uppercase; display: block;">ID: ${cardId}</span>
                         </div>
                         
                     </div>
                     
-                    <!-- Right Panel: Massive QR -->
+                    <!-- Right Panel: Symmetrical Mini QR -->
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; box-sizing: border-box;">
-                        <div style="background: #ffffff; padding: 24px; border-radius: 16px; border: 5px solid #d4af37; box-shadow: 0 0 40px rgba(212,175,55,0.3); display: flex; justify-content: center; align-items: center; position: relative;">
-                            <div class="qr-back-container qr-massive"></div>
+                        <div class="qr-box">
+                            <div class="qr-back-container"></div>
                             ${qrLogo}
                         </div>
-                        <p class="vip-text" style="font-size: 26px; color: #d4af37; margin: 0; letter-spacing: 6px; text-transform: uppercase; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">Scan For VIP Access</p>
+                        <p class="vip-text" style="font-size: 18px; color: #d4af37; margin: 0; letter-spacing: 4px; text-transform: uppercase;">Scan For VIP Access</p>
                     </div>
                     
                 </div>`;
