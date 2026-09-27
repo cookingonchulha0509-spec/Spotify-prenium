@@ -1,1134 +1,725 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TapCraves | Premium SaaS Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Staff Portal | Tournament</title>
     
-    <script>
-        document.addEventListener('contextmenu', event => event.preventDefault());
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false;
-            if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
-        }
-    </script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], serif: ['"Cinzel"', 'serif'] },
-                    colors: {
-                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 900: '#134e4a', 950: '#042f2e' },
-                        dark: { bg: '#0a0a0a', surface: '#121212', border: '#27272a', glass: 'rgba(18, 18, 18, 0.65)' },
-                        gold: { 400: '#f5d796', 500: '#d4af37', 600: '#b48545' }
-                    },
-                    animation: { 'fade-in': 'fadeIn 0.3s ease-out', 'slide-up': 'slideUp 0.4s ease-out', 'slide-in-right': 'slideInRight 0.3s ease-out' },
-                    keyframes: {
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideUp: { '0%': { opacity: '0', transform: 'translateY(15px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-                        slideInRight: { '0%': { transform: 'translateX(100%)' }, '100%': { transform: 'translateX(0)' } }
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        body { background-color: #0a0a0a; color: #e4e4e7; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
-
-        .glass-panel {
-            background: rgba(18, 18, 18, 0.7); backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        :root {
+            /* Clean SaaS / Native App Theme */
+            --bg-body: #F8FAFC; 
+            --bg-surface: #FFFFFF; 
+            --primary: #2563EB; 
+            --primary-hover: #1D4ED8;
+            --success: #16A34A; 
+            --danger: #DC2626; 
+            --warning: #D97706;
+            
+            --text-main: #0F172A; 
+            --text-secondary: #475569; 
+            --text-muted: #94A3B8;
+            
+            --border-color: #E2E8F0; 
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-modal: 0 -10px 40px rgba(0, 0, 0, 0.1);
         }
-        .glass-card {
-            background: linear-gradient(145deg, rgba(39,39,42,0.4) 0%, rgba(24,24,27,0.4) 100%);
-            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.03);
-            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-        }
-        .glass-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px -10px rgba(20, 184, 166, 0.15); border-color: rgba(20, 184, 166, 0.3); }
-        .gradient-text { background: linear-gradient(to right, #2dd4bf, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        #global-loader { position: fixed; inset: 0; background: #0a0a0a; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.4s; }
-        .spinner { width: 40px; height: 40px; border: 3px solid rgba(45, 212, 191, 0.1); border-radius: 50%; border-top-color: #2dd4bf; animation: spin 1s ease-in-out infinite; }
+        /* System Fonts for true Native Feel */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; font-size: 14px; -webkit-font-smoothing: antialiased; }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        .hidden { display: none !important; }
+        h1, h2, h3, h4 { font-weight: 600; letter-spacing: -0.01em; color: var(--text-main); }
+        .flex { display: flex; align-items: center; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+
+        /* Sleek Native Loader */
+        #global-loader { position: fixed; inset: 0; background: var(--bg-body); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .spinner { width: 32px; height: 32px; border: 3px solid var(--border-color); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .premium-input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; transition: all 0.3s; }
-        .premium-input:focus { outline: none; border-color: #2dd4bf; box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.1); background: rgba(255, 255, 255, 0.05); }
-
-        .premium-table th { background: rgba(255,255,255,0.02); font-weight: 600; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; color: #a1a1aa; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0.75rem 1rem; }
-        .premium-table tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.2s; }
-        .premium-table tr:hover { background: rgba(255,255,255,0.02); }
-        .premium-table td { padding: 0.75rem 1rem; font-size: 0.85rem; color: #d4d4d8; }
-
-        @media (min-width: 768px) { .premium-table td.actions-cell { white-space: nowrap; min-width: 120px; text-align: right; } }
-        @media (max-width: 767px) {
-            .premium-table, .premium-table tbody, .premium-table tr, .premium-table td { display: block; width: 100%; }
-            .premium-table thead { display: none; }
-            .premium-table tr { margin-bottom: 0.75rem; background: linear-gradient(145deg, rgba(39,39,42,0.4) 0%, rgba(24,24,27,0.4) 100%); border: 1px solid rgba(255,255,255,0.05); border-radius: 0.75rem; padding: 0.5rem; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
-            .premium-table tr:hover { background: linear-gradient(145deg, rgba(39,39,42,0.6) 0%, rgba(24,24,27,0.6) 100%); }
-            .premium-table td { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.03); text-align: right; }
-            .premium-table td:last-child { border-bottom: none; }
-            .premium-table td.actions-cell { flex-direction: column; align-items: stretch; padding-top: 0.75rem; border-bottom: none; }
-            .premium-table td.actions-cell button { width: 100% !important; }
-            .premium-table td::before { content: attr(data-label) ": "; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; color: #a1a1aa; text-align: left; margin-right: 1rem; }
-            .premium-table td.actions-cell::before, .premium-table td.hide-label-mobile::before { display: none !important; }
-            .premium-table td.hide-label-mobile { justify-content: center !important; text-align: center !important; }
-        }
-
-        #toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 5000; display: flex; flex-direction: column; gap: 0.5rem; }
-        .toast { min-width: 250px; padding: 0.75rem 1rem; border-radius: 0.5rem; background: rgba(24, 24, 27, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 5px 20px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 0.75rem; animation: slideInRight 0.3s ease-out forwards; }
-        .nav-item.active { background: rgba(45, 212, 191, 0.1); color: #2dd4bf; border-right: 3px solid #2dd4bf; }
-        .security-lockdown { position: fixed; inset: 0; background: #990000; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; font-weight: bold; display: none; }
-        .batch-row { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 0.5rem; margin-bottom: 0.5rem; transition: all 0.2s; }
-        .batch-row.downloaded { opacity: 0.6; background: rgba(34, 197, 94, 0.05); border-color: rgba(34, 197, 94, 0.2); }
+        /* Clean Cards */
+        .card { background: var(--bg-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); padding: 24px; word-wrap: break-word; }
         
-        #progress-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        #progress-overlay.active { opacity: 1; pointer-events: all; }
-        .progress-bar-container { width: 250px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 15px; }
-        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ea580c, #f5d796); transition: width 0.3s ease; }
-        #render-container { position: fixed; top: -9999px; left: -9999px; width: 0; height: 0; overflow: visible; }
+        /* Modern Native Buttons */
+        .btn { border: none; padding: 12px 16px; border-radius: var(--radius-md); font-weight: 500; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.15s ease; text-align: center; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; background: var(--border-color) !important; color: var(--text-secondary) !important; border: none !important; }
+        .btn:active:not(:disabled) { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-outline { background: var(--bg-surface); color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .btn-outline:hover { background: var(--bg-body); color: var(--text-main); }
+        
+        /* Sub-action buttons */
+        .btn-danger-outline { background: #FEF2F2; color: var(--danger); border: 1px solid #FECACA; }
+        .btn-success-outline { background: #F0FDF4; color: var(--success); border: 1px solid #BBF7D0; }
+
+        /* SaaS Inputs */
+        .input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; width: 100%; }
+        .input-group label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+        .input-field, .select-field { width: 100%; padding: 12px 14px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); font-size: 14px; transition: 0.2s ease; }
+        .input-field:focus, .select-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        
+        /* Native iOS-Style Bottom Sheet Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: 0.25s ease-out; backdrop-filter: blur(2px); }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--bg-surface); width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); max-height: 85vh; padding-bottom: max(16px, env(safe-area-inset-bottom)); box-shadow: var(--shadow-modal); }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        
+        /* Drag Handle Indicator */
+        .modal-handle { width: 40px; height: 4px; background: #CBD5E1; border-radius: 4px; margin: 12px auto 0; }
+        
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 16px; font-weight: 600; }
+        .modal-close { width: 28px; height: 28px; background: var(--bg-body); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); border: 1px solid var(--border-color); }
+        
+        .modal-body { padding: 24px; overflow-y: auto; overflow-x: hidden; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; gap: 12px; background: var(--bg-surface); flex-wrap: wrap; }
+        .modal-footer .btn { flex: 1; min-width: 120px; }
+
+        /* Minimal Badges */
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+        .badge-upcoming { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+        .badge-ongoing { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+        .badge-completed { background: #F0FDF4; color: #15803D; border: 1px solid #BBF7D0; }
+        .badge-danger { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+
+        /* Native Toast Notifications */
+        #toast-container { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 2000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; align-items: center; width: 90%; max-width: 400px; }
+        .toast { background: #1E293B; color: #FFFFFF; padding: 12px 16px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; animation: slideDown 0.3s ease-out; box-shadow: var(--shadow-md); width: 100%; word-wrap: break-word; }
+        .toast.error { background: #DC2626; }
+        .toast.success { background: #16A34A; }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Info Banners inside Modals */
+        .info-banner { font-size: 13px; padding: 12px 16px; border-radius: var(--radius-md); margin-bottom: 20px; display: flex; gap: 10px; align-items: center; line-height: 1.5; width: 100%; }
+        .info-banner.danger { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+        .info-banner.success { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-sm); }
+        .stat-card .stat-title { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; }
+        .stat-card .stat-value { font-size: 24px; font-weight: 600; color: var(--text-main); }
+
+        /* Match / Player Cards injected by JS */
+        .list-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm); overflow: hidden; }
+        .list-card .title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 8px; }
+        .list-card .title { font-size: 15px; font-weight: 600; color: var(--text-main); word-wrap: break-word; flex: 1; }
+        .list-card .subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
+        .list-card .stats-row { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--text-secondary); padding: 10px 12px; background: var(--bg-body); border-radius: var(--radius-md); margin-bottom: 16px; }
+        .list-card .stats-row span { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+        
+        /* Action Grid Fixed to Prevent Overflow */
+        .list-card .action-grid { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+        .list-card .action-grid .btn { flex: 1; min-width: 80px; padding: 10px 4px; font-size: 12px; }
+        
+        .player-row { border-bottom: 1px solid var(--border-color); padding: 16px 0; display: flex; flex-direction: column; gap: 8px; }
+        .player-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .player-row .player-info { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+        .player-row .player-name { font-size: 14px; font-weight: 600; color: var(--text-main); word-break: break-word; flex: 1; }
+        .player-row .player-ign { font-size: 13px; color: var(--text-secondary); }
+        .player-row .action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .player-row .action-row .btn { flex: 1; min-width: 100px; }
+
     </style>
 </head>
-<body class="antialiased font-sans selection:bg-brand-500 selection:text-white">
-
-    <div id="lockdown-screen" class="security-lockdown">
-        <i class="fa-solid fa-skull-crossbones text-6xl mb-3 animate-pulse"></i>
-        <h1 class="text-3xl text-white tracking-widest">ACCESS DENIED</h1>
-        <p class="mt-2 text-lg text-red-200" id="lockdown-reason">Unauthorized User Detected. Incident Logged.</p>
-        <button onclick="location.reload()" class="mt-6 px-5 py-2 bg-black/50 text-white rounded hover:bg-black/80 transition text-sm">Reload System</button>
-    </div>
+<body>
 
     <div id="global-loader">
-        <div class="flex flex-col items-center gap-3">
-            <div class="spinner"></div>
-            <h1 class="text-lg font-bold tracking-widest text-brand-400">TAPCRAVES</h1>
-        </div>
+        <div class="spinner"></div>
     </div>
 
-    <div id="auth-screen" class="min-h-screen flex items-center justify-center relative overflow-hidden hidden">
-        <div class="absolute top-[-10%] left-[-10%] w-[30%] h-[30%] bg-brand-600/20 rounded-full blur-[100px]"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-blue-600/20 rounded-full blur-[100px]"></div>
-        
-        <div class="glass-panel w-full max-w-sm p-6 sm:p-8 rounded-2xl relative z-10 animate-slide-up mx-4">
-            <div class="text-center mb-6">
-                <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 mb-3">
-                    <i class="fa-solid fa-bolt text-lg"></i>
+    <!-- STEP 1: AUTHENTICATION -->
+    <div id="login-screen" class="hidden" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+        <div class="card" style="width: 100%; max-width: 380px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="width: 48px; height: 48px; background: #EFF6FF; color: var(--primary); font-size: 20px; display: flex; align-items: center; justify-content: center; border-radius: 12px; margin: 0 auto 16px;">
+                    <i class="fa-solid fa-user-shield"></i>
                 </div>
-                <h2 class="text-2xl font-bold text-white mb-1">Admin Portal</h2>
-                <p class="text-gray-400 text-xs">Sign in to manage the TapCraves ecosystem</p>
+                <h2 style="font-size: 20px;">Staff Portal</h2>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">Sign in with your staff email</p>
             </div>
             
-            <form id="login-form" class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Email Address</label>
-                    <input type="email" id="admin-email" class="premium-input w-full px-3 py-2.5 rounded-lg text-sm" placeholder="admin@tapcraves.com" required>
+            <form id="host-login-form">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="host-email" class="input-field" required placeholder="staff@domain.com">
                 </div>
-                <div>
-                    <label class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Password</label>
-                    <input type="password" id="admin-password" class="premium-input w-full px-3 py-2.5 rounded-lg text-sm" placeholder="••••••••" required>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="host-pass" class="input-field" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="w-full py-2.5 mt-2 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-semibold rounded-lg shadow-[0_0_15px_rgba(20,184,166,0.3)] transition-all transform hover:scale-[1.02] text-sm">
-                    Authenticate Securely
-                </button>
+                <button type="submit" id="btn-login" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Secure Login</button>
             </form>
-            
-            <p class="mt-5 text-center text-[10px] text-brand-400 flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-shield-halved"></i> Protected by Firebase Auth
-            </p>
         </div>
     </div>
 
-    <div id="app-screen" class="h-screen flex hidden overflow-hidden bg-dark-bg relative">
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+    <!-- STEP 2: CATEGORY SELECTION -->
+    <div id="category-auth-screen" class="hidden" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+        <div class="card" style="width: 100%; max-width: 380px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="width: 48px; height: 48px; background: #F8FAFC; border: 1px solid var(--border-color); color: var(--text-main); font-size: 18px; display: flex; align-items: center; justify-content: center; border-radius: 12px; margin: 0 auto 16px;">
+                    <i class="fa-solid fa-gamepad"></i>
+                </div>
+                <h2 style="font-size: 20px;">Category Access</h2>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">Select category & enter security code</p>
+            </div>
+            
+            <div class="input-group">
+                <label>Select Category</label>
+                <select id="auth-category-select" class="select-field"></select>
+            </div>
+            <div class="input-group">
+                <label>Security Password</label>
+                <input type="password" id="auth-category-pass" class="input-field" placeholder="Enter Category Code">
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%; margin-top: 8px;" onclick="verifyCategoryPass()">Unlock Access</button>
+            <button class="btn btn-outline" style="width: 100%; margin-top: 12px;" onclick="logoutHost()">Logout Staff Account</button>
+        </div>
+    </div>
+
+    <!-- STEP 3: MAIN DASHBOARD -->
+    <div id="app-layout" class="hidden" style="display: flex; flex-direction: column; min-height: 100vh;">
         
-        <aside id="sidebar" class="w-64 glass-panel border-r border-white/5 flex flex-col transition-transform duration-300 absolute md:relative z-40 h-full -translate-x-full md:translate-x-0">
-            <div class="h-16 flex items-center px-4 border-b border-white/5">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-400 to-blue-500 flex items-center justify-center text-white shadow-md">
-                        <i class="fa-solid fa-utensils text-xs"></i>
-                    </div>
-                    <span class="text-lg font-bold tracking-wide text-white">Tap<span class="text-brand-400">Craves</span></span>
+        <header style="background: var(--bg-surface); border-bottom: 1px solid var(--border-color); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 40;">
+            <div style="flex: 1;">
+                <h3 style="font-size: 16px; margin-bottom: 2px;">Staff Dashboard</h3>
+                <span id="header-cat-name" style="font-size: 12px; color: var(--text-secondary); font-weight: 500;">Category</span>
+            </div>
+            <button class="btn btn-outline" style="padding: 8px 12px; font-size: 13px;" onclick="changeCategory()">
+                Change Category
+            </button>
+        </header>
+
+        <div style="max-width: 800px; margin: 0 auto; padding: 20px; width: 100%;">
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-title">Done Today</div>
+                    <div class="stat-value" id="stat-today">0</div>
                 </div>
-                <button id="close-sidebar" class="ml-auto md:hidden text-gray-400 hover:text-white p-1">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+                <div class="stat-card">
+                    <div class="stat-title">Total Managed</div>
+                    <div class="stat-value" id="stat-total">0</div>
+                </div>
             </div>
 
-            <nav class="flex-1 overflow-y-auto py-4 px-2 space-y-1 custom-scrollbar">
-                <p class="px-3 text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2">Overview</p>
-                <a href="#" data-target="dashboard" class="nav-item active flex items-center gap-2.5 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                    <i class="fa-solid fa-chart-pie w-4 text-center"></i><span class="font-medium text-sm">Dashboard</span>
-                </a>
-                
-                <p class="px-3 text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-4 mb-2">Management</p>
-                <a href="#" data-target="restaurants" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                    <i class="fa-solid fa-store w-4 text-center"></i><span class="font-medium text-sm">Restaurants</span>
-                </a>
-                <a href="#" data-target="card-orders" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                    <i class="fa-solid fa-box-open w-4 text-center"></i><span class="font-medium text-sm">Card Orders</span>
-                </a>
-                <a href="#" data-target="delivery" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                    <i class="fa-solid fa-truck-fast w-4 text-center"></i><span class="font-medium text-sm">Delivery</span>
-                </a>
-                <a href="#" data-target="cards" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                    <i class="fa-solid fa-credit-card w-4 text-center"></i><span class="font-medium text-sm">Generated Cards</span>
-                </a>
-                
-                <p class="px-3 text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-4 mb-2">Finances & Users</p>
-                <a href="#" data-target="transactions" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                    <i class="fa-solid fa-money-bill-transfer w-4 text-center"></i><span class="font-medium text-sm">Transactions</span>
-                </a>
-                <a href="#" data-target="users" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                    <i class="fa-solid fa-users w-4 text-center"></i><span class="font-medium text-sm">Users</span>
-                </a>
-                
-                <p class="px-3 text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-4 mb-2">System</p>
-                <a href="#" data-target="settings" class="nav-item flex items-center gap-2.5 px-3 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                    <i class="fa-solid fa-gear w-4 text-center"></i><span class="font-medium text-sm">Settings</span>
-                </a>
-            </nav>
-
-            <div class="p-3 border-t border-white/5">
-                <div class="flex items-center gap-2.5 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition cursor-pointer" onclick="logout()">
-                    <img src="https://ui-avatars.com/api/?name=Super+Admin&background=0D8ABC&color=fff" class="w-8 h-8 rounded-full" alt="Admin">
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-white truncate">Super Admin</p>
-                        <p class="text-[10px] text-gray-400 truncate">System Access</p>
-                    </div>
-                    <i class="fa-solid fa-right-from-bracket text-gray-400 text-sm"></i>
-                </div>
+            <div class="flex-between" style="margin-bottom: 16px;">
+                <h3 style="font-size: 16px;">Active Matches</h3>
             </div>
-        </aside>
 
-        <div class="flex-1 flex flex-col h-full relative w-full">
-            <header class="h-16 glass-panel border-b border-white/5 flex items-center justify-between px-4 z-20">
-                <div class="flex items-center gap-3">
-                    <button id="open-sidebar" class="md:hidden text-gray-400 hover:text-white text-lg p-1.5">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                    <div class="relative hidden sm:block">
-                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                        <input type="text" class="premium-input pl-9 pr-3 py-1.5 w-64 rounded-full text-xs" placeholder="Search Data...">
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="flex items-center gap-1.5 bg-dark-bg/50 px-2.5 py-1 rounded-full border border-white/5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
-                        <span class="text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase tracking-widest">System Live</span>
-                    </div>
-                </div>
-            </header>
-
-            <main class="flex-1 overflow-y-auto p-4 relative">
-                
-                <div id="view-dashboard" class="view-section animate-fade-in block">
-                    <div class="flex justify-between items-end mb-4 md:mb-5">
-                        <div>
-                            <h1 class="text-xl md:text-2xl font-bold text-white mb-0.5">Ecosystem <span class="gradient-text">Overview</span></h1>
-                            <p class="text-gray-400 text-[11px] md:text-xs">Real-time metrics from the TapCraves Firebase Engine.</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-5">
-                        <div class="glass-card p-4 rounded-xl">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-store text-sm"></i>
-                                </div>
-                            </div>
-                            <h3 class="text-gray-400 text-[11px] md:text-xs font-medium mb-0.5">Total Restaurants</h3>
-                            <div class="text-xl md:text-2xl font-bold text-white counter" id="stat-restaurants" data-target="0">0</div>
-                        </div>
-                        <div class="glass-card p-4 rounded-xl">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="w-8 h-8 rounded-lg bg-brand-500/10 text-brand-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-credit-card text-sm"></i>
-                                </div>
-                            </div>
-                            <h3 class="text-gray-400 text-[11px] md:text-xs font-medium mb-0.5">Total Cards Ordered</h3>
-                            <div class="text-xl md:text-2xl font-bold text-white counter" id="stat-cards" data-target="0">0</div>
-                        </div>
-                        <div class="glass-card p-4 rounded-xl">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-wallet text-sm"></i>
-                                </div>
-                            </div>
-                            <h3 class="text-gray-400 text-[11px] md:text-xs font-medium mb-0.5">Total Order Revenue</h3>
-                            <div class="text-xl md:text-2xl font-bold text-white">₹<span class="counter" id="stat-revenue" data-target="0">0</span></div>
-                        </div>
-                        <div class="glass-card p-4 rounded-xl">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="w-8 h-8 rounded-lg bg-green-500/10 text-green-400 flex items-center justify-center">
-                                    <i class="fa-solid fa-users text-sm"></i>
-                                </div>
-                            </div>
-                            <h3 class="text-gray-400 text-[11px] md:text-xs font-medium mb-0.5">Active Customers</h3>
-                            <div class="text-xl md:text-2xl font-bold text-white counter" id="stat-users" data-target="0">0</div>
-                        </div>
-                    </div>
-
-                    <div class="glass-card rounded-xl p-4">
-                        <h3 class="text-sm md:text-base font-semibold text-white mb-3">Live System Analytics</h3>
-                        <div class="w-full h-56 md:h-64">
-                            <canvas id="dashboardChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-restaurants" class="view-section animate-fade-in hidden">
-                    <div class="mb-4">
-                        <h1 class="text-xl md:text-2xl font-bold text-white mb-0.5">Restaurant Management</h1>
-                        <p class="text-gray-400 text-[11px] md:text-xs">Manage registered TapCraves merchants.</p>
-                    </div>
-                    <div class="glass-card rounded-xl">
-                        <div class="w-full overflow-x-auto custom-scrollbar">
-                            <table class="w-full text-left premium-table">
-                                <thead>
-                                    <tr>
-                                        <th>Restaurant Name</th>
-                                        <th>Owner Name</th>
-                                        <th>Contact Details</th>
-                                        <th>Reg. Date</th>
-                                        <th>Status</th>
-                                        <th class="text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="restaurants-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-card-orders" class="view-section animate-fade-in hidden">
-                    <div class="mb-4">
-                        <h1 class="text-xl md:text-2xl font-bold text-white mb-0.5">Card Orders</h1>
-                        <p class="text-gray-400 text-[11px] md:text-xs">TapCraves card batch orders from restaurants.</p>
-                    </div>
-                    <div class="glass-card rounded-xl">
-                        <div class="w-full overflow-x-auto custom-scrollbar">
-                            <table class="w-full text-left premium-table">
-                                <thead>
-                                    <tr>
-                                        <th>Order & Tracking ID</th>
-                                        <th>Restaurant Name</th>
-                                        <th>Card Qty</th>
-                                        <th>Total Amount</th>
-                                        <th>Order Date</th>
-                                        <th>Delivery Status</th>
-                                        <th class="text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="orders-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-delivery" class="view-section animate-fade-in hidden">
-                    <div class="mb-4">
-                        <h1 class="text-xl md:text-2xl font-bold text-white mb-0.5">Delivery Management</h1>
-                        <p class="text-gray-400 text-[11px] md:text-xs">Assign and track dispatches for card batches.</p>
-                    </div>
-                    <div class="glass-card rounded-xl">
-                        <div class="w-full overflow-x-auto custom-scrollbar">
-                            <table class="w-full text-left premium-table">
-                                <thead>
-                                    <tr>
-                                        <th>Tracking ID</th>
-                                        <th>Restaurant Name</th>
-                                        <th>Status</th>
-                                        <th>Expected Date</th>
-                                        <th>Delivery Boy</th>
-                                        <th class="text-right">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="delivery-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-cards" class="view-section animate-fade-in hidden">
-                    <div class="mb-4">
-                        <h1 class="text-xl md:text-2xl font-bold text-white mb-0.5">Card System Search</h1>
-                        <p class="text-gray-400 text-[11px] md:text-xs">Lookup specific physical cards (Coming Soon).</p>
-                    </div>
-                    <div class="glass-card rounded-xl p-6 text-center text-gray-500 italic text-sm">
-                        Real-time granular card status sync is pending deployment...
-                    </div>
-                </div>
-
-                <div id="view-transactions" class="view-section animate-fade-in hidden">
-                    <div class="mb-4">
-                        <h1 class="text-xl md:text-2xl font-bold text-white mb-0.5">System Transactions</h1>
-                        <p class="text-gray-400 text-[11px] md:text-xs">All payments across the ecosystem.</p>
-                    </div>
-                    <div class="glass-card rounded-xl p-6 text-center text-gray-500 italic text-sm">
-                        Real-time transaction sync is pending deployment...
-                    </div>
-                </div>
-
-                <div id="view-users" class="view-section animate-fade-in hidden">
-                    <div class="mb-4">
-                        <h1 class="text-xl md:text-2xl font-bold text-white mb-0.5">User Management</h1>
-                        <p class="text-gray-400 text-[11px] md:text-xs">Customer accounts, balances, and linked cards.</p>
-                    </div>
-                    <div class="glass-card rounded-xl">
-                        <div class="w-full overflow-x-auto custom-scrollbar">
-                            <table class="w-full text-left premium-table">
-                                <thead>
-                                    <tr>
-                                        <th>User Details</th>
-                                        <th>Contact Info</th>
-                                        <th>Linked Card</th>
-                                        <th>Wallet Balance</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="users-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="view-settings" class="view-section animate-fade-in hidden">
-                    <div class="mb-4">
-                        <h1 class="text-xl md:text-2xl font-bold text-white mb-0.5">System Settings</h1>
-                        <p class="text-gray-400 text-[11px] md:text-xs">Admin permissions, database config, and general rules.</p>
-                    </div>
-                    <div class="glass-card rounded-xl p-5 max-w-2xl">
-                        <h3 class="text-sm md:text-base font-semibold text-white mb-4 border-b border-white/5 pb-3">Firebase Database Configurations</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div class="pr-4">
-                                    <h4 class="text-xs font-medium text-white mb-0.5">Maintenance Mode</h4>
-                                    <p class="text-[10px] text-gray-500">Lock the app for updates (Database write rules disabled).</p>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                                    <input type="checkbox" class="sr-only peer">
-                                    <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-500"></div>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+            <div id="host-matches-list" style="display: flex; flex-direction: column;">
+                <!-- Matches injected here -->
+            </div>
         </div>
     </div>
 
     <!-- MODALS -->
-    <div id="delivery-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center opacity-0 transition-opacity duration-300 p-4">
-        <div class="glass-card w-full max-w-sm rounded-xl p-5 relative transform scale-95 transition-transform duration-300" id="delivery-modal-content">
-            <button onclick="closeModal('delivery-modal')" class="absolute top-3 right-3 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h2 class="text-lg font-bold text-white mb-1">Update Delivery Status</h2>
-            <p class="text-[11px] text-gray-400 mb-4">Updates reflect live on merchant dashboard.</p>
-            
-            <form class="space-y-3" onsubmit="event.preventDefault(); submitDelivery();">
-                <div>
-                    <label class="block text-[10px] font-semibold text-gray-400 uppercase mb-1">Status <span class="text-red-500">*</span></label>
-                    <select id="delivery-status" class="premium-input bg-dark-bg w-full px-3 py-2 rounded-lg text-sm outline-none border-gray-700" required>
-                        <option value="Pending">Pending</option>
-                        <option value="Processing">Processing</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Out for Delivery">Out for Delivery</option>
-                        <option value="Delivered">Delivered</option>
+    <div id="toast-container"></div>
+    
+    <!-- Room Details Modal -->
+    <div class="modal-overlay" id="modal-room">
+        <div class="modal-content">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <h3>Room Details</h3>
+                <div class="modal-close" onclick="closeModal('modal-room')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="room-t-id">
+                
+                <div class="input-group">
+                    <label>Room Release Time (Auto Reveal)</label>
+                    <input type="datetime-local" id="room-time" class="input-field">
+                </div>
+                <div class="input-group">
+                    <label>Game Room ID</label>
+                    <input type="text" id="room-id" class="input-field" placeholder="Enter Game Room ID">
+                </div>
+                <div class="input-group">
+                    <label>Game Password</label>
+                    <input type="text" id="room-pass" class="input-field" placeholder="Enter Game Password">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveRoomDetails()">Save Room Info</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Match Status Modal -->
+    <div class="modal-overlay" id="modal-status">
+        <div class="modal-content">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <h3>Match Status</h3>
+                <div class="modal-close" onclick="closeModal('modal-status')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="status-t-id">
+                <div class="input-group">
+                    <label>Current Status</label>
+                    <select id="status-t-val" class="select-field">
+                        <option value="Upcoming">Upcoming (Waiting)</option>
+                        <option value="Ongoing">Ongoing (Live Match)</option>
+                        <option value="Completed">Completed (Match Finished)</option>
+                        <option value="Cancelled">Cancelled</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-[10px] font-semibold text-gray-400 uppercase mb-1">Tracking ID</label>
-                    <input type="text" id="delivery-tracking-id" class="premium-input w-full px-3 py-2 rounded-lg text-sm font-mono tracking-wider text-brand-400" placeholder="e.g. BLUEDART123">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-semibold text-gray-400 uppercase mb-1">Expected Date <span class="text-red-500">*</span></label>
-                    <input type="date" id="delivery-date" class="premium-input w-full px-3 py-2 rounded-lg text-sm" required>
-                </div>
-                <div class="flex gap-2">
-                    <div class="flex-1">
-                        <label class="block text-[10px] font-semibold text-gray-400 uppercase mb-1">Delivery Boy</label>
-                        <input type="text" id="delivery-boy-name" class="premium-input w-full px-3 py-2 rounded-lg text-sm" placeholder="Name">
-                    </div>
-                    <div class="flex-1">
-                        <label class="block text-[10px] font-semibold text-gray-400 uppercase mb-1">Phone</label>
-                        <input type="tel" id="delivery-boy-phone" class="premium-input w-full px-3 py-2 rounded-lg text-sm" placeholder="Number">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-semibold text-gray-400 uppercase mb-1">Message</label>
-                    <textarea id="delivery-message" rows="2" class="premium-input w-full px-3 py-2 rounded-lg text-sm" placeholder="Notes..."></textarea>
-                </div>
-                <div class="pt-2 flex gap-2 justify-end">
-                    <button type="button" onclick="closeModal('delivery-modal')" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:bg-white/5 transition">Cancel</button>
-                    <button type="submit" class="px-4 py-1.5 bg-brand-500 hover:bg-brand-400 text-white rounded-lg text-xs font-semibold shadow-md transition">Update</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="batch-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center opacity-0 transition-opacity duration-300 p-4">
-        <div class="glass-card w-full max-w-xl rounded-xl p-5 relative transform scale-95 transition-transform duration-300 max-h-[85vh] flex flex-col" id="batch-modal-content">
-            <button onclick="closeModal('batch-modal')" class="absolute top-3 right-3 text-gray-400 hover:text-white z-10"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h2 class="text-xl font-bold text-white mb-1">Smart Batch PDF Downloader</h2>
-            <p class="text-xs text-gray-400 mb-4">Cards are automatically grouped into A4 batches (5 Cards / 10 Faces). Tight-Grid FOLD layout applied.</p>
-            
-            <div class="mb-4 bg-white/5 p-3 rounded-lg border border-white/10">
-                <label for="custom-logo-upload" class="block text-[10px] font-semibold text-gray-400 uppercase mb-2">Optional: Upload Custom Brand Logo (e.g., brand.png)</label>
-                <input type="file" accept="image/png, image/jpeg" id="custom-logo-upload" class="text-sm text-gray-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-brand-500/20 file:text-brand-400 hover:file:bg-brand-500/30 cursor-pointer w-full">
             </div>
-
-            <div id="batch-list-container" class="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-1.5 pb-2"></div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveMatchStatus()">Update Status</button>
+            </div>
         </div>
     </div>
 
-    <div id="progress-overlay">
-        <div class="text-center">
-            <i class="fa-solid fa-wand-magic-sparkles text-3xl text-brand-400 mb-3 animate-pulse"></i>
-            <h3 class="text-lg font-bold text-white tracking-wide" id="progress-text">Rendering Cards... 0%</h3>
-            <p class="text-[11px] text-gray-400 mt-1">Processing ultra high-resolution vectors. Please wait.</p>
-            <div class="progress-bar-container"><div class="progress-bar-fill" id="progress-bar-fill"></div></div>
+    <!-- Players Joined List Modal -->
+    <div class="modal-overlay" id="modal-players">
+        <div class="modal-content" style="max-height: 90vh;">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <h3>Joined Players <span class="badge" id="players-count" style="background:var(--border-color); color:var(--text-main); margin-left:8px;">0</span></h3>
+                <div class="modal-close" onclick="closeModal('modal-players')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+            <div class="modal-body" style="padding: 16px 24px;">
+                <input type="hidden" id="manage-t-id">
+                <div class="input-group">
+                    <input type="text" class="input-field" id="search-players" placeholder="Search by Slot, IGN or Name..." onkeyup="renderPlayersList()">
+                </div>
+                
+                <div id="players-list-container" style="display: flex; flex-direction: column;">
+                    <!-- Players render here -->
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="render-container"></div>
-    <div id="toast-container"></div>
+    <!-- Refund Modal -->
+    <div class="modal-overlay" id="modal-refund">
+        <div class="modal-content">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <h3>Process Refund</h3>
+                <div class="modal-close" onclick="closeModal('modal-refund')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+            <div class="modal-body">
+                <div class="info-banner danger">
+                    <i class="fa-solid fa-circle-info"></i> 
+                    <div>Max Refund Allowed (Entry Fee): <strong id="refund-max-limit">0</strong> Coins</div>
+                </div>
+                <input type="hidden" id="refund-u-id">
+                <div class="input-group">
+                    <label>Refund Amount (Coins)</label>
+                    <input type="number" id="refund-amount" class="input-field" placeholder="Enter Amount">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger-outline" style="border: none; background: #DC2626; color: white;" id="btn-confirm-refund" onclick="confirmRefund()">Confirm Refund</button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Award Winnings Modal -->
+    <div class="modal-overlay" id="modal-award">
+        <div class="modal-content">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <h3>Distribute Prize</h3>
+                <div class="modal-close" onclick="closeModal('modal-award')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+            <div class="modal-body">
+                <div class="info-banner success">
+                    <i class="fa-solid fa-trophy"></i>
+                    <div>
+                        Team Mode: <strong id="award-team-size">Solo</strong><br>
+                        Max Limit Per Player: <strong id="award-max-limit">0</strong> Coins
+                    </div>
+                </div>
+                <input type="hidden" id="award-u-id">
+                <div class="input-group">
+                    <label>Winning Amount (Coins)</label>
+                    <input type="number" id="award-amount" class="input-field" placeholder="Enter Winning Amount">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success-outline" style="border: none; background: #16A34A; color: white;" id="btn-confirm-award" onclick="confirmAward()">Add Winnings to Wallet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE SCRIPT -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyB49ap7eeOKV-2bnzZ8LzrznjhU990UmtQ",
-            authDomain: "tap-crabe.firebaseapp.com",
-            databaseURL: "https://tap-crabe-default-rtdb.firebaseio.com",
-            projectId: "tap-crabe",
-            storageBucket: "tap-crabe.firebasestorage.app",
-            messagingSenderId: "211890731218",
-            appId: "1:211890731218:web:2bcae1f8d26fddfe0f950b"
+            apiKey: "AIzaSyBElxrl7movpnFOxaUjWqrqBGhWVkaS3jw",
+            authDomain: "riser-tournament.firebaseapp.com",
+            databaseURL: "https://riser-tournament-default-rtdb.firebaseio.com",
+            projectId: "riser-tournament",
+            storageBucket: "riser-tournament.firebasestorage.app"
         };
 
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig); 
         const auth = getAuth(app);
         const db = getDatabase(app);
+        const $ = id => document.getElementById(id);
+        
+        let tournamentsState = {};
+        let categoriesState = {};
+        window.staffUid = null;
+        window.currentCategory = null;
+        let mainListenersAttached = false;
 
-        window.firebaseApp = app; window.auth = auth; window.db = db;
-        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-        window.signOut = signOut; window.onAuthStateChanged = onAuthStateChanged;
-        window.onValue = onValue; window.update = update; window.ref = ref; window.get = get;
-    </script>
-
-    <script>
-        let globalRestaurants = {}; let globalOrders = {}; let globalCustomers = {};
-        let currentEditingOrderId = null; let listenersAttached = false;
-        let customLogoBase64 = null;
-
-        // Ultra-robust text fitting function to ensure nothing gets cut off
-        function applyFitText(element, maxWidth, defaultFontSize, minFontSize = 8) {
-            if (!element) return;
-            element.style.fontSize = defaultFontSize + 'px';
-            element.style.whiteSpace = 'nowrap';
-            
-            // Store original display properties to restore them later
-            const origDisplay = element.style.display;
-            const origWidth = element.style.width;
-            
-            // Force inline-block and auto width to measure the TRUE natural width
-            element.style.display = 'inline-block';
-            element.style.width = 'auto';
-            
-            let currentSize = defaultFontSize;
-            
-            // Loop and reduce size until the actual width is safely inside our maxWidth
-            while (element.offsetWidth > maxWidth && currentSize > minFontSize) {
-                currentSize -= 0.5;
-                element.style.fontSize = currentSize + 'px';
-            }
-            
-            // Restore original styles
-            element.style.display = origDisplay;
-            element.style.width = origWidth;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const logoUpload = document.getElementById('custom-logo-upload');
-            if (logoUpload) {
-                logoUpload.addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => { customLogoBase64 = event.target.result; };
-                        reader.readAsDataURL(file);
-                    } else { customLogoBase64 = null; }
-                });
-            }
-
-            setTimeout(() => {
-                const loader = document.getElementById('global-loader');
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; document.getElementById('auth-screen').classList.remove('hidden'); }, 400);
-            }, 800);
-
-            initChart();
-
-            setTimeout(() => {
-                if (window.onAuthStateChanged && window.auth) {
-                    window.onAuthStateChanged(window.auth, async (user) => {
-                        if (user) {
-                            try {
-                                const adminRef = window.ref(window.db, `admins/${user.uid}`);
-                                const snapshot = await window.get(adminRef);
-                                if (snapshot.exists()) {
-                                    document.getElementById('auth-screen').classList.add('hidden');
-                                    document.getElementById('app-screen').classList.remove('hidden');
-                                    
-                                    if (!history.state) {
-                                        const hash = window.location.hash.replace('#', '') || 'dashboard';
-                                        history.replaceState({ view: hash }, '', '#' + hash);
-                                        switchView(hash, false);
-                                    } else { switchView(history.state.view, false); }
-                                    initDataListeners();
-                                } else {
-                                    await window.signOut(window.auth); triggerLockdown("User ID not found in Admin database.");
-                                }
-                            } catch(err) {
-                                console.error(err); await window.signOut(window.auth); triggerLockdown("Database access denied.");
-                            }
-                        } else {
-                            document.getElementById('app-screen').classList.add('hidden');
-                            document.getElementById('auth-screen').classList.remove('hidden');
-                        }
-                    });
-                }
-            }, 1000); 
-        });
-
-        function triggerLockdown(reasonStr = "Unauthorized User Detected.") {
-            document.getElementById('auth-screen').classList.add('hidden'); document.getElementById('app-screen').classList.add('hidden');
-            document.getElementById('lockdown-reason').innerText = reasonStr; document.getElementById('lockdown-screen').style.display = 'flex';
-        }
-
-        function initDataListeners() {
-            if(listenersAttached) return; listenersAttached = true;
-            window.onValue(window.ref(window.db, 'restaurants'), (snapshot) => {
-                globalRestaurants = snapshot.val() || {}; renderRestaurants(); renderOrders(); renderDelivery(); updateDashboard();
-            });
-            window.onValue(window.ref(window.db, 'orders'), (snapshot) => {
-                globalOrders = snapshot.val() || {}; renderOrders(); renderDelivery(); updateDashboard();
-            });
-            window.onValue(window.ref(window.db, 'customers'), (snapshot) => {
-                globalCustomers = snapshot.val() || {}; renderUsers(); updateDashboard();
-            });
-        }
-
-        function getStatusBadge(status) {
-            status = status || 'Pending';
-            let classes = "px-2 py-0.5 rounded text-[10px] font-semibold uppercase border";
-            if(status === 'Delivered' || status === 'Active' || status === 'Approved') return `<span class="${classes} bg-green-500/10 text-green-400 border-green-500/20">${status}</span>`;
-            if(status === 'Pending' || status === 'Processing') return `<span class="${classes} bg-yellow-500/10 text-yellow-400 border-yellow-500/20">${status}</span>`;
-            if(status === 'Shipped' || status === 'Out for Delivery') return `<span class="${classes} bg-blue-500/10 text-blue-400 border-blue-500/20">${status}</span>`;
-            return `<span class="${classes} bg-gray-500/10 text-gray-400 border-gray-500/20">${status}</span>`;
-        }
-
-        function renderRestaurants() {
-            const tbody = document.getElementById('restaurants-table-body'); if(!tbody) return;
-            tbody.innerHTML = '';
-            const entries = Object.entries(globalRestaurants);
-            if(entries.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="text-center italic text-gray-500 py-4 hide-label-mobile">No restaurants registered yet.</td></tr>`; return; }
-            for(const [restId, rest] of entries) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td data-label="Name" class="font-medium">${rest.name || 'Unnamed'}</td>
-                    <td data-label="Owner">${rest.owner || 'N/A'}</td>
-                    <td data-label="Contact" class="text-right md:text-left">${rest.email || 'N/A'}<br><span class="text-[10px] text-brand-400 font-bold">${rest.mobile || 'N/A'}</span></td>
-                    <td data-label="Reg. Date">${rest.createdAt || 'N/A'}</td>
-                    <td data-label="Status">${getStatusBadge(rest.status || 'Active')}</td>
-                    <td data-label="Actions" class="actions-cell">
-                        <button class="bg-white/5 md:bg-transparent border border-white/5 md:border-none text-gray-300 hover:text-white hover:bg-white/10 transition px-3 py-1.5 rounded-lg w-full md:w-auto flex items-center justify-center gap-1.5 text-xs font-medium">
-                            <i class="fa-solid fa-eye"></i> <span class="md:hidden">View Details</span>
-                        </button>
-                    </td>`;
-                tbody.appendChild(tr);
-            }
-        }
-
-        function renderOrders() {
-            const tbody = document.getElementById('orders-table-body'); if(!tbody) return;
-            tbody.innerHTML = '';
-            const entries = Object.entries(globalOrders);
-            if(entries.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="text-center italic text-gray-500 py-4 hide-label-mobile">No card orders found.</td></tr>`; return; }
-            for (const [orderId, order] of entries) {
-                const restName = (globalRestaurants[orderId] && globalRestaurants[orderId].name) ? globalRestaurants[orderId].name : 'Unnamed';
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td data-label="Order & ID" class="text-[10px] font-mono text-gray-400">Ord: ${orderId.substring(0, 8)}...<br><span class="text-brand-400 font-bold tracking-wider">TRK: ${order.trackingId || 'N/A'}</span></td>
-                    <td data-label="Name" class="font-medium text-white">${restName}</td>
-                    <td data-label="Qty">${order.qty || 0}</td>
-                    <td data-label="Amount" class="font-bold text-green-400">₹${order.totalAmount || order.total || 0}</td>
-                    <td data-label="Date" class="text-xs">${order.date || 'N/A'}</td>
-                    <td data-label="Status">${getStatusBadge(order.status)}</td>
-                    <td data-label="Actions" class="actions-cell">
-                        <button onclick="openBatchModal('${orderId}')" class="bg-brand-500/20 text-brand-400 hover:bg-brand-500/30 transition px-3 py-1.5 rounded-lg text-xs font-semibold w-full md:w-auto flex items-center justify-center md:inline-flex">
-                            <i class="fa-solid fa-layer-group mr-1.5"></i> Cards
-                        </button>
-                    </td>`;
-                tbody.appendChild(tr);
-            }
-        }
-
-        function renderDelivery() {
-            const tbody = document.getElementById('delivery-table-body'); if(!tbody) return;
-            tbody.innerHTML = '';
-            const entries = Object.entries(globalOrders);
-            if(entries.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="text-center italic text-gray-500 py-4 hide-label-mobile">No delivery data available.</td></tr>`; return; }
-            for (const [orderId, order] of entries) {
-                const restName = (globalRestaurants[orderId] && globalRestaurants[orderId].name) ? globalRestaurants[orderId].name : 'Unnamed';
-                const boyInfo = (order.deliveryBoyName && order.deliveryBoyPhone) 
-                    ? `<div class="flex flex-col text-right md:text-left"><span class="text-gray-300 font-medium text-[11px] break-words">${order.deliveryBoyName}</span><span class="text-gray-500 text-[10px]">${order.deliveryBoyPhone}</span></div>` 
-                    : '<span class="text-gray-500 italic text-[10px]">Unassigned</span>';
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td data-label="ID" class="text-[11px] font-mono text-brand-400 font-bold">${order.trackingId || 'N/A'}</td>
-                    <td data-label="Name" class="font-medium text-white">${restName}</td>
-                    <td data-label="Status">${getStatusBadge(order.status)}</td>
-                    <td data-label="Date" class="text-gray-300 text-xs">${order.expectedDate || '<span class="italic text-gray-500">Pending</span>'}</td>
-                    <td data-label="Agent" class="flex justify-end md:justify-start ml-auto md:ml-0">${boyInfo}</td>
-                    <td data-label="Action" class="actions-cell">
-                        <button onclick="openDeliveryModal('${orderId}')" class="bg-white/5 text-gray-300 hover:bg-white/10 px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-white/5 w-full flex items-center justify-center md:inline-flex">
-                            <i class="fa-solid fa-pen mr-1.5"></i> Update
-                        </button>
-                    </td>`;
-                tbody.appendChild(tr);
-            }
-        }
-
-        function renderUsers() {
-            const tbody = document.getElementById('users-table-body'); if(!tbody) return;
-            tbody.innerHTML = '';
-            const entries = Object.entries(globalCustomers);
-            if(entries.length === 0) { tbody.innerHTML = `<tr><td colspan="4" class="text-center italic text-gray-500 py-4 hide-label-mobile">No users found.</td></tr>`; return; }
-            for (const [userId, user] of entries) {
-                const name = user.name || 'Unknown User'; const initials = name.substring(0,2).toUpperCase();
-                const linkedCardHtml = user.linkedCardId ? `<span class="font-mono text-[10px] text-brand-400 bg-brand-500/10 px-1.5 py-0.5 rounded inline-block">${user.linkedCardId}</span>` : '<span class="text-gray-500 italic text-[10px]">Unlinked</span>';
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td data-label="User">
-                        <div class="flex items-center justify-end md:justify-start gap-2 w-full md:w-auto">
-                            <div class="w-6 h-6 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-[10px] shrink-0">${initials}</div>
-                            <span class="font-medium text-white truncate max-w-[120px] block text-xs">${name}</span>
-                        </div>
-                    </td>
-                    <td data-label="Contact" class="text-[10px] text-gray-400 text-right md:text-left">${user.email || 'No email'}<br><span class="text-gray-500">${user.phone || 'No phone'}</span></td>
-                    <td data-label="Card" class="flex justify-end md:justify-start">${linkedCardHtml}</td>
-                    <td data-label="Balance" class="font-bold text-white text-xs">₹${user.walletBalance || 0}</td>`;
-                tbody.appendChild(tr);
-            }
-        }
-
-        function updateDashboard() {
-            let tRest = Object.keys(globalRestaurants).length; let tRev = 0; let tCards = 0; let tUsers = Object.keys(globalCustomers).length;
-            for (const order of Object.values(globalOrders)) { tRev += Number(order.totalAmount || order.total || 0); tCards += Number(order.qty || 0); }
-            updateStat('stat-restaurants', tRest); updateStat('stat-cards', tCards); updateStat('stat-revenue', tRev); updateStat('stat-users', tUsers);
-        }
-
-        function updateStat(id, endValue) {
-            const el = document.getElementById(id); if(!el) return;
-            el.setAttribute('data-target', endValue);
-            const target = +endValue; const current = +el.innerText.replace(/,/g, '');
-            if (current === target) return;
-            const steps = 15; const inc = (target - current) / steps; let currentStep = 0;
-            const timer = setInterval(() => {
-                currentStep++; const newValue = Math.ceil(current + (inc * currentStep));
-                if (currentStep >= steps) { el.innerText = target.toLocaleString(); clearInterval(timer); }
-                else { el.innerText = newValue.toLocaleString(); }
-            }, 30);
-        }
-
-        function openDeliveryModal(orderId) {
-            currentEditingOrderId = orderId; const order = globalOrders[orderId];
-            document.getElementById('delivery-status').value = order.status || 'Pending';
-            document.getElementById('delivery-tracking-id').value = order.trackingId || ''; 
-            document.getElementById('delivery-date').value = order.expectedDate || '';
-            document.getElementById('delivery-boy-name').value = order.deliveryBoyName || '';
-            document.getElementById('delivery-boy-phone').value = order.deliveryBoyPhone || '';
-            document.getElementById('delivery-message').value = order.deliveryMessage || '';
-            openModal('delivery-modal');
-        }
-
-        function submitDelivery() {
-            const status = document.getElementById('delivery-status').value;
-            const trackingId = document.getElementById('delivery-tracking-id').value; 
-            const expectedDate = document.getElementById('delivery-date').value;
-            const deliveryBoyName = document.getElementById('delivery-boy-name').value;
-            const deliveryBoyPhone = document.getElementById('delivery-boy-phone').value;
-            const deliveryMessage = document.getElementById('delivery-message').value;
-            
-            if(currentEditingOrderId && window.update && window.ref && window.db) {
-                const btn = document.querySelector('#delivery-modal form button[type="submit"]');
-                const prevText = btn.innerHTML; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-                const order = globalOrders[currentEditingOrderId]; const history = order.history || {};
-                const nowStr = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }); 
-                history[status] = nowStr;
-                
-                window.update(window.ref(window.db, 'orders/' + currentEditingOrderId), {
-                    status, trackingId: trackingId || order.trackingId, expectedDate, deliveryBoyName, deliveryBoyPhone, deliveryMessage, history
-                }).then(() => { closeModal('delivery-modal'); showToast('Delivery updated', 'success'); })
-                .catch(err => showToast(err.message, 'error')).finally(() => btn.innerHTML = prevText);
-            }
-        }
-
-        let activeBatchesCache = []; let activeOrderId = null;
-        function openBatchModal(orderId) {
-            const order = globalOrders[orderId];
-            if (!order || !order.generatedCards || order.generatedCards.length === 0) { showToast("No generated cards found.", "error"); return; }
-            activeOrderId = orderId; const cards = order.generatedCards; activeBatchesCache = [];
-            for (let i = 0; i < cards.length; i += 5) activeBatchesCache.push(cards.slice(i, i + 5));
-            const container = document.getElementById('batch-list-container'); container.innerHTML = '';
-            activeBatchesCache.forEach((batch, idx) => {
-                const s = (idx * 5) + 1; const e = s + batch.length - 1;
-                const row = document.createElement('div'); row.className = 'batch-row'; row.id = `batch-row-${idx}`;
-                row.innerHTML = `
-                    <div><h4 class="text-white font-bold text-xs mb-0.5">Batch ${idx + 1}</h4><p class="text-gray-400 text-[10px]">Cards ${s} to ${e} (${batch.length})</p></div>
-                    <button id="batch-btn-${idx}" onclick="downloadBatch(${idx})" class="bg-brand-500/20 text-brand-400 hover:bg-brand-500 hover:text-white transition px-3 py-1.5 rounded-lg text-[11px] font-semibold flex items-center shadow-md border border-brand-500/30"><i class="fa-solid fa-download mr-1.5"></i> PDF</button>`;
-                container.appendChild(row);
-            });
-            openModal('batch-modal');
-        }
-
-        function createCardFront(cardId, rest, logoBase64) {
-            const el = document.createElement('div');
-            el.style.width = '1000px'; 
-            el.style.height = '631px'; 
-            el.style.position = 'relative'; 
-            el.style.borderRadius = '0px'; 
-            el.style.overflow = 'hidden'; 
-            el.style.fontFamily = '"Plus Jakarta Sans", sans-serif'; 
-            el.style.color = '#111111'; 
-            el.style.boxSizing = 'border-box';
-            // Luxurious White Theme
-            el.style.backgroundColor = '#ffffff';
-            el.style.border = '1px solid #eaeaea';
-            
-            const nameParts = (rest.name || 'Restaurant').split(' '); 
-            let titleMain = nameParts[0].toUpperCase(); 
-            let titleSub = nameParts.slice(1).join(' ').toUpperCase(); 
-            if(!titleSub) titleSub = "VIP MEMBER";
-
-            let logoHtml = logoBase64 
-                ? `<img src="${logoBase64}" style="max-height: 48px; max-width: 140px; object-fit: contain; border-radius: 4px;">`
-                : `<div style="width: 48px; height: 48px; background: #ffffff; border-radius: 8px; border: 2px solid #d4af37; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05);"><i class="fa-solid fa-crown" style="color:#d4af37; font-size:24px;"></i></div>`;
-
-            el.innerHTML = `
-                <style>
-                    .vip-text { font-weight: 900 !important; font-family: '"Plus Jakarta Sans", sans-serif'; }
-                    .vip-serif { font-family: 'Cinzel', serif; font-weight: 900 !important; }
-                    .qr-box { background: #ffffff; padding: 16px; border-radius: 16px; border: 2px solid #f0f0f0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; position: relative; width: 280px; height: 280px; box-sizing: border-box; }
-                    /* Force Front QR Match Size */
-                    .qr-front-container img, .qr-front-container canvas { width: 240px !important; height: 240px !important; }
-                </style>
-                <!-- Background base -->
-                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: #ffffff; z-index:1;"></div>
-                
-                <!-- Minimalist Elegant Gold Top Bar -->
-                <div style="position:absolute; top:0; left:0; width:100%; height:8px; background: linear-gradient(90deg, #d4af37, #f5d796, #d4af37); z-index:3;"></div>
-                
-                <div style="position:relative; z-index:10; padding: 64px; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
-                    
-                    <!-- Top Row -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-                        <div style="display: flex; align-items: center; gap: 24px;">
-                            ${logoHtml}
-                            <div style="display: flex; flex-direction: column; justify-content: center;">
-                                <h2 class="vip-text" style="font-size: 42px; margin: 0; letter-spacing: 4px; color: #111111; line-height: 1;">TAP<span style="color: #d4af37;">CRAVES</span></h2>
-                                <p class="vip-text" style="font-size: 16px; color: #888888; margin: 6px 0 0 0; letter-spacing: 8px; text-transform: uppercase;">Premium Tier</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Extra Large Front QR -->
-                        <div class="qr-box">
-                            <div class="qr-front-container"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Bottom Row -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">
-                        
-                        <div style="display: flex; flex-direction: column; gap: 12px;">
-                            <span class="vip-text" style="font-size: 16px; color: #888888; text-transform: uppercase; letter-spacing: 6px;">Membership ID</span>
-                            <span class="vip-text" style="font-family: monospace !important; font-size: 48px; color: #111111; letter-spacing: 12px;">
-                                ${cardId.substring(0,4)}<span style="color:#d4af37;">${cardId.substring(4,8)}</span>${cardId.substring(8,12)}<span style="color:#d4af37;">${cardId.substring(12,16) || '8888'}</span>
-                            </span>
-                        </div>
-                        
-                        <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 12px; width: 450px; text-align: right;">
-                            <h1 class="card-title-main vip-serif" style="color: #111111; letter-spacing: 4px; margin: 0; line-height: 1; width: 100%; display: block; text-transform: uppercase;">${titleMain}</h1>
-                            <h2 class="card-title-sub vip-text" style="color: #555555; letter-spacing: 6px; margin: 0; width: 100%; display: block; text-transform: uppercase;">${titleSub}</h2>
-                        </div>
-                        
-                    </div>
-                </div>`;
-            return el;
-        }
-
-        function createCardBack(cardId, rest) {
-            const el = document.createElement('div');
-            el.style.width = '1000px'; 
-            el.style.height = '631px'; 
-            el.style.position = 'relative'; 
-            el.style.borderRadius = '0px'; 
-            el.style.overflow = 'hidden'; 
-            el.style.fontFamily = '"Plus Jakarta Sans", sans-serif'; 
-            el.style.color = '#111111'; 
-            el.style.backgroundColor = '#ffffff'; 
-            el.style.boxSizing = 'border-box';
-            el.style.border = '1px solid #eaeaea';
-
-            el.innerHTML = `
-                <style>
-                    .vip-text { font-weight: 900 !important; font-family: '"Plus Jakarta Sans", sans-serif'; }
-                    .qr-box { background: #ffffff; padding: 16px; border-radius: 16px; border: 2px solid #f0f0f0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; position: relative; width: 280px; height: 280px; box-sizing: border-box; }
-                    /* Extra Large Back QR */
-                    .qr-back-container img, .qr-back-container canvas { width: 240px !important; height: 240px !important; image-rendering: pixelated; }
-                </style>
-                <!-- Clean White Background -->
-                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: #ffffff; z-index:1;"></div>
-                
-                <!-- Minimalist Elegant Gold Top Bar -->
-                <div style="position:absolute; top:0; left:0; width:100%; height:8px; background: linear-gradient(90deg, #d4af37, #f5d796, #d4af37); z-index:3;"></div>
-                
-                <div style="position: relative; z-index: 10; padding: 64px; display: flex; justify-content: space-between; align-items: center; height: 100%; box-sizing: border-box;">
-                    
-                    <!-- Left Panel: Text Info -->
-                    <div style="display: flex; flex-direction: column; justify-content: center; width: 550px; box-sizing: border-box; gap: 40px;">
-                        
-                        <div>
-                            <h3 class="vip-text" style="font-size: 28px; color: #111111; letter-spacing: 4px; margin: 0 0 16px 0; text-transform: uppercase;">Premium Membership</h3>
-                            <p class="vip-text" style="font-size: 16px; color: #555555; margin: 0; line-height: 1.8; text-align: justify; font-weight: 500 !important;">
-                                This card is the exclusive property of TapCraves and our issuing partner. It is strictly non-transferable and grants access to premium tier benefits. Presentation of this card constitutes acceptance of our elite membership terms.
-                            </p>
-                        </div>
-                        
-                        <div style="background: #fafafa; border-left: 6px solid #d4af37; padding: 24px; border-radius: 0 8px 8px 0;">
-                            <div class="card-support vip-text" style="color: #333333; line-height: 1.8; text-transform: uppercase; font-size: 16px;">SUPPORT: tapcraves@gmail.com</div>
-                            <div class="card-restaurant vip-text" style="color: #333333; line-height: 1.8; text-transform: uppercase; font-size: 16px; margin-top: 8px;">contact.no: ${rest.mobile || 'Not provided'}</div>
-                        </div>
-                        
-                        <div style="margin-top: 16px;">
-                            <span class="card-footer-id vip-text" style="font-family: monospace !important; font-size: 20px; color: #888888; letter-spacing: 6px; text-transform: uppercase; display: block;">ID: ${cardId}</span>
-                        </div>
-                        
-                    </div>
-                    
-                    <!-- Right Panel: Symmetrical Big QR -->
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; box-sizing: border-box;">
-                        <div class="qr-box">
-                            <div class="qr-back-container"></div>
-                        </div>
-                        <p class="vip-text" style="font-size: 18px; color: #111111; margin: 0; letter-spacing: 4px; text-transform: uppercase;">Scan To Access</p>
-                    </div>
-                    
-                </div>`;
-            return el;
-        }
-
-        async function downloadBatch(batchIndex) {
-            const batch = activeBatchesCache[batchIndex]; if (!batch || !activeOrderId) return;
-            const rest = globalRestaurants[activeOrderId] || { name: 'Unnamed Restaurant' };
-            const btn = document.getElementById(`batch-btn-${batchIndex}`); btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>';
-            const overlay = document.getElementById('progress-overlay'); const progressFill = document.getElementById('progress-bar-fill'); const progressText = document.getElementById('progress-text'); const renderContainer = document.getElementById('render-container');
-            overlay.classList.add('active'); renderContainer.innerHTML = '';
-            
-            const totalSteps = (batch.length * 2) + 1; let currentStep = 0;
-            const updateProgress = (msg) => {
-                currentStep++; const p = Math.floor((currentStep / totalSteps) * 100);
-                progressFill.style.width = `${p}%`; progressText.innerText = `${msg} ${p}%`;
-            };
-
-            try {
-                const { jsPDF } = window.jspdf; const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-                const cardWidth = 85.6, cardHeight = 54;
-                
-                // Gap between rows applied here so they are not glued vertically (gives a "normal gap below")
-                const gapY = 4; // 4mm vertical gap
-                const marginX = (210 - (cardWidth * 2)) / 2;
-                
-                // Height = 5 cards + 4 gaps = (54 * 5) + (4 * 4) = 286mm
-                const totalGridHeight = (cardHeight * 5) + (gapY * 4);
-                const marginY = (297 - totalGridHeight) / 2; // Centers the layout perfectly vertically
-
-                for (let i = 0; i < batch.length; i++) {
-                    const cardId = batch[i];
-                    
-                    // Create new page every 5 cards
-                    if (i > 0 && i % 5 === 0) {
-                        doc.addPage();
-                    }
-                    
-                    const row = i % 5;
-                    
-                    const xPosFront = marginX;
-                    const xPosBack = marginX + cardWidth;
-                    const yPos = marginY + (row * (cardHeight + gapY));
-                    
-                    // --- FRONT RENDERING ---
-                    const frontEl = createCardFront(cardId, rest, window.customLogoBase64); renderContainer.appendChild(frontEl);
-                    
-                    // Dynamically apply fitText to prevent text cutting
-                    applyFitText(frontEl.querySelector('.card-title-main'), 430, 32); // Max width safely below container 450px
-                    applyFitText(frontEl.querySelector('.card-title-sub'), 430, 14.4);
-                    
-                    // Ultra HD QR 240x240
-                    new QRCode(frontEl.querySelector('.qr-front-container'), { text: cardId, width: 240, height: 240, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
-                    await new Promise(r => setTimeout(r, 100));
-                    
-                    // HD Rendering Scale set to 5 for premium crisp print quality
-                    const canvasFront = await html2canvas(frontEl, { scale: 5, useCORS: true, backgroundColor: null });
-                    doc.addImage(canvasFront.toDataURL('image/jpeg', 1.0), 'JPEG', xPosFront, yPos, cardWidth, cardHeight);
-                    updateProgress(`Rendering F...`); renderContainer.removeChild(frontEl);
-
-                    // --- BACK RENDERING ---
-                    const backEl = createCardBack(cardId, rest); renderContainer.appendChild(backEl);
-                    
-                    // Dynamically apply fitText to back components
-                    applyFitText(backEl.querySelector('.card-support'), 550, 12.8);
-                    applyFitText(backEl.querySelector('.card-restaurant'), 550, 12.8);
-                    applyFitText(backEl.querySelector('.card-footer-id'), 380, 12.8);
-                    
-                    // Ultra HD QR 240x240
-                    new QRCode(backEl.querySelector('.qr-back-container'), { text: `https://tapcraves.shop/?view=wallet&card=${cardId}`, width: 240, height: 240, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
-                    await new Promise(r => setTimeout(r, 100));
-                    
-                    // HD Rendering Scale set to 5 for premium crisp print quality
-                    const canvasBack = await html2canvas(backEl, { scale: 5, useCORS: true, backgroundColor: null });
-                    doc.addImage(canvasBack.toDataURL('image/jpeg', 1.0), 'JPEG', xPosBack, yPos, cardWidth, cardHeight);
-                    updateProgress(`Rendering B...`); renderContainer.removeChild(backEl);
-                    
-                    // --- GUIDES & SCISSOR LINES ---
-                    
-                    // 1. Horizontal dashed line between rows (placed in the gap)
-                    if (row > 0) {
-                        doc.setDrawColor(180, 180, 180);
-                        doc.setLineWidth(0.1);
-                        doc.setLineDashPattern([1.5, 1.5], 0);
-                        const lineY = yPos - (gapY / 2);
-                        doc.line(marginX - 2, lineY, marginX + (cardWidth * 2) + 2, lineY);
-                    }
-                    
-                    // 2. Vertical Fold Tick Marks (Subtle guides right on the border connecting front & back)
-                    doc.setDrawColor(150, 150, 150);
-                    doc.setLineWidth(0.1);
-                    doc.setLineDashPattern([], 0); // Solid lines for the small ticks
-                    
-                    // Top subtle tick
-                    doc.line(xPosBack, yPos, xPosBack, yPos + 2);
-                    // Center subtle fold alignment dash (exactly middle to guide scissor/fold perfectly)
-                    doc.line(xPosBack, yPos + (cardHeight / 2) - 2, xPosBack, yPos + (cardHeight / 2) + 2);
-                    // Bottom subtle tick
-                    doc.line(xPosBack, yPos + cardHeight - 2, xPosBack, yPos + cardHeight);
-                }
-
-                updateProgress('Finalizing...'); doc.save(`Order_${activeOrderId.substring(0,6)}_Batch_${batchIndex+1}.pdf`);
-                setTimeout(() => {
-                    overlay.classList.remove('active'); progressFill.style.width = '0%';
-                    btn.className = "bg-green-500/10 text-green-400 px-3 py-1.5 rounded-lg text-[11px] font-semibold flex items-center shadow-md border border-green-500/20";
-                    btn.innerHTML = '<i class="fa-solid fa-check mr-1.5"></i> ✓'; btn.disabled = true;
-                    document.getElementById(`batch-row-${batchIndex}`).classList.add('downloaded'); showToast(`Batch downloaded!`, 'success');
-                }, 1000);
-            } catch (err) {
-                console.error(err); overlay.classList.remove('active'); btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-rotate-right mr-1.5"></i> Retry'; showToast("Failed to generate PDF.", "error");
-            }
-        }
-
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault(); const email = document.getElementById('admin-email').value; const password = document.getElementById('admin-password').value;
-            const btn = e.target.querySelector('button'); const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...';
-            try {
-                if (!window.signInWithEmailAndPassword || !window.auth) throw new Error("Firebase initializing...");
-                const userCred = await window.signInWithEmailAndPassword(window.auth, email, password);
-                const adminRef = window.ref(window.db, `admins/${userCred.user.uid}`);
-                const snapshot = await window.get(adminRef);
-                if (snapshot.exists()) showToast('Welcome back, Admin', 'success');
-                else { await window.signOut(window.auth); triggerLockdown("Access Denied: Not Admin."); btn.innerHTML = originalText; }
-            } catch (error) { showToast(error.message || "Login failed.", 'error'); btn.innerHTML = originalText; }
-        });
-
-        async function logout() {
-            try { if (window.signOut && window.auth) await window.signOut(window.auth); showToast('Logged out', 'info'); document.getElementById('login-form').querySelector('button').innerHTML = 'Authenticate Securely'; document.getElementById('login-form').reset(); } 
-            catch(error) { showToast(error.message, 'error'); }
-        }
-
-        const navItems = document.querySelectorAll('.nav-item'); const views = document.querySelectorAll('.view-section');
-        function switchView(targetView, pushToHistory = true) {
-            navItems.forEach(n => { if (n.getAttribute('data-target') === targetView) n.classList.add('active'); else n.classList.remove('active'); });
-            views.forEach(view => { if(view.id === `view-${targetView}`) view.classList.remove('hidden'); else view.classList.add('hidden'); });
-            if(window.innerWidth < 768) toggleSidebar(false);
-            if (pushToHistory) history.pushState({ view: targetView }, '', '#' + targetView);
-        }
-
-        navItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault(); const targetView = item.getAttribute('data-target'); const currentView = history.state?.view || 'dashboard';
-                if (targetView !== currentView) switchView(targetView, true); else if (window.innerWidth < 768) toggleSidebar(false);
-            });
-        });
-
-        window.addEventListener('popstate', (e) => {
-            if (e.state && e.state.view) switchView(e.state.view, false); else { const targetView = window.location.hash.replace('#', '') || 'dashboard'; switchView(targetView, false); }
-        });
-
-        const sidebar = document.getElementById('sidebar'), sidebarOverlay = document.getElementById('sidebar-overlay');
-        function toggleSidebar(show) {
-            if(show) { sidebar.classList.remove('-translate-x-full'); sidebarOverlay.classList.remove('hidden'); setTimeout(() => sidebarOverlay.classList.remove('opacity-0'), 10); } 
-            else { sidebar.classList.add('-translate-x-full'); sidebarOverlay.classList.add('opacity-0'); setTimeout(() => sidebarOverlay.classList.add('hidden'), 300); }
-        }
-        document.getElementById('open-sidebar').addEventListener('click', () => toggleSidebar(true));
-        document.getElementById('close-sidebar').addEventListener('click', () => toggleSidebar(false));
-        sidebarOverlay.addEventListener('click', () => toggleSidebar(false));
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container'); const toast = document.createElement('div'); toast.className = 'toast';
-            let icon = type === 'success' ? '<i class="fa-solid fa-circle-check"></i>' : type === 'error' ? '<i class="fa-solid fa-circle-exclamation"></i>' : '<i class="fa-solid fa-circle-info"></i>';
-            let color = type === 'success' ? 'text-green-400' : type === 'error' ? 'text-red-400' : 'text-brand-400';
-            toast.innerHTML = `<div class="text-lg ${color}">${icon}</div><div class="text-[11px] font-medium text-white">${message}</div>`;
+        window.openModal = id => $(id).classList.add('active');
+        window.closeModal = id => $(id).classList.remove('active');
+        window.showToast = (msg, type = 'success') => {
+            const container = $('toast-container');
+            const toast = document.createElement('div'); toast.className = `toast ${type}`;
+            toast.innerHTML = type === 'error' ? `<i class="fa-solid fa-circle-exclamation"></i> ${msg}` : `<i class="fa-solid fa-check-circle"></i> ${msg}`;
             container.appendChild(toast);
-            setTimeout(() => { toast.style.animation = 'slideInRight 0.3s ease-in reverse forwards'; setTimeout(() => toast.remove(), 300); }, 3000);
-        }
+            setTimeout(() => { toast.style.animation = 'slideDown 0.3s reverse forwards'; setTimeout(() => toast.remove(), 300); }, 3000);
+        };
 
-        function openModal(id) {
-            const m = document.getElementById(id), c = document.getElementById(`${id}-content`); m.classList.remove('hidden');
-            setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); c.classList.add('scale-100'); }, 10);
-        }
-        function closeModal(id) {
-            const m = document.getElementById(id), c = document.getElementById(`${id}-content`); m.classList.add('opacity-0'); c.classList.remove('scale-100'); c.classList.add('scale-95');
-            setTimeout(() => m.classList.add('hidden'), 300);
-        }
+        // STAFF AUTHENTICATION
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const staffSnap = await get(ref(db, `staff/${user.uid}`));
+                if (staffSnap.exists() && staffSnap.val() === true) {
+                    window.staffUid = user.uid;
+                    $('global-loader').classList.add('hidden'); 
+                    $('login-screen').classList.add('hidden');
+                    loadCategoryAuthScreen();
+                } else { showToast('Access Denied.', 'error'); signOut(auth); }
+            } else {
+                $('global-loader').classList.add('hidden'); $('category-auth-screen').classList.add('hidden');
+                $('app-layout').classList.add('hidden'); $('login-screen').classList.remove('hidden');
+            }
+        });
 
-        function initChart() {
-            const ctx = document.getElementById('dashboardChart').getContext('2d');
-            let gradient = ctx.createLinearGradient(0, 0, 0, 400); gradient.addColorStop(0, 'rgba(45, 212, 191, 0.4)'); gradient.addColorStop(1, 'rgba(45, 212, 191, 0.0)');
-            new Chart(ctx, {
-                type: 'line',
-                data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ data: [12000, 19000, 25000, 28000, 32000, 42500], borderColor: '#2dd4bf', backgroundColor: gradient, borderWidth: 2, pointBackgroundColor: '#0a0a0a', pointBorderColor: '#2dd4bf', pointBorderWidth: 2, pointRadius: 3, fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.03)' }, ticks: { color: '#a1a1aa', font: { size: 10 }, callback: v => '₹' + (v/1000) + 'k' } }, x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: { size: 10 } } } }, interaction: { intersect: false, mode: 'index' } }
+        $('host-login-form').onsubmit = async (e) => {
+            e.preventDefault(); const btn = $('btn-login'); btn.disabled = true; btn.innerText = 'Logging in...';
+            try { await signInWithEmailAndPassword(auth, $('host-email').value, $('host-pass').value); } 
+            catch(err) { showToast('Invalid Credentials!', 'error'); btn.disabled = false; btn.innerText = 'Secure Login'; } 
+        };
+        
+        window.logoutHost = async () => { 
+            localStorage.removeItem('savedStaffCategory'); 
+            localStorage.removeItem('savedStaffPass');
+            await signOut(auth); 
+            window.location.reload(); 
+        };
+
+        // CATEGORY AUTH WITH LOCALSTORAGE
+        function loadCategoryAuthScreen() {
+            get(ref(db, 'categories')).then(snap => {
+                categoriesState = snap.val() || {};
+                const select = $('auth-category-select');
+                select.innerHTML = '<option value="">-- Select Category --</option>';
+                Object.values(categoriesState).forEach(c => select.innerHTML += `<option value="${c.name}">${c.name}</option>`);
+                
+                // Auto-Login Check
+                const savedCat = localStorage.getItem('savedStaffCategory');
+                const savedPass = localStorage.getItem('savedStaffPass');
+                
+                if (savedCat && savedPass) {
+                    const catData = Object.values(categoriesState).find(c => c.name === savedCat);
+                    if (catData && catData.staffPass === savedPass) {
+                        $('auth-category-select').value = savedCat;
+                        $('auth-category-pass').value = savedPass;
+                        verifyCategoryPass(true); // true indicates auto-login
+                        return; // Skip showing the screen
+                    } else {
+                        // Pass mismatch or category deleted, clear storage
+                        localStorage.removeItem('savedStaffCategory');
+                        localStorage.removeItem('savedStaffPass');
+                    }
+                }
+                $('category-auth-screen').classList.remove('hidden');
             });
         }
+
+        window.verifyCategoryPass = (isAutoLogin = false) => {
+            const catName = $('auth-category-select').value, inputPass = $('auth-category-pass').value;
+            if(!catName) return showToast('Please select a category', 'error');
+            const catData = Object.values(categoriesState).find(c => c.name === catName);
+            
+            if(catData && catData.staffPass === inputPass) {
+                // Save to local storage for future auto-login
+                localStorage.setItem('savedStaffCategory', catName);
+                localStorage.setItem('savedStaffPass', inputPass);
+                
+                window.currentCategory = catName;
+                $('category-auth-screen').classList.add('hidden'); 
+                $('app-layout').classList.remove('hidden');
+                $('header-cat-name').innerText = catName; 
+                startMainDashboard();
+            } else { 
+                if(!isAutoLogin) showToast('Incorrect Category Code!', 'error'); 
+            }
+        };
+
+        window.changeCategory = () => { 
+            // Clear storage so it asks again
+            localStorage.removeItem('savedStaffCategory');
+            localStorage.removeItem('savedStaffPass');
+            
+            window.currentCategory = null; 
+            $('auth-category-pass').value = ''; 
+            $('app-layout').classList.add('hidden'); 
+            $('category-auth-screen').classList.remove('hidden'); 
+        };
+
+        const formatForInput = (isoString) => {
+            if (!isoString) return '';
+            const d = new Date(isoString); d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            return d.toISOString().slice(0, 16);
+        };
+
+        // DASHBOARD CORE
+        function startMainDashboard() {
+            if(!mainListenersAttached) {
+                mainListenersAttached = true;
+                onValue(ref(db, 'tournaments'), s => { 
+                    tournamentsState = s.val() || {}; 
+                    if(window.currentCategory) { renderHostMatches(); calculateStaffStats(); if($('modal-players').classList.contains('active')) renderPlayersList(); }
+                });
+                
+                // Start Live Countdown Timers
+                setInterval(updateLiveTimers, 1000);
+            } else { renderHostMatches(); calculateStaffStats(); }
+        }
+
+        // NEW IMPROVED STATS CALCULATOR
+        function calculateStaffStats() {
+            let total = 0, today = 0; 
+            const todayStr = new Date().toDateString();
+            
+            Object.values(tournamentsState).forEach(t => {
+                // Check if match belongs to the current category and is Completed
+                if (t.category === window.currentCategory && t.status === 'Completed') {
+                    total++; // Count for Total Managed
+                    
+                    // Fallback: If completedAt is missing (done by Admin manually), use the match scheduled time.
+                    const checkDate = t.completedAt ? new Date(t.completedAt) : new Date(t.time);
+                    if (checkDate.toDateString() === todayStr) {
+                        today++; // Count for Done Today
+                    }
+                }
+            });
+            $('stat-total').innerText = total; 
+            $('stat-today').innerText = today;
+        }
+
+        // Live Timer Updater Function
+        function updateLiveTimers() {
+            document.querySelectorAll('.match-timer').forEach(el => {
+                const targetTimeStr = el.getAttribute('data-time');
+                const status = el.getAttribute('data-status');
+                
+                if (status === 'Completed') {
+                    el.innerHTML = '<span style="color:var(--text-muted);">Match Ended</span>';
+                    return;
+                }
+                if (!targetTimeStr) {
+                    el.innerHTML = 'Time not set';
+                    return;
+                }
+                
+                const diff = new Date(targetTimeStr) - new Date();
+                
+                if (diff <= 0) {
+                    el.innerHTML = '<span style="color:var(--success);">Room Time Reached / Live</span>';
+                } else {
+                    const h = Math.floor(diff / (1000 * 60 * 60));
+                    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((diff % (1000 * 60)) / 1000);
+                    el.innerHTML = `Room in: ${h}h ${m}m ${s}s`;
+                }
+            });
+        }
+
+        function renderHostMatches() {
+            const list = Object.entries(tournamentsState).filter(([_, t]) => t.category === window.currentCategory).sort((a, b) => new Date(a[1].time) - new Date(b[1].time));
+            $('host-matches-list').innerHTML = list.map(([id, t]) => {
+                let badgeClass = 'badge-upcoming';
+                if(t.status === 'Ongoing') badgeClass = 'badge-ongoing';
+                if(t.status === 'Completed') badgeClass = 'badge-completed';
+                
+                const roomRevealTime = t.roomTime || t.time; // default to match time if roomTime not set
+
+                return `
+                <div class="list-card">
+                    <div class="title-row">
+                        <div class="title">${t.title}</div>
+                        <span class="badge ${badgeClass}">${t.status}</span>
+                    </div>
+                    <div class="subtitle">${new Date(t.time).toLocaleString('en-IN', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'})} • ${t.teamSize||'Solo'}</div>
+                    
+                    <!-- LIVE TIMER FOR ROOM -->
+                    <div style="font-size: 13px; color: var(--warning); margin-bottom: 12px; font-weight: 600; display:flex; align-items:center; gap:6px;">
+                        <i class="fa-solid fa-clock"></i> 
+                        <span class="match-timer" data-time="${roomRevealTime}" data-status="${t.status}">Calculating...</span>
+                    </div>
+
+                    <div class="stats-row">
+                        <span><i class="fa-solid fa-users text-muted"></i> ${t.joined||0}/${t.totalSlots}</span>
+                        <span><i class="fa-solid fa-wallet text-muted"></i> ₹${t.prizePool||0}</span>
+                    </div>
+                    
+                    <div class="action-grid">
+                        <button class="btn btn-outline" onclick="openRoomModal('${id}')"><i class="fa-solid fa-key"></i> Room</button>
+                        <button class="btn btn-outline" onclick="editMatchStatus('${id}')"><i class="fa-solid fa-rotate"></i> Status</button>
+                        <button class="btn btn-outline" onclick="openPlayersModal('${id}')"><i class="fa-solid fa-users"></i> Players</button>
+                    </div>
+                </div>`;
+            }).join('') || '<div style="text-align:center; padding:40px; color:var(--text-muted); font-size:13px;">No active matches in this category.</div>';
+            
+            // Call once immediately to prevent "Calculating..." flicker
+            updateLiveTimers();
+        }
+
+        window.openRoomModal = (id) => { 
+            const t = tournamentsState[id]; $('room-t-id').value = id; 
+            $('room-id').value = t.roomId || ''; $('room-pass').value = t.roomPass || ''; 
+            const defaultRoomTime = new Date(new Date(t.time).getTime() - (15*60000)).toISOString(); 
+            $('room-time').value = formatForInput(t.roomTime || defaultRoomTime); 
+            openModal('modal-room'); 
+        };
+        window.saveRoomDetails = () => { 
+            const id = $('room-t-id').value; 
+            update(ref(db, `tournaments/${id}`), { roomId: $('room-id').value, roomPass: $('room-pass').value, roomTime: new Date($('room-time').value).toISOString() })
+            .then(() => { closeModal('modal-room'); showToast('Room Info Saved', 'success'); });
+        };
+
+        window.editMatchStatus = (id) => { $('status-t-id').value = id; $('status-t-val').value = tournamentsState[id].status || 'Upcoming'; openModal('modal-status'); };
+        window.saveMatchStatus = () => { 
+            const id = $('status-t-id').value, newStatus = $('status-t-val').value, updates = { status: newStatus };
+            if(newStatus === 'Completed' && tournamentsState[id].status !== 'Completed') { updates.completedBy = window.staffUid; updates.completedAt = Date.now(); }
+            update(ref(db, `tournaments/${id}`), updates).then(() => { showToast('Status Updated', 'success'); closeModal('modal-status'); });
+        };
+
+        window.openPlayersModal = (id) => { $('manage-t-id').value = id; $('search-players').value = ''; openModal('modal-players'); renderPlayersList(); };
+        
+        // 🚨 DOUBLE REFUND PROTECTION INTEGRATED HERE 🚨
+        window.renderPlayersList = () => {
+            const tId = $('manage-t-id').value, t = tournamentsState[tId]; if(!t) return;
+            const term = $('search-players').value.toLowerCase(); let players = Object.entries(t.players || {}); 
+            $('players-count').innerText = players.length;
+            
+            if(term) players = players.filter(([_, p]) => (p.username||'').toLowerCase().includes(term) || (p.slot||'').toString().includes(term) || (p.inGameName||p.gameName||'').toLowerCase().includes(term));
+            
+            $('players-list-container').innerHTML = players.map(([uid, p]) => {
+                // Determine Badge
+                let statusBadge = '';
+                if(p.isRefunded) statusBadge = `<span class="badge badge-danger">Refunded</span>`;
+                else if(p.isWinner) statusBadge = `<span class="badge badge-completed">Won ₹${p.won||0}</span>`;
+                
+                // Button Disable Logic
+                const disableBtns = p.isRefunded || p.isWinner ? 'disabled' : '';
+
+                return `
+                <div class="player-row">
+                    <div class="player-info">
+                        <div class="player-name"><span style="color:var(--text-muted); font-weight:normal;">#${p.slot}</span> &nbsp;${p.username}</div>
+                        ${statusBadge}
+                    </div>
+                    <div class="player-ign">IGN: <span style="color:var(--text-main); font-weight:500;">${p.inGameName||p.gameName||'N/A'}</span></div>
+                    
+                    <div class="action-row">
+                        <button class="btn btn-danger-outline" onclick="openRefundModal('${tId}', '${uid}')" ${disableBtns}>
+                            Refund Money
+                        </button>
+                        <button class="btn btn-success-outline" onclick="openAwardModal('${tId}', '${uid}')" ${disableBtns}>
+                            Make Winner
+                        </button>
+                    </div>
+                </div>`;
+            }).join('') || '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:13px;">No players found.</div>';
+        };
+
+        window.openRefundModal = (tId, uid) => {
+            const t = tournamentsState[tId]; window.currentRefundLimit = Number(t.entryFee || 0);
+            $('refund-u-id').value = uid; $('refund-max-limit').innerText = window.currentRefundLimit;
+            $('refund-amount').value = window.currentRefundLimit; 
+            openModal('modal-refund');
+        };
+
+        window.confirmRefund = async () => {
+            const tId = $('manage-t-id').value;
+            const uid = $('refund-u-id').value;
+            const amount = Number($('refund-amount').value);
+            
+            if (amount <= 0) return showToast('Enter valid refund amount', 'error');
+            if (amount > window.currentRefundLimit) return showToast(`Refund cannot exceed Entry Fee`, 'error');
+
+            const btn = $('btn-confirm-refund'); btn.disabled = true; btn.innerText = 'Processing...';
+
+            try {
+                const userSnap = await get(ref(db, `users/${uid}`));
+                if(!userSnap.exists()) throw new Error("User not found!");
+                
+                const currentBalance = Number(userSnap.val().balance || 0);
+                const updates = {};
+                updates[`users/${uid}/balance`] = currentBalance + amount;
+                updates[`tournaments/${tId}/players/${uid}/isRefunded`] = true; // 🚨 Flag Set!
+                
+                await update(ref(db), updates);
+                
+                showToast(`₹${amount} Refunded successfully`, 'success');
+                closeModal('modal-refund');
+            } catch (err) { showToast('Error: ' + err.message, 'error'); } 
+            finally { btn.disabled = false; btn.innerText = 'Confirm Refund'; }
+        };
+
+        window.openAwardModal = (tId, uid) => {
+            const t = tournamentsState[tId]; let maxPrize = Number(t.prizePool || 0);
+            const teamSize = t.teamSize || 'Solo';
+            if (teamSize === 'Duo') maxPrize = maxPrize / 2;
+            if (teamSize === 'Squad') maxPrize = maxPrize / 4;
+            
+            window.currentAwardTid = tId; window.currentAwardLimit = maxPrize;
+            $('award-u-id').value = uid; $('award-team-size').innerText = teamSize;
+            $('award-max-limit').innerText = maxPrize; $('award-amount').value = maxPrize; 
+            openModal('modal-award');
+        };
+
+        window.confirmAward = async () => {
+            const tId = window.currentAwardTid, uid = $('award-u-id').value;
+            const amount = Number($('award-amount').value), maxPrize = window.currentAwardLimit;
+
+            if (amount <= 0) return showToast('Enter valid amount', 'error');
+            if (amount > maxPrize) return showToast(`Prize cannot exceed limit`, 'error');
+
+            const btn = $('btn-confirm-award'); btn.disabled = true; btn.innerText = 'Processing...';
+
+            try {
+                const userSnap = await get(ref(db, `users/${uid}`));
+                if(!userSnap.exists()) throw new Error("User not found!");
+                
+                const userData = userSnap.val();
+                let currentBalance = Number(userData.balance || 0), currentWinnings = Number(userData.winnings || 0); 
+                const updates = {};
+                updates[`users/${uid}/balance`] = currentBalance + amount;
+                updates[`users/${uid}/winnings`] = currentWinnings + amount; 
+                updates[`tournaments/${tId}/players/${uid}/isWinner`] = true;
+                updates[`tournaments/${tId}/players/${uid}/won`] = amount;
+
+                await update(ref(db), updates);
+                showToast(`Prize Added Successfully!`, 'success'); closeModal('modal-award');
+            } catch (err) { showToast('Error: ' + err.message, 'error'); } 
+            finally { btn.disabled = false; btn.innerText = 'Add Winnings to Wallet'; }
+        };
     </script>
 </body>
 </html>
