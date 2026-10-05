@@ -129,6 +129,11 @@
         .player-row .action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
         .player-row .action-row .btn { flex: 1; min-width: 100px; }
 
+        /* RED ALERT PULSE (5 Min Full Slot matches) */
+        .alert-card { border: 2px solid var(--danger) !important; background: #FEF2F2 !important; animation: pulseRed 2s infinite; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+        .alert-timer { font-size: 18px !important; color: var(--danger) !important; font-weight: 800 !important; }
+
     </style>
 </head>
 <body>
@@ -211,10 +216,6 @@
                     <div class="stat-title">Total Managed</div>
                     <div class="stat-value" id="stat-total">0</div>
                 </div>
-            </div>
-
-            <div class="flex-between" style="margin-bottom: 16px;">
-                <h3 style="font-size: 16px;">Active Matches</h3>
             </div>
 
             <div id="host-matches-list" style="display: flex; flex-direction: column;">
@@ -360,7 +361,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, get, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBElxrl7movpnFOxaUjWqrqBGhWVkaS3jw",
@@ -495,8 +496,9 @@
                     if(window.currentCategory) { renderHostMatches(); calculateStaffStats(); if($('modal-players').classList.contains('active')) renderPlayersList(); }
                 });
                 
-                // Start Live Countdown Timers
+                // Start Live Countdown Timers and Auto Refund Processor
                 setInterval(updateLiveTimers, 1000);
+                setInterval(window.processAutoRefunds, 10000);
             } else { renderHostMatches(); calculateStaffStats(); }
         }
 
@@ -549,41 +551,185 @@
             });
         }
 
-        function renderHostMatches() {
-            const list = Object.entries(tournamentsState).filter(([_, t]) => t.category === window.currentCategory).sort((a, b) => new Date(a[1].time) - new Date(b[1].time));
-            $('host-matches-list').innerHTML = list.map(([id, t]) => {
-                let badgeClass = 'badge-upcoming';
-                if(t.status === 'Ongoing') badgeClass = 'badge-ongoing';
-                if(t.status === 'Completed') badgeClass = 'badge-completed';
+        // AUTOMATIC REFUND CHECKER (SAFE & IDEMPOTENT)
+        window.processAutoRefunds = async () => {
+            if (!tournamentsState) return;
+            const now = Date.now();
+
+            for (const [tId, t] of Object.entries(tournamentsState)) {
+                if (!t) continue;
+                if (t.refundProcessed) continue; // Skip if already processed
+
+                const tTime = new Date(t.time).getTime();
+                let shouldRefund = false;
+                let reason = '';
+                let notifTitle = '';
+                let msg = '';
+
+                // Case 1: Match Cancelled
+                if (t.status === 'Cancelled') {
+                    shouldRefund = true; reason = 'MATCH_CANCELLED';
+                    notifTitle = `Match Cancelled — ₹${t.entryFee || 0} Refunded`;
+                    msg = `"${t.title}" was cancelled by the administrator. Your entry fee has been refunded.`;
+                } 
+                // Case 2: Time reached but slots not full
+                else if (t.status === 'Upcoming' && now >= tTime && t.totalSlots > 0 && (t.joined || 0) < t.totalSlots) {
+                    shouldRefund = true;
+                    if (t.totalSlots === 2 && (t.joined || 0) === 1) {
+                        reason = 'OPPONENT_NOT_JOINED';
+                        notifTitle = `Opponent Didn't Join — ₹${t.entryFee || 0} Refunded`;
+                        msg = `Your opponent did not join "${t.title}". Your entry fee has been refunded.`;
+                    } else {
+                        reason = 'SLOT_NOT_FULL';
+                        notifTitle = `Match Refund — ₹${t.entryFee || 0} Credited`;
+                        msg = `Your entry fee for "${t.title}" was refunded because the required slots were not filled before the scheduled start time.`;
+                    }
+                }
+
+                if (shouldRefund) {
+                    // Safety lock with runTransaction
+                    const tRef = ref(db, `tournaments/${tId}/refundProcessed`);
+                    try {
+                        const txResult = await runTransaction(tRef, (currentData) => {
+                            if (currentData === true) return; // Abort if already processed
+                            return true; 
+                        });
+                        
+                        if (!txResult.committed) continue;
+
+                        // Fetch fresh tournament data
+                        const freshT = (await get(ref(db, `tournaments/${tId}`))).val();
+                        if (!freshT) continue;
+                        
+                        const updates = {};
+                        if (freshT.status !== 'Cancelled') {
+                            updates[`tournaments/${tId}/status`] = 'Cancelled';
+                        }
+
+                        if (freshT.players) {
+                            for (const [uid, p] of Object.entries(freshT.players)) {
+                                if (p.refunded || p.isRefunded) continue; // Skip if already refunded
+                                
+                                const uSnap = await get(ref(db, `users/${uid}`));
+                                const u = uSnap.val();
+                                if (!u) continue;
+
+                                const fee = freshT.entryFee || 0;
+                                updates[`users/${uid}/balance`] = (u.balance || 0) + fee;
+                                
+                                const txId = push(ref(db, 'walletHistory')).key;
+                                const dateIso = new Date().toISOString();
+                                
+                                // Rich Transaction Context
+                                updates[`walletHistory/${uid}/${txId}`] = {
+                                    amount: fee, type: 'up', note: `Refund: ${freshT.title}`, date: dateIso,
+                                    matchId: tId, tournamentId: tId, matchTitle: freshT.title, matchImage: freshT.img || '',
+                                    entryFee: fee, reason: reason, refundReason: reason, matchDate: freshT.time,
+                                    matchTime: freshT.time, transactionTime: dateIso, status: 'Refunded'
+                                };
+
+                                // Notification (Persistent)
+                                const notifData = {
+                                    title: notifTitle, message: msg, active: true, read: false, time: Date.now(),
+                                    matchId: tId, tournamentId: tId, matchTitle: freshT.title, matchImage: freshT.img || '',
+                                    amount: fee, reason: reason, type: 'refund'
+                                };
+
+                                updates[`users/${uid}/notification`] = notifData;
+                                const notifId = push(ref(db, 'notifications')).key;
+                                updates[`users/${uid}/notifications/${notifId}`] = { ...notifData };
+
+                                updates[`tournaments/${tId}/players/${uid}/refunded`] = true;
+                                updates[`tournaments/${tId}/players/${uid}/isRefunded`] = true;
+                            }
+                        }
+                        
+                        if (Object.keys(updates).length > 0) {
+                            await update(ref(db), updates);
+                        }
+                    } catch(e) {
+                        console.error("Auto Refund Error for " + tId, e);
+                    }
+                }
+            }
+        };
+
+        function generateMatchCardHTML(id, t, isAlert) {
+            let badgeClass = 'badge-upcoming';
+            if(t.status === 'Ongoing') badgeClass = 'badge-ongoing';
+            if(t.status === 'Completed') badgeClass = 'badge-completed';
+            
+            const roomRevealTime = t.roomTime || t.time; 
+            
+            const cardClass = isAlert ? 'list-card alert-card' : 'list-card';
+            const timerClass = isAlert ? 'match-timer alert-timer' : 'match-timer';
+
+            return `
+            <div class="${cardClass}">
+                <div class="title-row">
+                    <div class="title">${t.title}</div>
+                    <span class="badge ${badgeClass}">${t.status}</span>
+                </div>
+                <div class="subtitle">${new Date(t.time).toLocaleString('en-IN', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'})} • ${t.teamSize||'Solo'}</div>
                 
-                const roomRevealTime = t.roomTime || t.time; // default to match time if roomTime not set
+                <!-- LIVE TIMER FOR ROOM -->
+                <div style="font-size: 13px; color: var(--warning); margin-bottom: 12px; font-weight: 600; display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-clock ${isAlert ? 'fa-beat-fade' : ''}"></i> 
+                    <span class="${timerClass}" data-time="${roomRevealTime}" data-status="${t.status}">Calculating...</span>
+                </div>
 
-                return `
-                <div class="list-card">
-                    <div class="title-row">
-                        <div class="title">${t.title}</div>
-                        <span class="badge ${badgeClass}">${t.status}</span>
-                    </div>
-                    <div class="subtitle">${new Date(t.time).toLocaleString('en-IN', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'})} • ${t.teamSize||'Solo'}</div>
-                    
-                    <!-- LIVE TIMER FOR ROOM -->
-                    <div style="font-size: 13px; color: var(--warning); margin-bottom: 12px; font-weight: 600; display:flex; align-items:center; gap:6px;">
-                        <i class="fa-solid fa-clock"></i> 
-                        <span class="match-timer" data-time="${roomRevealTime}" data-status="${t.status}">Calculating...</span>
-                    </div>
+                <div class="stats-row" ${isAlert ? 'style="background: #FEE2E2;"' : ''}>
+                    <span><i class="fa-solid fa-users text-muted"></i> ${t.joined||0}/${t.totalSlots}</span>
+                    <span><i class="fa-solid fa-wallet text-muted"></i> ₹${t.prizePool||0}</span>
+                </div>
+                
+                <div class="action-grid">
+                    <button class="btn btn-outline" onclick="openRoomModal('${id}')"><i class="fa-solid fa-key"></i> Room</button>
+                    <button class="btn btn-outline" onclick="editMatchStatus('${id}')"><i class="fa-solid fa-rotate"></i> Status</button>
+                    <button class="btn btn-outline" onclick="openPlayersModal('${id}')"><i class="fa-solid fa-users"></i> Players</button>
+                </div>
+            </div>`;
+        }
 
-                    <div class="stats-row">
-                        <span><i class="fa-solid fa-users text-muted"></i> ${t.joined||0}/${t.totalSlots}</span>
-                        <span><i class="fa-solid fa-wallet text-muted"></i> ₹${t.prizePool||0}</span>
-                    </div>
-                    
-                    <div class="action-grid">
-                        <button class="btn btn-outline" onclick="openRoomModal('${id}')"><i class="fa-solid fa-key"></i> Room</button>
-                        <button class="btn btn-outline" onclick="editMatchStatus('${id}')"><i class="fa-solid fa-rotate"></i> Status</button>
-                        <button class="btn btn-outline" onclick="openPlayersModal('${id}')"><i class="fa-solid fa-users"></i> Players</button>
-                    </div>
-                </div>`;
-            }).join('') || '<div style="text-align:center; padding:40px; color:var(--text-muted); font-size:13px;">No active matches in this category.</div>';
+        function renderHostMatches() {
+            const list = Object.entries(tournamentsState)
+                .filter(([_, t]) => t.category === window.currentCategory)
+                .sort((a, b) => new Date(a[1].time) - new Date(b[1].time));
+            
+            const alertMatches = [];
+            const normalMatches = [];
+            const now = Date.now();
+
+            list.forEach(([id, t]) => {
+                const diff = new Date(t.time) - now;
+                const isFull = (t.joined || 0) >= t.totalSlots && t.totalSlots > 0;
+                
+                // If Upcoming, Full, and starting in <= 5 minutes (300000 ms)
+                if (t.status === 'Upcoming' && isFull && diff > 0 && diff <= 300000) {
+                    alertMatches.push([id, t]);
+                } else {
+                    normalMatches.push([id, t]);
+                }
+            });
+
+            let html = '';
+            
+            if (alertMatches.length > 0) {
+                html += `<h3 style="color: var(--danger); margin-bottom: 12px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-triangle-exclamation fa-fade"></i> ACTION REQUIRED (STARTING SOON)</h3>`;
+                html += alertMatches.map(([id, t]) => generateMatchCardHTML(id, t, true)).join('');
+                html += `<hr style="border:0; border-top:1px solid var(--border-color); margin: 20px 0;">`;
+                html += `<h3 style="margin-bottom: 12px; display:flex; align-items:center; gap:8px;">Other Active Matches</h3>`;
+            } else if (normalMatches.length > 0) {
+                html += `<div class="flex-between" style="margin-bottom: 16px;"><h3 style="font-size: 16px;">Active Matches</h3></div>`;
+            }
+
+            html += normalMatches.map(([id, t]) => generateMatchCardHTML(id, t, false)).join('');
+            
+            if (html === '') {
+                html = '<div style="text-align:center; padding:40px; color:var(--text-muted); font-size:13px;">No active matches in this category.</div>';
+            }
+
+            $('host-matches-list').innerHTML = html;
             
             // Call once immediately to prevent "Calculating..." flicker
             updateLiveTimers();
@@ -622,11 +768,11 @@
             $('players-list-container').innerHTML = players.map(([uid, p]) => {
                 // Determine Badge
                 let statusBadge = '';
-                if(p.isRefunded) statusBadge = `<span class="badge badge-danger">Refunded</span>`;
+                if(p.isRefunded || p.refunded) statusBadge = `<span class="badge badge-danger">Refunded</span>`;
                 else if(p.isWinner) statusBadge = `<span class="badge badge-completed">Won ₹${p.won||0}</span>`;
                 
                 // Button Disable Logic
-                const disableBtns = p.isRefunded || p.isWinner ? 'disabled' : '';
+                const disableBtns = p.isRefunded || p.refunded || p.isWinner ? 'disabled' : '';
 
                 return `
                 <div class="player-row">
@@ -657,6 +803,7 @@
 
         window.confirmRefund = async () => {
             const tId = $('manage-t-id').value;
+            const t = tournamentsState[tId];
             const uid = $('refund-u-id').value;
             const amount = Number($('refund-amount').value);
             
@@ -673,7 +820,32 @@
                 const updates = {};
                 updates[`users/${uid}/balance`] = currentBalance + amount;
                 updates[`tournaments/${tId}/players/${uid}/isRefunded`] = true; // 🚨 Flag Set!
+                updates[`tournaments/${tId}/players/${uid}/refunded`] = true;
                 
+                // Rich Transaction Context
+                const fee = amount; 
+                const txId = push(ref(db, 'walletHistory')).key;
+                const dateIso = new Date().toISOString();
+                
+                updates[`walletHistory/${uid}/${txId}`] = {
+                    amount: fee, type: 'up', note: `Refund: ${t.title}`, date: dateIso,
+                    matchId: tId, tournamentId: tId, matchTitle: t.title, matchImage: t.img || '',
+                    entryFee: t.entryFee || 0, reason: 'ADMIN_MANUAL_REFUND', refundReason: 'ADMIN_MANUAL_REFUND',
+                    matchDate: t.time, matchTime: t.time, transactionTime: dateIso, status: 'Refunded'
+                };
+
+                // Notification Context
+                const notifData = {
+                    title: `Match Refund — ₹${fee} Credited`,
+                    message: `Your entry fee for "${t.title}" was manually refunded by the staff.`,
+                    active: true, read: false, time: Date.now(),
+                    matchId: tId, tournamentId: tId, matchTitle: t.title, matchImage: t.img || '',
+                    amount: fee, reason: 'ADMIN_MANUAL_REFUND', type: 'refund'
+                };
+
+                updates[`users/${uid}/notification`] = notifData;
+                updates[`users/${uid}/notifications/${push(ref(db, 'notifications')).key}`] = { ...notifData };
+
                 await update(ref(db), updates);
                 
                 showToast(`₹${amount} Refunded successfully`, 'success');
@@ -696,6 +868,7 @@
 
         window.confirmAward = async () => {
             const tId = window.currentAwardTid, uid = $('award-u-id').value;
+            const t = tournamentsState[tId];
             const amount = Number($('award-amount').value), maxPrize = window.currentAwardLimit;
 
             if (amount <= 0) return showToast('Enter valid amount', 'error');
@@ -714,6 +887,28 @@
                 updates[`users/${uid}/winnings`] = currentWinnings + amount; 
                 updates[`tournaments/${tId}/players/${uid}/isWinner`] = true;
                 updates[`tournaments/${tId}/players/${uid}/won`] = amount;
+
+                // Rich Winning Context
+                const txId = push(ref(db, 'walletHistory')).key;
+                const dateIso = new Date().toISOString();
+
+                updates[`walletHistory/${uid}/${txId}`] = {
+                    amount: amount, type: 'up', note: `Winnings: ${t.title}`, date: dateIso,
+                    matchId: tId, tournamentId: tId, matchTitle: t.title, matchImage: t.img || '',
+                    entryFee: t.entryFee || 0, reason: 'Match Winnings',
+                    matchDate: t.time, matchTime: t.time, transactionTime: dateIso, status: 'Credited', result: 'Winner'
+                };
+
+                const notifData = {
+                    title: `Match Won — ₹${amount} Credited`,
+                    message: `Your winning reward for "${t.title}" has been credited to your wallet.`,
+                    active: true, read: false, time: Date.now(),
+                    matchId: tId, tournamentId: tId, matchTitle: t.title, matchImage: t.img || '',
+                    amount: amount, type: 'winning'
+                };
+
+                updates[`users/${uid}/notification`] = notifData;
+                updates[`users/${uid}/notifications/${push(ref(db, 'notifications')).key}`] = { ...notifData };
 
                 await update(ref(db), updates);
                 showToast(`Prize Added Successfully!`, 'success'); closeModal('modal-award');
