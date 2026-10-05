@@ -554,7 +554,7 @@
         // AUTOMATIC REFUND CHECKER (SAFE & IDEMPOTENT)
         window.processAutoRefunds = async () => {
             if (!tournamentsState) return;
-            const now = Date.now();
+            const now = Date.now(); // Using original device time as requested
 
             for (const [tId, t] of Object.entries(tournamentsState)) {
                 if (!t) continue;
@@ -608,7 +608,7 @@
 
                         if (freshT.players) {
                             for (const [uid, p] of Object.entries(freshT.players)) {
-                                if (p.refunded || p.isRefunded) continue; // Skip if already refunded
+                                if (p.refunded || p.isRefunded) continue; // Skip if already refunded (Double Refund Protection)
                                 
                                 const uSnap = await get(ref(db, `users/${uid}`));
                                 const u = uSnap.val();
@@ -820,7 +820,7 @@
                 const updates = {};
                 updates[`users/${uid}/balance`] = currentBalance + amount;
                 updates[`tournaments/${tId}/players/${uid}/isRefunded`] = true; // 🚨 Flag Set!
-                updates[`tournaments/${tId}/players/${uid}/refunded`] = true;
+                updates[`tournaments/${tId}/players/${uid}/refunded`] = true; // Safety Flag
                 
                 // Rich Transaction Context
                 const fee = amount; 
